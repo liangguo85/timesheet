@@ -1,0 +1,145 @@
+﻿@using Abp.Web.Mvc.Extensions
+@section styles {
+    <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/plugins/iCheck/all.css">
+}
+@section scripts
+{
+    <!-- DataTables -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <!-- iCheck 1.0.1 -->
+    <script src="~/lib/AdminLTE-2.4.10/plugins/iCheck/icheck.min.js"></script>
+
+    @Html.IncludeScript("~/js/ProjectManagement/Index.js")
+}
+<div class="row">
+    <div class="col-xs-12">
+        <!-- /.box -->
+        <div class="box">
+            <div class="box box-header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>项目</label>
+                            <select class="form-control select2" style="width: 100%;">
+                                <option selected="selected">Alabama</option>
+                                <option>Alaska</option>
+                                <option>California</option>
+                                <option>Delaware</option>
+                                <option>Tennessee</option>
+                                <option>Texas</option>
+                                <option>Washington</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-toggle pull-right">
+                    <button type="button" name="search" id="search-btn" class="btn btn-success">
+                        查询 <i class="fa fa-search"></i>
+                    </button>
+                </div>
+                <div class="btn-group-toggle">
+                    <button type="button" class="btn btn-info">新增 <i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-danger">批量删除 <i class="fa fa-remove"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                    <input type="checkbox" class="flat-red" checked>
+                            </th>
+                            <th>Rendering engine</th>
+                            <th>Browser</th>
+                            <th>Platform(s)</th>
+                            <th>Engine version</th>
+                            <th>CSS grade</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="flat-red" checked>
+                            </td>
+                            <td>Trident</td>
+                            <td>
+                                Internet
+                                Explorer 4.0
+                            </td>
+                            <td>Win 95+</td>
+                            <td> 4</td>
+                            <td>X</td>
+                            <td><div class="btn-group-toggle">
+                                <button type="button" class="btn btn-info">编辑</button>
+                                <button type="button" class="btn btn-danger">删除</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="flat-red" checked>
+                            </td>
+                            <td>Trident</td>
+                            <td>
+                                Internet
+                                Explorer 5.0
+                            </td>
+                            <td>Win 95+</td>
+                            <td>5</td>
+                            <td>C</td>
+                            <td><div class="btn-group-toggle"><button type="button" class="btn btn-info">编辑</button> <button type="button" class="btn btn-danger">删除</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="flat-red" checked>
+                            </td>
+                            <td>Trident</td>
+                            <td>
+                                Internet
+                                Explorer 5.5
+                            </td>
+                            <td>Win 95+</td>
+                            <td>5.5</td>
+                            <td>A</td>
+                            <td><div class="btn-group-toggle"><button type="button" class="btn btn-info">编辑</button> <button type="button" class="btn btn-danger">删除</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="flat-red" checked>
+                            </td>
+                            <td>Trident</td>
+                            <td>
+                                Internet
+                                Explorer 6
+                            </td>
+                            <td>Win 98+</td>
+                            <td>6</td>
+                            <td>A</td>
+                            <td><div class="btn-group-toggle"><button type="button" class="btn btn-info">编辑</button> <button type="button" class="btn btn-danger">删除</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="flat-red" checked>
+                            </td>
+                            <td>Trident</td>
+                            <td>AOL browser (AOL desktop)</td>
+                            <td>Win XP</td>
+                            <td>6</td>
+                            <td>A</td>
+                            <td><div class="btn-group-toggle"><button type="button" class="btn btn-info">编辑</button> <button type="button" class="btn btn-danger">删除</button></div></td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+

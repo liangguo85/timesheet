@@ -196,6 +196,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Project\IProjectRepository.cs" />
+    <Compile Include="Project\Project.cs" />
     <Compile Include="TimesheetConsts.cs" />
     <Compile Include="TimesheetCoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Data.Entity;
 using Abp.EntityFramework;
 
 namespace ZNV.Timesheet.EntityFramework
@@ -9,6 +10,8 @@ namespace ZNV.Timesheet.EntityFramework
 
         //Example:
         //public virtual IDbSet<User> Users { get; set; }
+
+        public virtual IDbSet<ZNV.Timesheet.Project.Project> Projects { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.

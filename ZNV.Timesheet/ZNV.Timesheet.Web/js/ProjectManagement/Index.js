@@ -26,7 +26,49 @@
                     "sortDescending": ": activate to sort column descending"
                 }
             },
-            'searching': false
+            'searching': false,
+            "processing": true,
+            "serverSide": true,
+            "pageLength": 5,
+            "ajax": {
+                "url": "/ProjectManagement/GetAllProjects",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "columnDefs": [
+                {
+                    "targets": [0, -1],
+                    "searchable": false,
+                    "orderable": false
+                }
+            ],
+            "columns": [
+                {
+                    "data": null, "render": function (data, type, row) {
+                        return "<input type='checkbox' class='flat-red' checked>";
+                    }
+                },
+                { "data": "Id" },
+                { "data": "IsApproval" },
+                { "data": "ProjectCode" },
+                { "data": "ProjectName" },
+                { "data": "ProjectManagerID" },
+                { "data": "ProductManagerID" },
+                { "data": "ProjectType" },
+                { "data": "ProjectLevel" },
+                { "data": "ProjectKind" },
+                { "data": "ProductionLineAttribute" },
+                { "data": "ProjectStatus" },
+                { "data": "IsEnabled" },
+                { "data": "EffectiveDate" },
+                { "data": "ExpirationDate" },
+                {
+                    "data": null, "render": function (data, type, row) {
+                        return "<div class='btn - group - toggle'><button type='button' class='btn btn-info'>编辑</button> <button type='button' class='btn btn-danger'>删除</button></div>";
+                    }
+                }
+
+            ]
         }
     )
     $('#example2').DataTable({

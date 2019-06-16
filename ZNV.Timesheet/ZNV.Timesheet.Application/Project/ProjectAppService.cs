@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Abp.Application.Services;
+using Abp.Domain.Repositories;
+
+namespace ZNV.Timesheet.Project
+{
+    public class ProjectAppService: TimesheetAppServiceBase, IProjectAppService
+    {
+        private readonly IProjectRepository _projectRepository;
+        //private readonly IRepository<Holiday>
+
+        public ProjectAppService(IProjectRepository projectRepository)
+        {
+            _projectRepository = projectRepository;
+        }
+
+        public void CreateProject(Project project)
+        {
+            _projectRepository.Insert(project);
+        }
+
+        public List<Project> GetAllProjectList()
+        {
+            return _projectRepository.GetAll().ToList();
+        }
+
+        public void UpdateProject(Project project)
+        {
+            _projectRepository.Update(project);
+        }
+    }
+}

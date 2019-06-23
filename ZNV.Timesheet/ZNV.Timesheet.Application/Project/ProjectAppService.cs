@@ -32,5 +32,10 @@ namespace ZNV.Timesheet.Project
         {
             _projectRepository.Update(project);
         }
+
+        public void DeleteProject(int id)
+        {
+            _projectRepository.Delete(id);
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/6/24 7:05:55 ******/
+/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/6/24 9:04:38 ******/
 CREATE DATABASE [ZNVTimesheet]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -77,7 +77,7 @@ EXEC sys.sp_db_vardecimal_storage_format N'ZNVTimesheet', N'ON'
 GO
 USE [ZNVTimesheet]
 GO
-/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/6/24 7:05:55 ******/
+/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -87,7 +87,7 @@ CREATE TABLE [dbo].[Holiday](
 	[HolidayDate] [date] NOT NULL,
 	[HolidayType] [nvarchar](50) NOT NULL,
 	[Creator] [nvarchar](20) NOT NULL,
-	[CreatedTime] [datetime] NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
 	[LastModifier] [nvarchar](20) NULL,
 	[LastModifyTime] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE [dbo].[Holiday](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project]    Script Date: 2019/6/24 7:05:55 ******/
+/****** Object:  Table [dbo].[Project]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -130,7 +130,7 @@ CREATE TABLE [dbo].[Project](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Team]    Script Date: 2019/6/24 7:05:55 ******/
+/****** Object:  Table [dbo].[Team]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -141,7 +141,7 @@ CREATE TABLE [dbo].[Team](
 	[DepartmentID] [nvarchar](50) NOT NULL,
 	[TeamLeader] [nvarchar](50) NOT NULL,
 	[Creator] [nvarchar](20) NOT NULL,
-	[CreatedTime] [datetime] NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
 	[LastModifier] [nvarchar](20) NULL,
 	[LastModifyTime] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL,
@@ -152,7 +152,7 @@ CREATE TABLE [dbo].[Team](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/6/24 7:05:55 ******/
+/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -171,7 +171,7 @@ CREATE TABLE [dbo].[Timesheet](
 	[ApprovedTime] [datetime] NULL,
 	[WorkflowInstanceID] [nvarchar](50) NULL,
 	[Creator] [nvarchar](20) NOT NULL,
-	[CreatedTime] [datetime] NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
 	[LastModifier] [nvarchar](20) NULL,
 	[LastModifyTime] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL,

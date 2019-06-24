@@ -24,7 +24,7 @@ namespace ZNV.Timesheet.Web.Controllers
         public JsonResult GetAllTimesheets(string user, DateTime? startDate, DateTime? endDate)
         {
             var list = _appService.GetAllTimesheetsByUser(user, startDate, endDate);
-            return Json(new { sEcho = 1, iTotalRecords = 2, iTotalDisplayRecords = 2, aaData = list });
+            return Json(new { sEcho = 1, iTotalRecords = list.Count, iTotalDisplayRecords = list.Count, aaData = list });
         }
     }
 }

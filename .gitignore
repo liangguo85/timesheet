@@ -66,3 +66,4 @@ ipch/
 *.vspx
 /ZNV.Timesheet/packages
 /ZNV.Timesheet/ZNV.Timesheet.Database/ZNV.Timesheet.Database.jfm
+/ZNV.Timesheet/ZNV.Timesheet.Database/ZNV.Timesheet.Database.dbmdl

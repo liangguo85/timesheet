@@ -7760,7 +7760,8 @@
     <Content Include="Views\ProjectManagement\AddOrEdit.cshtml" />
     <Content Include="Views\Holiday\Index.cshtml" />
     <Content Include="Views\Holiday\AddOrEdit.cshtml" />
-	<Content Include="Views\Timesheet\Index备份.cshtml" />
+    <Content Include="Views\Timesheet\Index备份.cshtml" />
+    <Content Include="Views\Timesheet\Create.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -63,7 +63,9 @@ namespace ZNV.Timesheet.Web
             //~/Bundles/css
             bundles.Add(
                 new StyleBundle("~/Bundles/css")
-                    .Include("~/css/main.css")
+                    .Include(
+                    "~/css/main.css"
+                    )
                 );
 
             //~/Bundles/js

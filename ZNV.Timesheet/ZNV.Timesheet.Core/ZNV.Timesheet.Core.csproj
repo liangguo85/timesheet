@@ -196,11 +196,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Holiday\Holiday.cs" />
+    <Compile Include="Holiday\IHolidayRepository.cs" />
     <Compile Include="Project\IProjectRepository.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="TimesheetConsts.cs" />
     <Compile Include="TimesheetCoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Timesheet\ITimesheetRepository.cs" />
+    <Compile Include="Timesheet\Timesheet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

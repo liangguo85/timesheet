@@ -64,3 +64,5 @@ ipch/
 *.psess
 *.vsp
 *.vspx
+/ZNV.Timesheet/packages
+/ZNV.Timesheet/ZNV.Timesheet.Database/ZNV.Timesheet.Database.jfm

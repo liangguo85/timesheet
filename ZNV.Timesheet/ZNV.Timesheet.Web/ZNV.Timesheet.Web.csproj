@@ -469,12 +469,14 @@
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
+    <Content Include="css\editor.dataTables.min.css" />
     <Content Include="css\main.css">
       <DependentUpon>main.less</DependentUpon>
     </Content>
     <Content Include="css\main.min.css">
       <DependentUpon>main.css</DependentUpon>
     </Content>
+    <Content Include="css\site.css" />
     <Content Include="images\abp-logo.png" />
     <Content Include="Content\bootstrap-cosmo.min.css" />
     <Content Include="Content\flags\famfamfam-flags.css" />
@@ -482,6 +484,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="js\main.js" />
+    <Content Include="js\Timesheet\Index备份.js" />
     <Content Include="js\Timesheet\Index.js" />
     <Content Include="lib\AdminLTE-2.4.10\bower_components\bootstrap-colorpicker\dist\css\bootstrap-colorpicker.css" />
     <Content Include="lib\AdminLTE-2.4.10\bower_components\bootstrap-colorpicker\dist\css\bootstrap-colorpicker.min.css" />
@@ -7751,6 +7754,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\ProjectManagement\Index.cshtml" />
     <Content Include="Views\Timesheet\Index.cshtml" />
+    <Content Include="Views\Timesheet\Index备份.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

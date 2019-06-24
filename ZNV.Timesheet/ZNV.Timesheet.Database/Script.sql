@@ -1,6 +1,6 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/6/15 9:20:35 ******/
+/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/6/24 9:04:38 ******/
 CREATE DATABASE [ZNVTimesheet]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -77,34 +77,34 @@ EXEC sys.sp_db_vardecimal_storage_format N'ZNVTimesheet', N'ON'
 GO
 USE [ZNVTimesheet]
 GO
-/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/6/15 9:20:35 ******/
+/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Holiday](
-	[HolidayID] [int] IDENTITY(1,1) NOT NULL,
+	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[HolidayDate] [date] NOT NULL,
 	[HolidayType] [nvarchar](50) NOT NULL,
 	[Creator] [nvarchar](20) NOT NULL,
-	[CreatedTime] [datetime] NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
 	[LastModifier] [nvarchar](20) NULL,
 	[LastModifyTime] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Holiday] PRIMARY KEY CLUSTERED 
 (
-	[HolidayID] ASC
+	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project]    Script Date: 2019/6/15 9:20:35 ******/
+/****** Object:  Table [dbo].[Project]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Project](
-	[ProjectID] [int] IDENTITY(1,1) NOT NULL,
+	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[IsApproval] [bit] NOT NULL,
 	[ProjectCode] [nvarchar](50) NOT NULL,
 	[ProjectName] [nvarchar](50) NOT NULL,
@@ -119,46 +119,46 @@ CREATE TABLE [dbo].[Project](
 	[EffectiveDate] [datetime] NOT NULL,
 	[ExpirationDate] [datetime] NOT NULL,
 	[Creator] [nvarchar](20) NOT NULL,
-	[CreatedTime] [datetime] NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
 	[LastModifier] [nvarchar](20) NULL,
 	[LastModifyTime] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Project] PRIMARY KEY CLUSTERED 
 (
-	[ProjectID] ASC
+	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Team]    Script Date: 2019/6/15 9:20:35 ******/
+/****** Object:  Table [dbo].[Team]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Team](
-	[TeamID] [int] IDENTITY(1,1) NOT NULL,
+	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[TeamName] [nvarchar](50) NOT NULL,
 	[DepartmentID] [nvarchar](50) NOT NULL,
 	[TeamLeader] [nvarchar](50) NOT NULL,
 	[Creator] [nvarchar](20) NOT NULL,
-	[CreatedTime] [datetime] NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
 	[LastModifier] [nvarchar](20) NULL,
 	[LastModifyTime] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Team] PRIMARY KEY CLUSTERED 
 (
-	[TeamID] ASC
+	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/6/15 9:20:35 ******/
+/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/6/24 9:04:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Timesheet](
-	[TimesheetID] [int] IDENTITY(1,1) NOT NULL,
+	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[TimesheetUser] [nvarchar](20) NOT NULL,
 	[TimesheetDate] [date] NOT NULL,
 	[ProjectID] [int] NOT NULL,
@@ -171,13 +171,13 @@ CREATE TABLE [dbo].[Timesheet](
 	[ApprovedTime] [datetime] NULL,
 	[WorkflowInstanceID] [nvarchar](50) NULL,
 	[Creator] [nvarchar](20) NOT NULL,
-	[CreatedTime] [datetime] NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
 	[LastModifier] [nvarchar](20) NULL,
 	[LastModifyTime] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK_Timesheet] PRIMARY KEY CLUSTERED 
 (
-	[TimesheetID] ASC
+	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -186,7 +186,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'节假日日�
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'工作日变节假日 |  周末变工作日' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Holiday', @level2type=N'COLUMN',@level2name=N'HolidayType'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'项目ID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Project', @level2type=N'COLUMN',@level2name=N'ProjectID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'项目ID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Project', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'是否立项' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Project', @level2type=N'COLUMN',@level2name=N'IsApproval'
 GO
@@ -216,7 +216,7 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'失效日期' 
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Project', @level2type=N'COLUMN',@level2name=N'Creator'
 GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Project', @level2type=N'COLUMN',@level2name=N'CreatedTime'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Project', @level2type=N'COLUMN',@level2name=N'CreationTime'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'最后编辑人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Project', @level2type=N'COLUMN',@level2name=N'LastModifier'
 GO

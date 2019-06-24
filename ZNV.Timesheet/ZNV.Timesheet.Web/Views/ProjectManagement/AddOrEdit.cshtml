@@ -1,0 +1,114 @@
+﻿@model ZNV.Timesheet.Project.Project
+@{
+    Layout = null;
+}
+
+
+@using (Html.BeginForm("AddOrEdit", "ProjectManagement", FormMethod.Post, new { onsubmit = "return SubmitForm(this)" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectCode, "项目代码", new { @class = "control-label" })
+            @Html.EditorFor(model => model.ProjectCode, new { htmlAttributes = new { @class = "form-control" } })
+            @*@Html.ValidationMessageFor(model => model.Name)*@
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectName, "项目名称", new { @class = "control-label" })
+            @Html.EditorFor(model => model.ProjectName, new { htmlAttributes = new { @class = "form-control" } })
+            @*@Html.ValidationMessageFor(model => model.ProjectName)*@
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectManagerID, "项目经理", new { @class = "control-label" })
+            @Html.EditorFor(model => model.ProjectManagerID, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProductManagerID, "产品经理", new { @class = "control-label" })
+            @Html.EditorFor(model => model.ProductManagerID, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectType, "项目类别", new { @class = "control-label" })
+            @Html.DropDownListFor(model=>model.ProjectType, new List<SelectListItem> {
+                new SelectListItem { Value="平台", Text="平台"},
+                new SelectListItem { Value="产品", Text="产品"},
+                new SelectListItem { Value="预研", Text="预研"},
+                new SelectListItem { Value="合同", Text="合同"}
+            }, new { @class="form-control"})
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectLevel, "项目级别", new { @class = "control-label" })
+            @Html.DropDownListFor(model=>model.ProjectLevel, new List<SelectListItem> {
+                new SelectListItem { Value="战略", Text="战略"},
+                new SelectListItem { Value="普通", Text="普通"},
+                new SelectListItem { Value="维护", Text="维护"}
+            }, new { @class="form-control"})
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectKind, "项目性质", new { @class = "control-label" })
+            @Html.DropDownListFor(model=>model.ProjectKind, new List<SelectListItem> {
+                new SelectListItem { Value="自研", Text="自研"},
+                new SelectListItem { Value="ODM", Text="ODM"},
+                new SelectListItem { Value="OEM", Text="OEM"}
+            }, new { @class="form-control"})
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProductionLineAttribute, "产线属性", new { @class = "control-label" })
+            @Html.DropDownListFor(model=>model.ProductionLineAttribute, new List<SelectListItem> {
+                new SelectListItem { Value="研发公共", Text="研发公共"},
+                new SelectListItem { Value="智慧城市", Text="智慧城市"},
+                new SelectListItem { Value="公共安全", Text="公共安全"},
+                new SelectListItem { Value="公共安全-心测及定位", Text="公共安全-心测及定位"},
+                new SelectListItem { Value="物联网", Text="物联网"},
+                new SelectListItem { Value="战略投入", Text="战略投入"},
+                new SelectListItem { Value="云运维", Text="云运维"}
+            }, new { @class="form-control"})
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectStatus, "项目状态", new { @class = "control-label" })
+            @Html.DropDownListFor(model=>model.ProjectStatus, new List<SelectListItem> {
+                new SelectListItem { Value="规划中", Text="规划中"},
+                new SelectListItem { Value="立项/进行中", Text="立项/进行中"},
+                new SelectListItem { Value="已完成", Text="已完成"},
+                new SelectListItem { Value="退市", Text="退市"},
+                new SelectListItem { Value="已暂停", Text="已暂停"},
+                new SelectListItem { Value="已取消/异常关闭", Text="已取消/异常关闭"}
+            }, new { @class="form-control"})
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.EffectiveDate, "生效日期", new { @class = "control-label" })
+            @Html.EditorFor(model => model.EffectiveDate, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ExpirationDate, "失效日期", new { @class = "control-label" })
+            @Html.EditorFor(model => model.ExpirationDate, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.IsEnabled, "是否投入", new { @class = "control-label" })
+            @Html.CheckBoxFor(model => model.IsEnabled, new { @class = "form-check-input " })
+        </div>
+    </div>
+    <div class="form-group pull-right">
+        <input type="submit" value="保存" class="btn btn-primary btn-lg" />
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        //Date picker
+        $('#EffectiveDate, #ExpirationDate').datepicker({
+            autoclose: true
+        })
+    })
+</script>

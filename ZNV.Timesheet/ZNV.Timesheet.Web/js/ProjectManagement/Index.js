@@ -1,35 +1,32 @@
 ﻿$(function () {
     $('#example1').DataTable(
         {
-            "language":
-            {
-                "decimal": "",
-                "emptyTable": "没有数据",
-                "info": "共 _TOTAL_ 条记录",
-                "infoEmpty": "共 0 条记录",
-                "infoFiltered": "(filtered from _MAX_ total entries)",
-                "infoPostFix": "",
-                "thousands": ",",
-                "lengthMenu": "每页 _MENU_ 条",
-                "loadingRecords": "Loading...",
-                "processing": "Processing...",
-                "search": "查找:",
-                "zeroRecords": "没有找到匹配的记录",
-                "paginate": {
-                    "first": "首页",
-                    "last": "尾页",
-                    "next": "下一页",
-                    "previous": "上一页"
-                },
-                "aria": {
-                    "sortAscending": ": activate to sort column ascending",
-                    "sortDescending": ": activate to sort column descending"
-                }
-            },
-            'searching': false,
-            "processing": true,
-            "serverSide": true,
-            "pageLength": 5,
+            //"language":
+            //{
+            //    "decimal": "",
+            //    "emptyTable": "没有数据",
+            //    "info": "共 _TOTAL_ 条记录",
+            //    "infoEmpty": "共 0 条记录",
+            //    "infoFiltered": "(filtered from _MAX_ total entries)",
+            //    "infoPostFix": "",
+            //    "thousands": ",",
+            //    "lengthMenu": "每页 _MENU_ 条",
+            //    "loadingRecords": "Loading...",
+            //    "processing": "Processing...",
+            //    "search": "查找:",
+            //    "zeroRecords": "没有找到匹配的记录",
+            //    "paginate": {
+            //        "first": "首页",
+            //        "last": "尾页",
+            //        "next": "下一页",
+            //        "previous": "上一页"
+            //    },
+            //    "aria": {
+            //        "sortAscending": ": activate to sort column ascending",
+            //        "sortDescending": ": activate to sort column descending"
+            //    }
+            //},
+            
             "ajax": {
                 "url": "/ProjectManagement/GetAllProjects",
                 "type": "POST",
@@ -44,41 +41,35 @@
             ],
             "columns": [
                 {
-                    "data": null, "render": function (data, type, row) {
+                    "data": "Id", "render": function (data) {
                         return "<input type='checkbox' class='flat-red' checked>";
                     }
                 },
-                { "data": "Id" },
-                { "data": "IsApproval" },
-                { "data": "ProjectCode" },
-                { "data": "ProjectName" },
-                { "data": "ProjectManagerID" },
-                { "data": "ProductManagerID" },
-                { "data": "ProjectType" },
-                { "data": "ProjectLevel" },
-                { "data": "ProjectKind" },
-                { "data": "ProductionLineAttribute" },
-                { "data": "ProjectStatus" },
-                { "data": "IsEnabled" },
-                { "data": "EffectiveDate" },
-                { "data": "ExpirationDate" },
+                { "data": "Id", "name": "Id" },
+                { "data": "IsApproval", "name": "IsApproval" },
+                { "data": "ProjectCode", "name": "ProjectCode" },
+                { "data": "ProjectName", "name": "ProjectName" },
+                { "data": "ProjectManagerID", "name": "ProjectManagerID" },
+                { "data": "ProductManagerID", "name": "ProductManagerID" },
+                { "data": "ProjectType", "name": "ProjectType" },
+                { "data": "ProjectLevel", "name": "ProjectLevel" },
+                { "data": "ProjectKind", "name": "ProjectKind" },
+                { "data": "ProductionLineAttribute", "name": "ProductionLineAttribute" },
+                { "data": "ProjectStatus", "name": "ProjectStatus" },
+                { "data": "IsEnabled", "name": "IsEnabled" },
+                { "data": "EffectiveDate", "name": "EffectiveDate" },
+                { "data": "ExpirationDate", "name": "ExpirationDate" },
                 {
-                    "data": null, "render": function (data, type, row) {
+                    "data": "Id", "render": function (data) {
                         return "<div class='btn - group - toggle'><button type='button' class='btn btn-info'>编辑</button> <button type='button' class='btn btn-danger'>删除</button></div>";
                     }
                 }
 
-            ]
+            ],
+            "processing": true,
+            "serverSide": true
         }
     )
-    $('#example2').DataTable({
-        'paging': true,
-        'lengthChange': false,
-        'searching': false,
-        'ordering': true,
-        'info': true,
-        'autoWidth': false
-    })
 
     //iCheck for checkbox and radio inputs
     $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({

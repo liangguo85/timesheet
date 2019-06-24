@@ -7715,6 +7715,7 @@
     <Compile Include="App_Start\TimesheetWebModule.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AboutController.cs" />
+    <Compile Include="Controllers\HolidayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProjectManagementController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
@@ -7754,6 +7755,8 @@
     <Content Include="Views\ProjectManagement\Index.cshtml" />
     <Content Include="Views\Timesheet\Index.cshtml" />
     <Content Include="Views\ProjectManagement\AddOrEdit.cshtml" />
+    <Content Include="Views\Holiday\Index.cshtml" />
+    <Content Include="Views\Holiday\AddOrEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

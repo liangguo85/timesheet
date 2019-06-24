@@ -211,6 +211,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntityFramework\Repositories\HolidayRepository.cs" />
     <Compile Include="EntityFramework\Repositories\ProjectRepository.cs" />
     <Compile Include="EntityFramework\TimesheetDbContext.cs" />
     <Compile Include="EntityFramework\Repositories\TimesheetRepositoryBase.cs" />

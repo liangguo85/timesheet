@@ -1,0 +1,185 @@
+﻿@using Abp.Web.Mvc.Extensions
+@section styles {
+    <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/plugins/iCheck/all.css">
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <!-- bootstrap datepicker -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+}
+@section scripts
+{
+    <!-- DataTables -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <!-- iCheck 1.0.1 -->
+    <script src="~/lib/AdminLTE-2.4.10/plugins/iCheck/icheck.min.js"></script>
+    <!-- bootstrap datepicker -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/notify.min.js"></script>
+
+    <script>
+        var Popup, dataTable
+
+        $(document).ready(function () {
+            dataTable = $("#holidayTable").DataTable({
+                "ajax": {
+                    "url": "/Holiday/GetList",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    
+                    {
+                        "data": "HolidayDate", "name": "HolidayDate", "render": function (d) {
+                            return moment(d).format("YYYY-MM-DD");
+                        }
+                    },
+                    { "data": "HolidayType", "name": "HolidayType" },
+                    {
+                        "data": "Id", "render": function (data) {
+                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Holiday")/" + data + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a >"
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "120px"
+                    }
+                ],
+                "serverSide": true,
+                "processing": true,
+                "order": [0, "asc"],
+                "language": {
+                    "emptyTable": "没有记录, 请点击 <b>新增</b> 按钮添加记录!",
+                    "processing": "处理中... 请等待!",
+                    "decimal": "",
+                    "info": "共 _TOTAL_ 条记录",
+                    "infoEmpty": "共 0 条记录",
+                    "infoFiltered": "(filtered from _MAX_ total entries)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "每页 _MENU_ 条",
+                    "search": "查找:",
+                    "zeroRecords": "没有找到匹配的记录",
+                    "paginate": {
+                        "first": "首页",
+                        "last": "尾页",
+                        "next": "下一页",
+                        "previous": "上一页"
+                    }
+                },
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "fnInitComplete": function (oSettings, json) {
+                    addSearchControl(json)
+                }
+            })
+        })
+
+        function addSearchControl(json) {
+            $("#holidayTable thead").append($("#holidayTable thead tr:first").clone());
+
+            $("#holidayTable thead tr:eq(1) th").each(function (index) {
+                if (index != 2) {
+                    $(this).replaceWith('<th><input type="text" style="width:80px;"></input></th>');
+                    var searchControl = $("#holidayTable thead tr:eq(1) th:eq(" + index + ") input");
+                    searchControl.on('keyup', function () {
+                        dataTable.column(index).search(searchControl.val()).draw();
+                    })
+                }
+            })
+        }
+
+        function PopupForm(url) {
+            var formDiv = $('<div/>');
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        resizable: false,
+                        modal: true,
+                        title: "新增节假日信息",
+                        height: 300,
+                        width: 400,
+                        close: function () {
+                            Popup.dialog('destroy').remove();
+                        }
+                    });
+                });
+        }
+
+        function SubmitForm(form) {
+            //$.validator.unobtrusive.parse(form);
+            //if ($(form).valid()) {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: $(form).serialize(),
+                success: function (data) {
+                    if (data.success) {
+                        Popup.dialog('close');
+                        dataTable.ajax.reload();
+
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+                    }
+                }
+            });
+            //}
+            return false;
+        }
+
+        function Delete(id) {
+            if (confirm("确认删除吗?")) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Delete", "Holiday")/' + id,
+                    success: function (data) {
+                        if (data.success) {
+                            dataTable.ajax.reload();
+
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+}
+<div class="row">
+    <div class="col-xs-12">
+        <!-- /.box -->
+        <div class="box">
+            <div class="box box-header">
+                <div class="btn-group-toggle">
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Holiday")')">新增 <i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="holidayTable" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>类型</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+
+
+

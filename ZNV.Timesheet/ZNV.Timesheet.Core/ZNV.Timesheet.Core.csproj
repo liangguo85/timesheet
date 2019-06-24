@@ -196,6 +196,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Holiday\Holiday.cs" />
+    <Compile Include="Holiday\IHolidayRepository.cs" />
     <Compile Include="Project\IProjectRepository.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="TimesheetConsts.cs" />

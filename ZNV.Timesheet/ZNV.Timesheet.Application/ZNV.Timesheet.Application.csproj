@@ -208,6 +208,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Holiday\HolidayAppService.cs" />
+    <Compile Include="Holiday\IHolidayAppService.cs" />
     <Compile Include="Project\IProjectAppService.cs" />
     <Compile Include="Project\ProjectAppService.cs" />
     <Compile Include="TimesheetApplicationModule.cs" />

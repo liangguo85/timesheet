@@ -12,6 +12,7 @@ namespace ZNV.Timesheet.EntityFramework
         //public virtual IDbSet<User> Users { get; set; }
 
         public virtual IDbSet<ZNV.Timesheet.Project.Project> Projects { get; set; }
+        public virtual IDbSet<ZNV.Timesheet.Holiday.Holiday> Holidays { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.

@@ -17,6 +17,12 @@ namespace ZNV.Timesheet.Timesheet
         /// <param name="endDate">结束日期</param>
         /// <returns></returns>
         List<Timesheet> GetAllTimesheetsByUser(string user, DateTime? startDate, DateTime? endDate);
+        
+        /// <summary>
+        /// 通过ID去获取工时数据
+        /// </summary>
+        /// <param name="id">用户</param>
+        Timesheet GetTimesheetsByID(int id);
 
         /// <summary>
         /// 通过用户获取某一天的工时记录，因为同一天可以填多个项目，所以一天有可能返回多个记录
@@ -32,5 +38,11 @@ namespace ZNV.Timesheet.Timesheet
         /// <param name="timesheetList">需要处理的工时列表</param>
         /// <returns>返回空字符串代表成功，失败则返回失败的原因</returns>
         string InsertOrUpdateTimesheets(List<Timesheet> timesheetList);
+
+        void CreateTimesheet(Timesheet ts);
+
+        void UpdateTimesheet(Timesheet ts);
+
+        void DeleteTimesheet(int id);
     }
 }

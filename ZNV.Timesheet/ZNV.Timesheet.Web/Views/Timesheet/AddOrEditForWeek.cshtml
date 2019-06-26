@@ -1,0 +1,55 @@
+﻿@model ZNV.Timesheet.Timesheet.TimesheetForWeek
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("AddOrEditForWeek", "Timesheet", FormMethod.Post, new { onsubmit = "return SubmitForm(this)" }))
+{
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- /.box -->
+            <div class="box">
+                <div class="box box-header">
+                    <div class="btn-group-toggle">
+                        @Html.DropDownList("Project", ViewData["Projects"] as SelectList, "--请选择--", new { @class = "my-select-css-class" })
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>项目代码</th>
+                                <th>工时</th>
+                                <th>工作内容</th>
+                                <th>备注</th>
+                            </tr>
+                            @for (int i = 0; i < Model.TimesheetList.Count; i++)
+                            {
+                            <tr>
+                                <td><input name="TimesheetDate" type="text" value="@Model.TimesheetList[i].TimesheetDate" /></td>
+                                <td><input type="text" value="@Model.TimesheetList[i].ProjectID" /></td>
+                                <td><input type="text" value="@Model.TimesheetList[i].Workload" /></td>
+                                <td><input type="text" value="@Model.TimesheetList[i].WorkContent" /></td>
+                                <td><input type="text" value="@Model.TimesheetList[i].Remarks" /></td>
+                            </tr>
+                            }
+                        </thead>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+}
+    <script>
+        $(document).ready(function () {
+            //Date picker
+            $("input[name='TimesheetDate']").datepicker({
+                autoclose: true
+            })
+        })
+    </script>

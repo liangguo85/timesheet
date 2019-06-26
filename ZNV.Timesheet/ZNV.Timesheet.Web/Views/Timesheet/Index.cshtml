@@ -3,6 +3,9 @@
     <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
     <!-- iCheck for checkboxes and radio inputs -->
     <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/plugins/iCheck/all.css">
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <!-- bootstrap datepicker -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 }
 @section scripts
 {
@@ -11,39 +14,170 @@
     <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     <!-- iCheck 1.0.1 -->
     <script src="~/lib/AdminLTE-2.4.10/plugins/iCheck/icheck.min.js"></script>
+    <!-- bootstrap datepicker -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
 
-    @Html.IncludeScript("~/js/Timesheet/Index.js")
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/notify.min.js"></script>
+
+    @*@Html.IncludeScript("~/js/Timesheet/Index.js")*@
+
+<script>
+        var Popup, dataTable
+
+        $(document).ready(function () {
+            dataTable = $("#dtTimesheet").DataTable({
+                "ajax": {
+                    "url": "/Timesheet/GetAllTimesheets",
+                    "type": "POST",
+                    "datatype": "json",
+                    "data": {
+                            "user": "kojar.liu",
+                            "startDate": "2019-06-01",
+                            "endDate": "2019-09-01"
+                        },
+                },
+                "columns": [
+                    { "data": "Id" },
+                    {
+                        "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
+                            if (d)
+                                return moment(d).format("YYYY-MM-DD");
+                            else
+                                return "";
+                        }
+                    },
+                    { "data": "ProjectID" },
+                    { "data": "ProjectGroup" },
+                    { "data": "Workload" },
+                    { "data": "WorkContent" },
+                    { "data": "Remarks" },
+                    { "data": "Status" },
+                    {
+                        "data": "Id", "render": function (data) {
+                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Timesheet")/" + data + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a >"
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "125px",
+                    }
+                ],
+                "serverSide": true,
+                "processing": true,
+                //"order": [1, "asc"],
+                "aaSorting": [[1, "desc"]],
+                "bSort": true,
+                "language": {
+                    "emptyTable": "没有记录, 请点击 <b>新增</b> 按钮添加记录!",
+                    "processing": "处理中... 请等待!",
+                    "decimal": "",
+                    "info": "共 _TOTAL_ 条记录",
+                    "infoEmpty": "共 0 条记录",
+                    "infoFiltered": "(filtered from _MAX_ total entries)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "每页 _MENU_ 条",
+                    "search": "查找:",
+                    "zeroRecords": "没有找到匹配的记录",
+                    "paginate": {
+                        "first": "首页",
+                        "last": "尾页",
+                        "next": "下一页",
+                        "previous": "上一页"
+                    }
+                },
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "fnInitComplete": function (oSettings, json) {
+                    addSearchControl(json)
+                }
+            })
+        })
+
+        function addSearchControl(json) {
+            //$("#dtTimesheet thead").append($("#dtTimesheet thead tr:first").clone());
+
+            //$("#dtTimesheet thead tr:eq(1) th").each(function (index) {
+            //    if (index != 13) {
+            //        $(this).replaceWith('<th><input type="text" style="width:80px;"></input></th>');
+            //        var searchControl = $("#dtTimesheet thead tr:eq(1) th:eq(" + index + ") input");
+            //        searchControl.on('keyup', function () {
+            //            dataTable.column(index).search(searchControl.val()).draw();
+            //        })
+            //    }
+            //})
+        }
+
+        function PopupForm(url) {
+            var formDiv = $('<div/>');
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        resizable: false,
+                        modal: true,
+                        title: "新增工时",
+                        //height: 600,
+                        width: 700,
+                        close: function () {
+                            Popup.dialog('destroy').remove();
+                        }
+                    });
+                });
+        }
+
+        function SubmitForm(form) {
+            //$.validator.unobtrusive.parse(form);
+            //if ($(form).valid()) {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: $(form).serialize(),
+                success: function (data) {
+                    if (data.success) {
+                        Popup.dialog('close');
+                        dataTable.ajax.reload();
+
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+                    }
+                }
+            });
+            //}
+            return false;
+        }
+
+        function Delete(id) {
+            if (confirm("确认删除吗?")) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Delete", "Timesheet")/' + id,
+                    success: function (data) {
+                        if (data.success) {
+                            dataTable.ajax.reload();
+
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+                        }
+                    }
+                })
+            }
+        }
+</script>
 }
 <div class="row">
     <div class="col-xs-12">
         <!-- /.box -->
         <div class="box">
             <div class="box box-header">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>我的周报</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="btn-group-toggle pull-right">
-                    <table cellpadding="0" cellspacing="0" width="100%">
-                        <tr>
-                            <td style="text-align:right">开始日期</td>
-                            <td style="width:60px"><input id="startDate" width="100%" type="text" value="2019-06-01" /></td>
-                            <td style="width:60px;text-align:right">结束日期</td>
-                            <td style="width:60px"><input id="endDate" width="100%" type="text" value="2019-06-30" /></td>
-                            <td style="width:80px;text-align:center">
-                                <button type="button" name="search" id="search-btn" class="btn btn-success">
-                                    查询 <i class="fa fa-search"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
                 <div class="btn-group-toggle">
-                    <button type="button" id="btCreate" class="btn btn-info">新增 <i class="fa fa-plus"></i></button>
-                    <button type="button" id="btBulkDelete" class="btn btn-danger">批量删除 <i class="fa fa-remove"></i></button>
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Timesheet")')">按天新增 <i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEditForWeek","Timesheet")')">按周新增或编辑 <i class="fa fa-plus"></i></button>
                 </div>
             </div>
             <!-- /.box-header -->
@@ -51,9 +185,6 @@
                 <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>
-                                <input type="checkbox" class="flat-red" checked>
-                            </th>
                             <th>序号</th>
                             <th>日期</th>
                             <th>项目代码</th>
@@ -62,8 +193,6 @@
                             <th>工作内容</th>
                             <th>备注</th>
                             <th>状态</th>
-                            <th>审批人</th>
-                            <th>审批时间</th>
                             <th></th>
                         </tr>
                     </thead>

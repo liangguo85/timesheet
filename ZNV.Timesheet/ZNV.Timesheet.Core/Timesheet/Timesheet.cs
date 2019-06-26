@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using ZNV.Timesheet.Project;
 
 namespace ZNV.Timesheet.Timesheet
 {
@@ -14,6 +17,7 @@ namespace ZNV.Timesheet.Timesheet
     {
         public virtual string TimesheetUser { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public virtual DateTime? TimesheetDate { get; set; }
 
         public virtual int? ProjectID { get; set; }
@@ -50,3 +54,4 @@ namespace ZNV.Timesheet.Timesheet
         }
     }
 }
+

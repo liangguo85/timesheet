@@ -1,0 +1,66 @@
+﻿@model ZNV.Timesheet.Timesheet.Timesheet
+@{
+    Layout = null;
+}
+
+
+@using (Html.BeginForm("AddOrEdit", "Timesheet", FormMethod.Post, new { onsubmit = "return SubmitForm(this)" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.TimesheetUser, "用户", new { @class = "control-label" })
+            @Html.EditorFor(model => model.TimesheetUser, new { htmlAttributes = new { @class = "form-control",@readonly= "readonly" } })
+            @*@Html.ValidationMessageFor(model => model.TimesheetUser)*@
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.TimesheetDate, "日期", new { @class = "control-label" })
+            @Html.EditorFor(model => model.TimesheetDate, new { htmlAttributes = new { @class = "form-control", @autocomplete = "OFF" }, Value = Model.TimesheetDate.HasValue?Model.TimesheetDate.Value.ToString("yyyy-MM-dd"):"" })
+            @*@Html.ValidationMessageFor(model => model.TimesheetDate)*@
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectID, "项目代码", new { @class = "control-label" })
+            @Html.DropDownList("ProjectID", ViewData["Projects"] as List<SelectListItem>, "--请选择--", new { @class = "my-select-css-class" })
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ProjectGroup, "项目组", new { @class = "control-label" })
+            @Html.EditorFor(model => model.ProjectGroup, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.Workload, "工时", new { @class = "control-label" })
+            @Html.EditorFor(model => model.Workload, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.WorkContent, "工作类容", new { @class = "control-label" })
+            @Html.EditorFor(model => model.WorkContent, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.Remarks, "备注", new { @class = "control-label" })
+            @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.Status, "状态", new { @class = "control-label" })
+            @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-group pull-right">
+        <input type="submit" value="保存" class="btn btn-primary btn-lg" />
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        //Date picker
+        $('#TimesheetDate').datepicker({
+            autoclose: true,
+            dateFormat: "yy-mm-dd"
+        });
+        
+    })
+</script>

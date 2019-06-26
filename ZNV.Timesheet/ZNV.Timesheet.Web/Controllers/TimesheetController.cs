@@ -27,8 +27,6 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
-            string sortColumnName = Request["columns[" + Request["order[0][column]"] + "][name]"];
-            string sortDirection = Request["order[0][dir]"];
             var list = _appService.GetAllTimesheetsByUser(user, startDate, endDate);
             int totalRow = list.Count;
             list = list.Skip(start).Take(length).ToList();
@@ -79,9 +77,10 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult AddOrEdit(Timesheet.Timesheet ts)
         {
-            ts.Creator = "kojar.liu";
             if (ts.Id == 0)
             {
+                ts.Creator = "kojar.liu";
+                ts.TimesheetUser = "kojar.liu";
                 _appService.CreateTimesheet(ts);
                 return Json(new { success = true, message = "新增工时成功!" }, JsonRequestBehavior.AllowGet);
             }

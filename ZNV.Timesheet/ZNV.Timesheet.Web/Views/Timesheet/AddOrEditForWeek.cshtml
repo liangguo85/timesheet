@@ -3,7 +3,7 @@
     Layout = null;
 }
 
-@using (Html.BeginForm("AddOrEditForWeek", "Timesheet", FormMethod.Post, new { onsubmit = "return SubmitForm(this)" }))
+@using (Html.BeginForm("AddOrEditForWeek", "Timesheet", FormMethod.Post, new { onsubmit = "return SubmitFormForWeek(this)" }))
 {
     <div class="row">
         <div class="col-xs-12">
@@ -11,7 +11,9 @@
             <div class="box">
                 <div class="box box-header">
                     <div class="btn-group-toggle">
-                        @Html.DropDownList("Project", ViewData["Projects"] as SelectList, "--请选择--", new { @class = "my-select-css-class" })
+                        <input type="hidden" id="startDate" value="@Model.startDate" />
+                        <input type="hidden" id="endDate" value="@Model.endDate" />
+                        <label>@Model.startDate</label>到<label>@Model.endDate</label>的工时
                     </div>
                 </div>
                 <!-- /.box-header -->
@@ -19,37 +21,82 @@
                     <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
+                                <th style="display:none"></th>
                                 <th>日期</th>
                                 <th>项目代码</th>
                                 <th>工时</th>
                                 <th>工作内容</th>
                                 <th>备注</th>
+                                <th></th>
                             </tr>
                             @for (int i = 0; i < Model.TimesheetList.Count; i++)
                             {
-                            <tr>
-                                <td><input name="TimesheetDate" type="text" value="@Model.TimesheetList[i].TimesheetDate" /></td>
-                                <td><input type="text" value="@Model.TimesheetList[i].ProjectID" /></td>
-                                <td><input type="text" value="@Model.TimesheetList[i].Workload" /></td>
-                                <td><input type="text" value="@Model.TimesheetList[i].WorkContent" /></td>
-                                <td><input type="text" value="@Model.TimesheetList[i].Remarks" /></td>
-                            </tr>
+                                <tr>
+                                    <td style="display:none"><input name="inputId" type="hidden" value="@Model.TimesheetList[i].Id"/></td>
+                                    <td>
+                                        @if (Model.TimesheetList[i].TimesheetDate.HasValue)
+                                        {
+                                            <input name="TimesheetDate" style="width:100px" type="text" value='@Model.TimesheetList[i].TimesheetDate.Value.ToString("yyyy-MM-dd")' />
+                                        }
+                                        else
+                                        {
+                                            <input name="TimesheetDate" type="text" value='' />
+                                        }
+                                    </td>
+                                    <td>
+                                        <select name="selectProject" style="width:100px">
+                                            @foreach (var project in ViewData["Projects"] as List<SelectListItem>)
+                                            {
+                                                if (Model.TimesheetList[i].ProjectID.HasValue && project.Value == Model.TimesheetList[i].ProjectID.Value.ToString())
+                                                {
+                                                    <option value="@project.Value" selected="selected">@project.Text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@project.Value">@project.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </td>
+                                    <td><input type="text" style="width:80px" value="@Model.TimesheetList[i].Workload" /></td>
+                                    <td><input type="text" style="width:100px" value="@Model.TimesheetList[i].WorkContent" /></td>
+                                    <td><input type="text" style="width:100px" value="@Model.TimesheetList[i].Remarks" /></td>
+                                    <td>
+                                        @if (Model.TimesheetList[i].Id == 0)
+                                        {//显示加号和减号
+                                            <a class='btn btn-info btn-sm' style="margin-right: 5px;" title="增加一个工时" onclick='CreateNewTimesheet(this)'>+</a>
+                                            <a class='btn btn-info btn-sm' title="移除一个工时" onclick='RemoveNewTimesheet(this)'>-</a>
+                                        }
+                                        else
+                                        {//只显示加号，因为数据以及存在不允许删除，可以到列表界面单独进行删除
+                                            <a class='btn btn-info btn-sm' style="margin-right: 5px;" title="增加一个工时" onclick='CreateNewTimesheet(this)'>+</a> 
+                                        }
+                                    </td>
+                                </tr>
                             }
                         </thead>
                     </table>
                 </div>
                 <!-- /.box-body -->
+                <div class="form-group pull-right">
+                    <input type="submit" value="保存" class="btn btn-primary btn-lg" />
+                </div>
             </div>
             <!-- /.box -->
         </div>
         <!-- /.col -->
     </div>
 }
-    <script>
-        $(document).ready(function () {
-            //Date picker
-            $("input[name='TimesheetDate']").datepicker({
-                autoclose: true
-            })
+<script>
+    $(document).ready(function () {
+        //Date picker
+        $("input[name='TimesheetDate']").datepicker({
+            autoclose: true,
+            dateFormat: "yy-mm-dd",
+            minDate: $("#startDate").val(),
+            maxDate: $("#endDate").val(),
+            weekStart: 1,
         })
-    </script>
+    })
+
+</script>

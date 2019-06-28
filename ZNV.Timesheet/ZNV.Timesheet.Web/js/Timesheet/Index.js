@@ -119,15 +119,6 @@ function searchData() {
     )
 }
 
-function createData() {
-    var b = $(".DTED_Lightbox_Background");
-    var c = $('.DTED_Lightbox_Wrapper');
-    $(top.document.body).prepend(b);
-    $(top.document.body).prepend(c);
-    $(b).show();
-    $(c).show();
-}
-
 function bulkDeleteData() {
     abp.message.confirm(
         '你选择的项讲会被删除', //确认提示

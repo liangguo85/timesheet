@@ -36,16 +36,7 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpGet]
         public ActionResult AddOrEdit(int id = 0)
         {
-            List<Project.Project> projects = _projectService.GetAllProjectList();
-            List<SelectListItem> selectLists = new List<SelectListItem>();
-            if (projects != null && projects.Count > 0)
-            {
-                foreach (var project in projects)
-                {
-                    selectLists.Add(new SelectListItem() { Value = project.Id.ToString(), Text = project.ProjectName });
-                }
-            }
-            ViewData["Projects"] = selectLists;
+            SetProjectListToViewData();
             if (id == 0)
             {
                 return View(new Timesheet.Timesheet());
@@ -57,30 +48,32 @@ namespace ZNV.Timesheet.Web.Controllers
         }
 
         /// <summary>
-        /// 获取第几周的数据
+        /// 将项目信息放置到ViewData，供前端使用
         /// </summary>
-        /// <param name="week">如果=0则返回当前周</param>
-        /// <returns></returns>
-        [HttpGet]
-        public ActionResult AddOrEditForWeek(int week = 0)
+        private void SetProjectListToViewData()
         {
-            if (week == 0)
+            List<Project.Project> projects = _projectService.GetAllProjectList();
+            List<SelectListItem> selectLists = new List<SelectListItem>();
+            if (projects != null && projects.Count > 0)
             {
-                return View(new Timesheet.Timesheet());
+                foreach (var project in projects)
+                {
+                    selectLists.Add(new SelectListItem() { Value = project.Id.ToString(), Text = project.ProjectName });
+                }
             }
-            else
-            {
-                return View(_appService.GetTimesheetsByID(week));
-            }
+            ViewData["Projects"] = selectLists;
         }
 
         [HttpPost]
         public ActionResult AddOrEdit(Timesheet.Timesheet ts)
         {
+            if (string.IsNullOrEmpty(ts.TimesheetUser))
+            {
+                ts.TimesheetUser = "kojar.liu";
+            }
             if (ts.Id == 0)
             {
                 ts.Creator = "kojar.liu";
-                ts.TimesheetUser = "kojar.liu";
                 _appService.CreateTimesheet(ts);
                 return Json(new { success = true, message = "新增工时成功!" }, JsonRequestBehavior.AllowGet);
             }
@@ -98,6 +91,76 @@ namespace ZNV.Timesheet.Web.Controllers
             return Json(new { success = true, message = "删除工时成功!" }, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// 获取第几周的数据
+        /// </summary>
+        /// <param name="week">起始和结束日期，例如：2019-06-24到2019-06-30</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult AddOrEditForWeek(string id = null)
+        {
+            var startDate = DateTime.Now.Date;
+            var endDate = DateTime.Now.Date;
+            if (string.IsNullOrEmpty(id))
+            {
+                var dateNow = DateTime.Now.Date;
+                var dayOfWeek = (int)dateNow.DayOfWeek;
+                if (dayOfWeek == 0)
+                    dayOfWeek = 7;
+                startDate = startDate.AddDays(-1 * dayOfWeek + 1);
+                endDate = startDate.AddDays(6);
+            }
+            else
+            {
+                startDate = DateTime.Parse(id.Split('到')[0]);
+                endDate = DateTime.Parse(id.Split('到')[1]);
+            }
+            Timesheet.TimesheetForWeek tfw = new TimesheetForWeek();
+            tfw.startDate = startDate.ToString("yyyy-MM-dd");
+            tfw.endDate = endDate.ToString("yyyy-MM-dd");
+            var tss = _appService.GetAllTimesheetsByUser("kojar.liu", startDate, endDate);
+
+            while (startDate <= endDate)
+            {
+                if (tss.Find(ts => { return ts.TimesheetDate.Value == startDate; }) == null)
+                {//把缺少的日期初始化一个空白的记录
+                    tss.Add(new Timesheet.Timesheet()
+                    {
+                        Id = 0,
+                        TimesheetDate = startDate
+                    });
+                }
+                startDate = startDate.AddDays(1);
+            }
+            //排序
+            tss.Sort((a, b) => a.TimesheetDate.Value.CompareTo(b.TimesheetDate.Value));
+
+            SetProjectListToViewData();
+            tfw.TimesheetList = tss;
+            return View(tfw);
+        }
+
+        /// <summary>
+        /// 添加或更新周工时数据
+        /// </summary>
+        /// <param name="tsfw">周工时数据</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddOrEditForWeek(Timesheet.TimesheetForWeek tsfw)
+        {
+            if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
+            {
+                foreach (var ts in tsfw.TimesheetList)
+                {
+                    AddOrEdit(ts);
+                }
+                return Json(new { success = true, message = "添加或更新周工时数据成功!" }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false, message = "需要添加或更新周工时数据为空!" }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
     }
 }

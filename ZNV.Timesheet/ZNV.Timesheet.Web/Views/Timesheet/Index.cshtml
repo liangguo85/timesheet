@@ -4,6 +4,7 @@
     <!-- iCheck for checkboxes and radio inputs -->
     <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/plugins/iCheck/all.css">
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/theme.css" rel="stylesheet" />
     <!-- bootstrap datepicker -->
     <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 }
@@ -22,7 +23,7 @@
 
     @*@Html.IncludeScript("~/js/Timesheet/Index.js")*@
 
-<script>
+    <script>
         var Popup, dataTable
 
         $(document).ready(function () {
@@ -32,10 +33,10 @@
                     "type": "POST",
                     "datatype": "json",
                     "data": {
-                            "user": "kojar.liu",
-                            "startDate": "2019-06-01",
-                            "endDate": "2019-09-01"
-                        },
+                        "user": "kojar.liu",
+                        "startDate": "2019-06-01",
+                        "endDate": "2019-09-01"
+                    },
                 },
                 "columns": [
                     { "data": "Id" },
@@ -90,8 +91,52 @@
                 "fnInitComplete": function (oSettings, json) {
                     addSearchControl(json)
                 }
-            })
+            });
+            InitWeekList();
         })
+
+        //初始化周列表，只需初始化当前周以及前后4周
+        function InitWeekList() {
+            var selectWeek = $("#selectWeek");
+            var dateNow = new Date();
+            var dayOfWeek = dateNow.getDay();
+            if (dayOfWeek === 0)
+                dayOfWeek = 7;
+            var optionNow = "";
+            for (var i = -4; i <= 4; i++) {
+                var firstDayOfWeek = new Date();
+                var lastDayOfWeek = new Date();
+                firstDayOfWeek.setDate(dateNow.getDate() + i * 7 - dayOfWeek + 1);
+                lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+                var s = firstDayOfWeek.Format() + "到" + lastDayOfWeek.Format();
+                if (i == 0)
+                    optionNow = s;
+                console.log(s);
+                selectWeek.append("<option value='" + s + "'>" + s + "</option>");
+            }
+            selectWeek.val(optionNow);
+        }
+
+        /** 日期格式化，如果未指定fmt，则默认为 yyyy-MM-dd */
+        Date.prototype.Format = function (fmt) {
+            if (!fmt)
+                fmt = "yyyy-MM-dd";
+            var o = {
+                "M+": this.getMonth() + 1,                 //月份
+                "d+": this.getDate(),                    //日
+                "h+": this.getHours(),                   //小时
+                "m+": this.getMinutes(),                 //分
+                "s+": this.getSeconds(),                 //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds()             //毫秒
+            };
+            if (/(y+)/.test(fmt))
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
 
         function addSearchControl(json) {
             //$("#dtTimesheet thead").append($("#dtTimesheet thead tr:first").clone());
@@ -107,7 +152,7 @@
             //})
         }
 
-        function PopupForm(url) {
+        function PopupForm(url,action) {
             var formDiv = $('<div/>');
             $.get(url)
                 .done(function (response) {
@@ -117,7 +162,7 @@
                         autoOpen: true,
                         resizable: false,
                         modal: true,
-                        title: "新增工时",
+                        title: action=="create"?"新增工时":"编辑工时",
                         //height: 600,
                         width: 700,
                         close: function () {
@@ -128,8 +173,6 @@
         }
 
         function SubmitForm(form) {
-            //$.validator.unobtrusive.parse(form);
-            //if ($(form).valid()) {
             $.ajax({
                 type: "POST",
                 url: form.action,
@@ -146,7 +189,6 @@
                     }
                 }
             });
-            //}
             return false;
         }
 
@@ -168,7 +210,123 @@
                 })
             }
         }
-</script>
+
+        function PopupFormForWeek(url) {
+            var formDiv = $('<div/>');
+            //这里需要把选择的周开始结束日期传递到后台
+            url += "/" + encodeURI($("#selectWeek").val());
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        resizable: false,
+                        modal: true,
+                        title: "按周新增或编辑工时",
+                        //height: 600,
+                        width: 800,
+                        close: function () {
+                            Popup.dialog('destroy').remove();
+                        }
+                    });
+                });
+        }
+
+        function SubmitFormForWeek(form) {
+            //按周操作的是多个工时对象，需要把form表单进行转换
+            debugger;
+            var weekData = {
+                startDate: $("#startDate").val(),
+                endDate: $("#endDate").val(),
+                TimesheetList: []
+            };
+            var trList = $(form).find("tr");
+            //从1开始，第一行是标题
+            for (var i = 1; i < trList.length; i++) {
+                var tds = $(trList[i]).find("td");
+                weekData.TimesheetList.push({
+                    Id: $(tds[0].children[0]).val(),
+                    TimesheetDate: $(tds[1].children[0]).val(),
+                    ProjectID: $(tds[2].children[0]).val(),
+                    Workload: $(tds[3].children[0]).val(),
+                    WorkContent: $(tds[4].children[0]).val(),
+                    Remarks: $(tds[5].children[0]).val()
+                });
+            }
+            //检验，同一个日期的工时不能超过8
+
+
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: weekData,//JSON.stringify(weekData),
+                success: function (data) {
+                    if (data.success) {
+                        Popup.dialog('close');
+                        dataTable.ajax.reload();
+
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+                    }
+                    else {
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "error"
+                        })
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $.notify(error, {
+                        globalPosition: "top center",
+                        className: "error"
+                    })
+                }
+            });
+            //}
+            return false;
+        }
+
+        function CreateNewTimesheet(bt) {
+            //debugger;
+            var newTr = $(bt).parent().parent().clone();
+            $(newTr).insertAfter($(bt).parent().parent());
+            var bts = $(newTr).find("a");
+            if (bts.length == 1) {//需要增加一个移除的按钮
+                $("<a class='btn btn-info btn-sm' title='移除一个工时' onclick='RemoveNewTimesheet(this)'>-</a>").insertAfter($(bts));
+            }
+            var dates = $(newTr).find("input[name='TimesheetDate']");
+            if (dates.length > 0) {
+                //先把id和class清空，否则无法绑定日历插件和正确赋值
+                $(dates).removeAttr("id").removeAttr("class");
+                $(dates).datepicker({
+                    autoclose: true,
+                    dateFormat: "yy-mm-dd",
+                    minDate: $("#startDate").val(),
+                    maxDate: $("#endDate").val(),
+                    weekStart: 1,
+                })
+            }
+            var inputId = $(newTr).find("input[name='inputId']");
+            if (inputId.length > 0) {//新增的需要把id赋值为0，否则会把原先的给替换掉
+                $(inputId).val(0);
+            }
+        }
+
+        function RemoveNewTimesheet(bt) {
+            //debugger;
+            var cf = confirm("你选择的工时将会被移除,确定要这么做吗？");
+            if (cf) {
+                $(bt).parent().parent().remove();
+                $.notify('你选择的工时已经被移除', {
+                    globalPosition: "top center",
+                    className: "success"
+                });
+            }
+        }
+    </script>
 }
 <div class="row">
     <div class="col-xs-12">
@@ -176,8 +334,9 @@
         <div class="box">
             <div class="box box-header">
                 <div class="btn-group-toggle">
-                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Timesheet")')">按天新增 <i class="fa fa-plus"></i></button>
-                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEditForWeek","Timesheet")')">按周新增或编辑 <i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Timesheet")','create')">按天新增 <i class="fa fa-plus"></i></button>
+                    <select id="selectWeek"></select>
+                    <button type="button" class="btn btn-info" onclick="PopupFormForWeek('@Url.Action("AddOrEditForWeek","Timesheet")')">按周新增或编辑 <i class="fa fa-plus"></i></button>
                 </div>
             </div>
             <!-- /.box-header -->

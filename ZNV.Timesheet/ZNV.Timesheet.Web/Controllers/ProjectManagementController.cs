@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ZNV.Timesheet.Project;
-using ZNV.Timesheet.Web.Models;
-using Newtonsoft.Json;
+using System.Linq.Dynamic;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
@@ -29,9 +27,7 @@ namespace ZNV.Timesheet.Web.Controllers
             int length = Convert.ToInt32(Request["length"]);
             string sortColumnName = Request["columns[" + Request["order[0][column]"] + "][name]"];
             string sortDirection = Request["order[0][dir]"];
-
             List<Project.Project> projectList = _projectAppService.GetAllProjectList();
-
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
             {
                 projectList = projectList.Where(x => x.ProjectCode.ToLower().Contains(Request["columns[0][search][value]"].ToLower())).ToList();
@@ -40,10 +36,53 @@ namespace ZNV.Timesheet.Web.Controllers
             {
                 projectList = projectList.Where(x => x.ProjectName.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList();
             }
-
+            if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ProjectManagerID.ToLower().Contains(Request["columns[2][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[3][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ProductManagerID.ToLower().Contains(Request["columns[3][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[4][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ProjectType.ToLower().Contains(Request["columns[4][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[5][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ProjectLevel.ToLower().Contains(Request["columns[5][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[6][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ProjectKind.ToLower().Contains(Request["columns[6][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[7][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ProductionLineAttribute.ToLower().Contains(Request["columns[7][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[8][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ProjectStatus.ToLower().Contains(Request["columns[8][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[9][search][value]"]))
+            {
+                projectList = projectList.Where(x => (x.IsApproval ? "是" : "否") == Request["columns[9][search][value]"]).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[10][search][value]"]))
+            {
+                projectList = projectList.Where(x => (x.IsEnabled ? "是" : "否") == Request["columns[10][search][value]"]).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[11][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.EffectiveDate.ToString().Contains(Request["columns[11][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[12][search][value]"]))
+            {
+                projectList = projectList.Where(x => x.ExpirationDate.ToString().Contains(Request["columns[12][search][value]"].ToLower())).ToList();
+            }
             int totalRow = projectList.Count;
-
             projectList = projectList.Skip(start).Take(length).ToList();
+            projectList = projectList.OrderBy(sortColumnName + " " + sortDirection).ToList();
             return Json(new { data = projectList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 

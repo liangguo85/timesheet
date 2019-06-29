@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ZNV.Timesheet.Holiday;
-using ZNV.Timesheet.Web.Models;
-using Newtonsoft.Json;
+using System.Linq.Dynamic;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
@@ -29,9 +27,7 @@ namespace ZNV.Timesheet.Web.Controllers
             int length = Convert.ToInt32(Request["length"]);
             string sortColumnName = Request["columns[" + Request["order[0][column]"] + "][name]"];
             string sortDirection = Request["order[0][dir]"];
-
             List<Holiday.Holiday> holidayList = _holidayAppService.GetHolidayList();
-
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
             {
                 holidayList = holidayList.Where(x => x.HolidayDate.ToString().Contains(Request["columns[0][search][value]"].ToLower())).ToList();
@@ -40,10 +36,9 @@ namespace ZNV.Timesheet.Web.Controllers
             {
                 holidayList = holidayList.Where(x => x.HolidayType.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList();
             }
-
             int totalRow = holidayList.Count;
-
             holidayList = holidayList.Skip(start).Take(length).ToList();
+            holidayList = holidayList.OrderBy(sortColumnName + " " + sortDirection).ToList();
             return Json(new { data = holidayList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 

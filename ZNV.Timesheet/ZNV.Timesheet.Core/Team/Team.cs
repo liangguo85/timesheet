@@ -3,14 +3,16 @@ using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ZNV.Timesheet.Holiday
+namespace ZNV.Timesheet.Team
 {
-    [Table("Holiday")]
-    public class Holiday : Entity<int>, IHasCreationTime
+    [Table("Team")]
+    public class Team : Entity<int>, IHasCreationTime
     {
-        public virtual DateTime? HolidayDate { get; set; }
+        public virtual string TeamName { get; set; }
 
-        public virtual string HolidayType { get; set; }
+        public virtual string DepartmentID { get; set; }
+
+        public virtual string TeamLeader { get; set; }
 
         public virtual string Creator { get; set; }
 
@@ -22,7 +24,7 @@ namespace ZNV.Timesheet.Holiday
 
         public virtual bool IsDeleted { get; set; }
 
-        public Holiday()
+        public Team()
         {
             CreationTime = DateTime.Now;
         }

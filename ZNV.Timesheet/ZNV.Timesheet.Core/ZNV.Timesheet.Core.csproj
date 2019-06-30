@@ -197,10 +197,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Employee\HRDepartment.cs" />
+    <Compile Include="Employee\HREmployee.cs" />
+    <Compile Include="Employee\IHRDepartmentRepository.cs" />
+    <Compile Include="Employee\IHREmployeeRepository.cs" />
     <Compile Include="Holiday\Holiday.cs" />
     <Compile Include="Holiday\IHolidayRepository.cs" />
     <Compile Include="Project\IProjectRepository.cs" />
     <Compile Include="Project\Project.cs" />
+    <Compile Include="Team\ITeamRepository.cs" />
+    <Compile Include="Team\Team.cs" />
     <Compile Include="TimesheetConsts.cs" />
     <Compile Include="TimesheetCoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

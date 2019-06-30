@@ -13,31 +13,67 @@
     </div>
     <div class="form-group">
         @Html.LabelFor(model => model.TeamLeader, "科室领导", new { @class = "control-label" })
-        @Html.EditorFor(model => model.TeamLeader, new { htmlAttributes = new { @class = "form-control" } })
+        @*@Html.EditorFor(model => model.TeamLeader, new { id = "leader", htmlAttributes = new { @class = "form-control select2" } })*@
+        @Html.DropDownListFor(model=>model.TeamLeader, new List<SelectListItem> {
+            new SelectListItem { Value="节假日", Text="节假日"},
+            new SelectListItem { Value="工作日", Text="工作日"}
+        }, new { id= "leader", @class= "form-control select2" })
     </div>
     <div class="form-group">
         @Html.LabelFor(model => model.DepartmentID, "所属部门", new { @class = "control-label" })
-        @Html.EditorFor(model => model.DepartmentID, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.EditorFor(model => model.DepartmentID, new { htmlAttributes = new { @class = "form-control select2" } })
     </div>
     @*<div class="form-group">
-            @Html.LabelFor(model => model.HolidayType, "类型", new { @class = "control-label" })
-            @Html.DropDownListFor(model=>model.HolidayType, new List<SelectListItem> {
-                new SelectListItem { Value="节假日", Text="节假日"},
-                new SelectListItem { Value="工作日", Text="工作日"}
-            }, new { @class="form-control"})
-        </div>*@
+        @Html.LabelFor(model => model.TeamLeader, "类型", new { @class = "control-label" })
+        @Html.DropDownListFor(model=>model.HolidayType, new List<SelectListItem> {
+            new SelectListItem { Value="节假日", Text="节假日"},
+            new SelectListItem { Value="工作日", Text="工作日"}
+        }, new { @class="form-control"})
+    </div>*@
     <div class="form-group pull-right">
         <input type="submit" value="保存" class="btn btn-primary btn-lg" />
     </div>
 }
 
 <script>
-            //$(document).ready(function () {
-            //    //Date picker
-            //    $('#HolidayDate').datepicker({
-            //        autoclose: true
-            //    })
-            //})
+    $(document).ready(function () {
+        $('#leader').select2(
+            {
+                placeholder: '输入工号或名字',
+                //Does the user have to enter any data before sending the ajax request
+                minimumInputLength: 0,
+                allowClear: true,
+                ajax: {
+                    //How long the user has to pause their typing before sending the next request
+                    delay: 150,
+                    //The url of the json service
+                    url: '@Url.Action("GetEmployeeList", "Team")',
+                    dataType: 'json',
+                    async: true,
+                    //Our search term and what page we are on
+                    data: function (params) {
+                        return {
+                            pageSize: 100,
+                            pageNum: params.page || 1,
+                            searchTerm: params.term,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.Results, function (obj) {
+                                return { id: obj.EmployeeCode, text: obj.EmployeeName + "(" + obj.EmployeeCode + ")" };
+                            }),
+                            pagination: {
+                                more: (params.page * 100) <= data.Total
+                            }
+                        };
+                    }
+                }
+            });
+    });
+
+    
 </script>
 
 

@@ -81,5 +81,21 @@ namespace ZNV.Timesheet.Web.Controllers
             _teamAppService.DeleteTeam(id);
             return Json(new { success = true, message = "删除科室信息成功!" }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public ActionResult GetEmployeeList(string searchTerm, int pageSize, int pageNum)
+        {
+            var itemList = _employeeAppService.GetEmployeeList().Where(x => string.IsNullOrEmpty(searchTerm) || x.EmployeeName.Contains(searchTerm) || x.EmployeeCode.Contains(searchTerm)).ToList();
+            var result = new
+            {
+                Total = itemList.Count(),
+                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
+            };
+            return new JsonResult
+            {
+                Data = result,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+        }
     }
 }

@@ -42,7 +42,14 @@ namespace ZNV.Timesheet.Web.Controllers
             //}
             int totalRow = teamList.Count;
             teamList = teamList.Skip(start).Take(length).ToList();
+            teamList.ForEach(item => {
+                var leader = _employeeAppService.GetEmployeeByCode(item.TeamLeader);
+                var dept = _employeeAppService.GetDepartmentByCode(item.DepartmentID);
+                item.TeamLeaderName = leader.EmployeeName + "(" + leader.EmployeeCode + ")";
+                item.DepartmentName = dept.FullDeptName + "(" + dept.DeptCode1 + ")";
+            });
             teamList = teamList.OrderBy(sortColumnName + " " + sortDirection).ToList();
+            
             return Json(new { data = teamList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 
@@ -51,11 +58,16 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             if (id == 0)
             {
+                ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Take(10), "EmployeeCode", "EmployeeName");
+                ViewBag.Departments = new SelectList(_employeeAppService.GetDepartmentList().Take(10), "DeptCode1", "DeptName1");
                 return View(new Team.Team());
             }
             else
             {
-                return View(_teamAppService.GetTeamList().Where(x => x.Id == id).FirstOrDefault());
+                var team = _teamAppService.GetTeamList().Where(x => x.Id == id).FirstOrDefault();
+                ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Where(x=>x.EmployeeCode == team.TeamLeader).ToList(), "EmployeeCode", "EmployeeName");
+                ViewBag.Departments = new SelectList(_employeeAppService.GetDepartmentList().Where(x => x.DeptCode1 == team.DepartmentID).ToList(), "DeptCode1", "DeptName1");
+                return View(team);
             }
         }
 
@@ -86,6 +98,22 @@ namespace ZNV.Timesheet.Web.Controllers
         public ActionResult GetEmployeeList(string searchTerm, int pageSize, int pageNum)
         {
             var itemList = _employeeAppService.GetEmployeeList().Where(x => string.IsNullOrEmpty(searchTerm) || x.EmployeeName.Contains(searchTerm) || x.EmployeeCode.Contains(searchTerm)).ToList();
+            var result = new
+            {
+                Total = itemList.Count(),
+                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
+            };
+            return new JsonResult
+            {
+                Data = result,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+        }
+
+        [HttpGet]
+        public ActionResult GetDepartmentList(string searchTerm, int pageSize, int pageNum)
+        {
+            var itemList = _employeeAppService.GetDepartmentList().Where(x => string.IsNullOrEmpty(searchTerm) || x.DeptName1.Contains(searchTerm) || x.DeptCode1.Contains(searchTerm)).ToList();
             var result = new
             {
                 Total = itemList.Count(),

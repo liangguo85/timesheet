@@ -8,6 +8,10 @@ namespace ZNV.Timesheet.Employee
     {
         List<HREmployee> GetEmployeeList();
 
+        HREmployee GetEmployeeByCode(string employeeCode);
+
         List<HRDepartment> GetDepartmentList();
+
+        HRDepartment GetDepartmentByCode(string departmentCode);
     }
 }

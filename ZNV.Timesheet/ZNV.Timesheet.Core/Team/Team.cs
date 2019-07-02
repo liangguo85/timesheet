@@ -11,8 +11,12 @@ namespace ZNV.Timesheet.Team
         public virtual string TeamName { get; set; }
 
         public virtual string DepartmentID { get; set; }
+        [NotMapped]
+        public virtual string DepartmentName { get; set; }
 
         public virtual string TeamLeader { get; set; }
+        [NotMapped]
+        public virtual string TeamLeaderName { get; set; }
 
         public virtual string Creator { get; set; }
 

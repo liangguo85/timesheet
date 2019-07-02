@@ -21,9 +21,19 @@ namespace ZNV.Timesheet.Employee
             return _employeeRepository.GetAllList();
         }
 
+        public HREmployee GetEmployeeByCode(string employeeCode)
+        {
+            return _employeeRepository.GetAll().Where(x => x.EmployeeCode == employeeCode).FirstOrDefault();
+        }
+
         public List<HRDepartment> GetDepartmentList()
         {
             return _departmentRepository.GetAll().Where(x => x.IsActiveDept == "Y").ToList();
+        }
+
+        public HRDepartment GetDepartmentByCode(string departmentCode)
+        {
+            return _departmentRepository.GetAll().Where(x => x.DeptCode1 == departmentCode).FirstOrDefault();
         }
     }
 }

@@ -26,6 +26,8 @@
     <script src="~/Scripts/notify.min.js"></script>
     <!-- Select2 -->
     <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
 
     <script>
         var Popup, dataTable
@@ -132,25 +134,25 @@
         }
 
         function SubmitForm(form) {
-            //$.validator.unobtrusive.parse(form);
-            //if ($(form).valid()) {
-            $.ajax({
-                type: "POST",
-                url: form.action,
-                data: $(form).serialize(),
-                success: function (data) {
-                    if (data.success) {
-                        Popup.dialog('close');
-                        dataTable.ajax.reload();
+            $.validator.unobtrusive.parse(form);
+            if ($(form).valid()) {
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            Popup.dialog('close');
+                            dataTable.ajax.reload();
 
-                        $.notify(data.message, {
-                            globalPosition: "top center",
-                            className: "success"
-                        })
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+                        }
                     }
-                }
-            });
-            //}
+                });
+            }
             return false;
         }
 

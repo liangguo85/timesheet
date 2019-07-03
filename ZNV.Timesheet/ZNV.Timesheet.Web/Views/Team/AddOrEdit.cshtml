@@ -10,14 +10,17 @@
     <div class="form-group">
         @Html.LabelFor(model => model.TeamName, "科室名称", new { @class = "control-label" })
         @Html.EditorFor(model => model.TeamName, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.TeamName, "", new { @class = "text-danger"})
     </div>
     <div class="form-group">
         @Html.LabelFor(model => model.TeamLeader, "科室领导", new { @class = "control-label" })
-        @Html.DropDownListFor(model=>model.TeamLeader,(IEnumerable<SelectListItem>)ViewBag.Employees, String.Empty,  new { id= "leader", @class= "form-control select2" })
+        @Html.DropDownListFor(model => model.TeamLeader, (IEnumerable<SelectListItem>)ViewBag.Employees, String.Empty, new { id = "leader", @class = "form-control select2" })
+        @Html.ValidationMessageFor(model => model.TeamLeader, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">
         @Html.LabelFor(model => model.DepartmentID, "所属部门", new { @class = "control-label" })
         @Html.DropDownListFor(model => model.DepartmentID, (IEnumerable<SelectListItem>)ViewBag.Departments, String.Empty, new { id = "dept", @class = "form-control select2" })
+        @Html.ValidationMessageFor(model => model.DepartmentID, "", new { @class = "text-danger" })
     </div>
     <div class="form-group pull-right">
         <input type="submit" value="保存" class="btn btn-primary btn-lg" />

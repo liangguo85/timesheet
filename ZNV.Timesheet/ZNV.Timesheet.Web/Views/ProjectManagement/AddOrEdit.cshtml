@@ -22,11 +22,13 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProjectManagerID, "项目经理", new { @class = "control-label" })
-            @Html.EditorFor(model => model.ProjectManagerID, new { htmlAttributes = new { @class = "form-control" } })
+            @*@Html.EditorFor(model => model.ProjectManagerID, new { htmlAttributes = new { @class = "form-control" } })*@
+            @Html.DropDownListFor(model => model.ProjectManagerID, (IEnumerable<SelectListItem>)ViewBag.Employees, String.Empty, new { id = "projectManager", @class = "form-control select2" })
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProductManagerID, "产品经理", new { @class = "control-label" })
-            @Html.EditorFor(model => model.ProductManagerID, new { htmlAttributes = new { @class = "form-control" } })
+            @*@Html.EditorFor(model => model.ProductManagerID, new { htmlAttributes = new { @class = "form-control" } })*@
+            @Html.DropDownListFor(model => model.ProductManagerID, (IEnumerable<SelectListItem>)ViewBag.Employees, String.Empty, new { id = "productionManager", @class = "form-control select2" })
         </div>
     </div>
     <div class="form-row">
@@ -109,6 +111,40 @@
         //Date picker
         $('#EffectiveDate, #ExpirationDate').datepicker({
             autoclose: true
-        })
+        });
+        $('#projectManager, #productionManager').select2(
+            {
+                placeholder: '输入工号或名字',
+                //Does the user have to enter any data before sending the ajax request
+                minimumInputLength: 0,
+                allowClear: false,
+                ajax: {
+                    //How long the user has to pause their typing before sending the next request
+                    delay: 150,
+                    //The url of the json service
+                    url: '@Url.Action("GetEmployeeList", "ProjectManagement")',
+                    dataType: 'json',
+                    async: true,
+                    //Our search term and what page we are on
+                    data: function (params) {
+                        return {
+                            pageSize: 100,
+                            pageNum: params.page || 1,
+                            searchTerm: params.term,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.Results, function (obj) {
+                                return { id: obj.EmployeeCode, text: obj.EmployeeName + "(" + obj.EmployeeCode + ")" };
+                            }),
+                            pagination: {
+                                more: (params.page * 100) <= data.Total
+                            }
+                        };
+                    }
+                }
+            });
     })
 </script>

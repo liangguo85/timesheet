@@ -16,7 +16,13 @@ namespace ZNV.Timesheet.Project
 
         public virtual string ProjectManagerID { get; set; }
 
+        [NotMapped]
+        public virtual string ProjectManagerName { get; set; }
+
         public virtual string ProductManagerID { get; set; }
+
+        [NotMapped]
+        public virtual string ProductManagerName { get; set; }
 
         public virtual string ProjectType { get; set; }
 

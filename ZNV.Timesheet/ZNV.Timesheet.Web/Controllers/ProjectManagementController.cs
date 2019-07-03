@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using ZNV.Timesheet.Project;
+using ZNV.Timesheet.Employee;
 using System.Linq.Dynamic;
 
 namespace ZNV.Timesheet.Web.Controllers
@@ -10,9 +11,11 @@ namespace ZNV.Timesheet.Web.Controllers
     public class ProjectManagementController : Controller
     {
         private readonly IProjectAppService _projectAppService;
-        public ProjectManagementController(IProjectAppService projectAppService)
+        private readonly IEmployeeAppService _employeeAppService;
+        public ProjectManagementController(IProjectAppService projectAppService, IEmployeeAppService employeeAppService)
         {
             _projectAppService = projectAppService;
+            _employeeAppService = employeeAppService;
         }
         // GET: ProjectManagement
         public ActionResult Index()
@@ -82,6 +85,12 @@ namespace ZNV.Timesheet.Web.Controllers
             }
             int totalRow = projectList.Count;
             projectList = projectList.Skip(start).Take(length).ToList();
+            projectList.ForEach(item => {
+                var projectManager = _employeeAppService.GetEmployeeByCode(item.ProjectManagerID);
+                var productManager = _employeeAppService.GetEmployeeByCode(item.ProductManagerID);
+                item.ProjectManagerName = projectManager.EmployeeName + "(" + projectManager.EmployeeCode + ")";
+                item.ProductManagerName = productManager.EmployeeName + "(" + productManager.EmployeeCode + ")";
+            });
             projectList = projectList.OrderBy(sortColumnName + " " + sortDirection).ToList();
             return Json(new { data = projectList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
@@ -91,11 +100,14 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             if (id == 0)
             {
+                ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Take(10), "EmployeeCode", "EmployeeName");
                 return View(new Project.Project());
             }
             else
             {
-                return View(_projectAppService.GetAllProjectList().Where(x => x.Id == id).FirstOrDefault());
+                var project = _projectAppService.GetAllProjectList().Where(x => x.Id == id).FirstOrDefault();
+                ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Where(x => x.EmployeeCode == project.ProductManagerID || x.EmployeeCode == project.ProjectManagerID).ToList(), "EmployeeCode", "EmployeeName");
+                return View(project);
             }
         }
 
@@ -120,6 +132,22 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             _projectAppService.DeleteProject(id);
             return Json(new { success = true, message = "删除项目成功!" }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetEmployeeList(string searchTerm, int pageSize, int pageNum)
+        {
+            var itemList = _employeeAppService.GetEmployeeList().Where(x => string.IsNullOrEmpty(searchTerm) || x.EmployeeName.Contains(searchTerm) || x.EmployeeCode.Contains(searchTerm)).ToList();
+            var result = new
+            {
+                Total = itemList.Count(),
+                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
+            };
+            return new JsonResult
+            {
+                Data = result,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
         }
     }
 }

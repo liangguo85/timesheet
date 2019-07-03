@@ -6,6 +6,8 @@
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
     <!-- bootstrap datepicker -->
     <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/css/select2.min.css">
 }
 @section scripts
 {
@@ -19,6 +21,8 @@
 
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/notify.min.js"></script>
+    <!-- Select2 -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
 
     @*@Html.IncludeScript("~/js/ProjectManagement/Index.js")*@
 
@@ -35,8 +39,8 @@
                 "columns": [
                     { "data": "ProjectCode", "name": "ProjectCode" },
                     { "data": "ProjectName", "name": "ProjectName" },
-                    { "data": "ProjectManagerID", "name": "ProjectManagerID" },
-                    { "data": "ProductManagerID", "name": "ProductManagerID" },
+                    { "data": "ProjectManagerName", "name": "ProjectManagerName" },
+                    { "data": "ProductManagerName", "name": "ProductManagerName" },
                     { "data": "ProjectType", "name": "ProjectType" },
                     { "data": "ProjectLevel", "name": "ProjectLevel" },
                     { "data": "ProjectKind", "name": "ProjectKind" },

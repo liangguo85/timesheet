@@ -7725,7 +7725,10 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProjectManagementController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
+    <Compile Include="Controllers\TimesheetApprovedController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
+    <Compile Include="Controllers\TimesheetDraftController.cs" />
+    <Compile Include="Controllers\TimesheetPendingController.cs" />
     <Compile Include="Models\Layout\LanguageSelectionViewModel.cs" />
     <Compile Include="Controllers\LayoutController.cs" />
     <Compile Include="Controllers\TimesheetControllerBase.cs" />
@@ -7771,6 +7774,9 @@
     <Content Include="Views\Timesheet\AddOrEditForWeek.cshtml" />
     <Content Include="Views\Team\Index.cshtml" />
     <Content Include="Views\Team\AddOrEdit.cshtml" />
+    <Content Include="Views\TimesheetDraft\Index.cshtml" />
+    <Content Include="Views\TimesheetApproved\Index.cshtml" />
+    <Content Include="Views\TimesheetPending\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

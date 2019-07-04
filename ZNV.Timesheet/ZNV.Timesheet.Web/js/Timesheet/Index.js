@@ -8,10 +8,6 @@ var tableObj = null;
         $('#endDate').val(getCurrentMonthLast());
         $('#btCreate').click(createData);
         $('#btBulkDelete').click(bulkDeleteData);
-        $('.DTED_Lightbox_Close').click(function () {
-            $(".DTED_Lightbox_Background").hide();
-            $(".DTED_Lightbox_Wrapper").hide();
-        });
 
         //首次打开页面不加载，点击查询按钮再加载
         $('#search-btn').click(function () {

@@ -27,24 +27,34 @@
                                 <th>工时</th>
                                 <th>工作内容</th>
                                 <th>备注</th>
+                                <th>状态</th>
                                 <th></th>
                             </tr>
+                        </thead>
+                        <tbody>
                             @for (int i = 0; i < Model.TimesheetList.Count; i++)
                             {
+                                var eleDisabled = (Model.TimesheetList[i].Status == "Draft" || Model.TimesheetList[i].Status == "" || Model.TimesheetList[i].Status == null) ? "" : " disabled ='disabled' ";//只有草稿状态的才能编辑
                                 <tr>
-                                    <td style="display:none"><input name="inputId" type="hidden" value="@Model.TimesheetList[i].Id"/></td>
+                                    <td style="display:none">
+                                        <input name="Id" type="hidden" value="@Model.TimesheetList[i].Id" />
+                                        <input name="Approver" type="hidden" value="@Model.TimesheetList[i].Approver" />
+                                        <input name="ApprovedTime" type="hidden" value="@Model.TimesheetList[i].ApprovedTime" />
+                                        <input name="WorkflowInstanceID" type="hidden" value="@Model.TimesheetList[i].WorkflowInstanceID" />
+                                        <input name="ProjectGroup" type="hidden" value="@Model.TimesheetList[i].ProjectGroup" />
+                                    </td>
                                     <td>
                                         @if (Model.TimesheetList[i].TimesheetDate.HasValue)
                                         {
-                                            <input name="TimesheetDate" style="width:100px" type="text" value='@Model.TimesheetList[i].TimesheetDate.Value.ToString("yyyy-MM-dd")' />
+                                            <input name="TimesheetDate" style="width:100px" type="text" @eleDisabled value='@Model.TimesheetList[i].TimesheetDate.Value.ToString("yyyy-MM-dd")' />
                                         }
                                         else
                                         {
-                                            <input name="TimesheetDate" type="text" value='' />
+                                            <input name="TimesheetDate" type="text" @eleDisabled value='' />
                                         }
                                     </td>
                                     <td>
-                                        <select name="selectProject" style="width:100px">
+                                        <select name="ProjectID" style="width:100px" @eleDisabled>
                                             @foreach (var project in ViewData["Projects"] as List<SelectListItem>)
                                             {
                                                 if (Model.TimesheetList[i].ProjectID.HasValue && project.Value == Model.TimesheetList[i].ProjectID.Value.ToString())
@@ -58,9 +68,10 @@
                                             }
                                         </select>
                                     </td>
-                                    <td><input type="text" style="width:80px" value="@Model.TimesheetList[i].Workload" /></td>
-                                    <td><input type="text" style="width:100px" value="@Model.TimesheetList[i].WorkContent" /></td>
-                                    <td><input type="text" style="width:100px" value="@Model.TimesheetList[i].Remarks" /></td>
+                                    <td><input type="text" name="Workload" @eleDisabled style="width:80px" value="@Model.TimesheetList[i].Workload" /></td>
+                                    <td><input type="text" name="WorkContent" @eleDisabled style="width:100px" value="@Model.TimesheetList[i].WorkContent" /></td>
+                                    <td><input type="text" name="Remarks" @eleDisabled style="width:100px" value="@Model.TimesheetList[i].Remarks" /></td>
+                                    <td><input type="text" name="Status" style="width:60px;" disabled="disabled" value="@Model.TimesheetList[i].Status" /></td>
                                     <td>
                                         @if (Model.TimesheetList[i].Id == 0)
                                         {//显示加号和减号
@@ -68,19 +79,20 @@
                                             <a class='btn btn-info btn-sm' title="移除一个工时" onclick='RemoveNewTimesheet(this)'>-</a>
                                         }
                                         else
-                                        {//只显示加号，因为数据以及存在不允许删除，可以到列表界面单独进行删除
-                                            <a class='btn btn-info btn-sm' style="margin-right: 5px;" title="增加一个工时" onclick='CreateNewTimesheet(this)'>+</a> 
+                                        {//只显示加号，因为数据已经存在不允许删除，可以到列表界面单独进行删除
+                                            <a class='btn btn-info btn-sm' style="margin-right: 5px;" title="增加一个工时" onclick='CreateNewTimesheet(this)'>+</a>
                                         }
                                     </td>
                                 </tr>
                             }
-                        </thead>
+                        </tbody>
+
                     </table>
+                    <div class="form-group pull-right">
+                        <input type="submit" value="保存" class="btn btn-primary btn-lg" />
+                    </div>
                 </div>
                 <!-- /.box-body -->
-                <div class="form-group pull-right">
-                    <input type="submit" value="保存" class="btn btn-primary btn-lg" />
-                </div>
             </div>
             <!-- /.box -->
         </div>

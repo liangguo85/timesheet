@@ -26,7 +26,10 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
         public List<Timesheet.Timesheet> GetAllTimesheetsByUser(string user, DateTime? startDate, DateTime? endDate)
         {
             var query = GetAll();
-            query = query.Where(ts => ts.TimesheetUser == user);
+            if (!string.IsNullOrEmpty(user))
+            {
+                query = query.Where(ts => ts.TimesheetUser == user);
+            }
             if (startDate.HasValue)
             {
                 query = query.Where(ts => ts.TimesheetDate >= startDate);

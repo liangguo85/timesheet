@@ -1,0 +1,121 @@
+﻿@using Abp.Web.Mvc.Extensions
+@section styles {
+    <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/plugins/iCheck/all.css">
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/base/theme.css" rel="stylesheet" />
+    <!-- bootstrap datepicker -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+}
+@section scripts
+{
+    <!-- DataTables -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <!-- iCheck 1.0.1 -->
+    <script src="~/lib/AdminLTE-2.4.10/plugins/iCheck/icheck.min.js"></script>
+    <!-- bootstrap datepicker -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/notify.min.js"></script>
+
+    <script>
+        var Popup, dataTable
+
+        $(document).ready(function () {
+            dataTable = $("#dtTimesheet").DataTable({
+                "ajax": {
+                    "url": "/TimesheetApproved/GetAllApprovedTimesheets",
+                    "type": "POST",
+                    "datatype": "json",
+                    "data": {
+                        "user": "kojar.liu"
+                    },
+                },
+                "columns": [
+                    { "data": "Id" },
+                    {
+                        "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
+                            if (d)
+                                return moment(d).format("YYYY-MM-DD");
+                            else
+                                return "";
+                        }
+                    },
+                    { "data": "ProjectID" },
+                    { "data": "ProjectGroup" },
+                    { "data": "Workload" },
+                    { "data": "WorkContent" },
+                    { "data": "Remarks" },
+                    { "data": "Status" }
+                ],
+                "serverSide": true,
+                "processing": true,
+                //"order": [1, "asc"],
+                "aaSorting": [[1, "desc"]],
+                "bSort": true,
+                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0] }],
+                "language": {
+                    "emptyTable": "没有记录",
+                    "processing": "处理中... 请等待!",
+                    "decimal": "",
+                    "info": "共 _TOTAL_ 条记录",
+                    "infoEmpty": "共 0 条记录",
+                    "infoFiltered": "(filtered from _MAX_ total entries)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "每页 _MENU_ 条",
+                    "search": "查找:",
+                    "zeroRecords": "没有找到匹配的记录",
+                    "paginate": {
+                        "first": "首页",
+                        "last": "尾页",
+                        "next": "下一页",
+                        "previous": "上一页"
+                    }
+                },
+                "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                "fnInitComplete": function (oSettings, json) {
+
+                }
+            });
+        })
+        
+    </script>
+}
+<div class="row">
+    <div class="col-xs-12">
+        <!-- /.box -->
+        <div class="box">
+            <div class="box box-header">
+                <div class="btn-group-toggle">
+                    
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>日期</th>
+                            <th>项目代码</th>
+                            <th>项目组</th>
+                            <th>工时</th>
+                            <th>工作内容</th>
+                            <th>备注</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+
+

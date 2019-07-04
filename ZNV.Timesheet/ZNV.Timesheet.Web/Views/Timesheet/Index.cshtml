@@ -25,7 +25,7 @@
 
     <script>
         var Popup, dataTable
-
+        
         $(document).ready(function () {
             dataTable = $("#dtTimesheet").DataTable({
                 "ajax": {
@@ -35,7 +35,7 @@
                     "data": {
                         "user": "kojar.liu",
                         "startDate": "2019-06-01",
-                        "endDate": "2019-09-01"
+                        "endDate": "2019-12-01"
                     },
                 },
                 "columns": [
@@ -55,12 +55,18 @@
                     { "data": "Remarks" },
                     { "data": "Status" },
                     {
-                        "data": "Id", "render": function (data) {
-                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Timesheet")/" + data + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a >"
-                        },
+                        "data": "Status",
                         "orderable": false,
                         "searchable": false,
                         "width": "125px",
+                        "render": function (data, type, full, meta) {
+                            console.log(data+","+type+","+full+","+meta);
+                            if (data=="" || data == null || data == 'Draft') {
+                                return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Timesheet")/" + full.Id + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + full.Id + ")><i class='fa fa-trash'></i>删除</a >";
+                            }  else {
+                                return "";
+                            }
+                        }
                     }
                 ],
                 "serverSide": true,
@@ -95,7 +101,7 @@
             InitWeekList();
         })
 
-        //初始化周列表，只需初始化当前周以及前后4周
+        //初始化周列表，只需初始化当前周以及前后8周
         function InitWeekList() {
             var selectWeek = $("#selectWeek");
             var dateNow = new Date();
@@ -103,11 +109,11 @@
             if (dayOfWeek === 0)
                 dayOfWeek = 7;
             var optionNow = "";
-            for (var i = -4; i <= 4; i++) {
+            for (var i = -8; i <= 8; i++) {
                 var firstDayOfWeek = new Date();
                 var lastDayOfWeek = new Date();
                 firstDayOfWeek.setDate(dateNow.getDate() + i * 7 - dayOfWeek + 1);
-                lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+                lastDayOfWeek.setDate(dateNow.getDate() + i * 7 - dayOfWeek + 7);
                 var s = firstDayOfWeek.Format() + "到" + lastDayOfWeek.Format();
                 if (i == 0)
                     optionNow = s;
@@ -243,20 +249,56 @@
             };
             var trList = $(form).find("tr");
             //从1开始，第一行是标题
-            for (var i = 1; i < trList.length; i++) {
-                var tds = $(trList[i]).find("td");
-                weekData.TimesheetList.push({
-                    Id: $(tds[0].children[0]).val(),
-                    TimesheetDate: $(tds[1].children[0]).val(),
-                    ProjectID: $(tds[2].children[0]).val(),
-                    Workload: $(tds[3].children[0]).val(),
-                    WorkContent: $(tds[4].children[0]).val(),
-                    Remarks: $(tds[5].children[0]).val()
-                });
+            for (var i = 0; i < trList.length; i++) {
+                var ts = {};
+                var inputId = $(trList[i]).find("input[name='Id']");
+                if (inputId.length > 0) {
+                    ts.Id = $(inputId).val();
+                }
+                var dates = $(trList[i]).find("input[name='TimesheetDate']");
+                if (dates.length > 0) {
+                    ts.TimesheetDate = $(dates).val();
+                }
+                var tsProjectID = $(trList[i]).find("select[name='ProjectID']");
+                if (tsProjectID.length > 0) {
+                    ts.ProjectID = $(tsProjectID).val();
+                }
+                var tsProjectGroup = $(trList[i]).find("input[name='ProjectGroup']");
+                if (tsProjectGroup.length > 0) {
+                    ts.ProjectGroup = $(tsProjectGroup).val();
+                }
+                var tsWorkload = $(trList[i]).find("input[name='Workload']");
+                if (tsWorkload.length > 0) {
+                    ts.Workload = $(tsWorkload).val();
+                }
+                var tsWorkContent = $(trList[i]).find("input[name='WorkContent']");
+                if (tsWorkContent.length > 0) {
+                    ts.WorkContent = $(tsWorkContent).val();
+                }
+                var tsRemarks = $(trList[i]).find("input[name='Remarks']");
+                if (tsRemarks.length > 0) {
+                    ts.Remarks = $(tsRemarks).val();
+                }
+                var tsStatus = $(trList[i]).find("input[name='Status']");
+                if (tsStatus.length > 0) {
+                    ts.Status = $(tsStatus).val();
+                }
+                var tsApprover = $(trList[i]).find("input[name='Approver']");
+                if (tsApprover.length > 0) {
+                    ts.Approver =  $(tsApprover).val();
+                }
+                var tsApprovedTime = $(trList[i]).find("input[name='ApprovedTime']");
+                if (tsApprovedTime.length > 0) {
+                    ts.ApprovedTime =  $(tsApprovedTime).val();
+                }
+                var tsWorkflowInstanceID = $(trList[i]).find("input[name='WorkflowInstanceID']");
+                if (tsWorkflowInstanceID.length > 0) {
+                    ts.WorkflowInstanceID =  $(tsWorkflowInstanceID).val();
+                }
+                weekData.TimesheetList.push(ts);
             }
             //检验，同一个日期的工时不能超过8
-
-
+            
             $.ajax({
                 type: "POST",
                 url: form.action,
@@ -291,16 +333,17 @@
 
         function CreateNewTimesheet(bt) {
             //debugger;
-            var newTr = $(bt).parent().parent().clone();
-            $(newTr).insertAfter($(bt).parent().parent());
-            var bts = $(newTr).find("a");
+            var trList = $(bt).parent().parent().clone();
+            $(trList).insertAfter($(bt).parent().parent());
+            var bts = $(trList).find("a");
             if (bts.length == 1) {//需要增加一个移除的按钮
                 $("<a class='btn btn-info btn-sm' title='移除一个工时' onclick='RemoveNewTimesheet(this)'>-</a>").insertAfter($(bts));
             }
-            var dates = $(newTr).find("input[name='TimesheetDate']");
+            var dates = $(trList).find("input[name='TimesheetDate']");
             if (dates.length > 0) {
                 //先把id和class清空，否则无法绑定日历插件和正确赋值
                 $(dates).removeAttr("id").removeAttr("class");
+                $(dates).removeAttr("disabled");
                 $(dates).datepicker({
                     autoclose: true,
                     dateFormat: "yy-mm-dd",
@@ -309,15 +352,47 @@
                     weekStart: 1,
                 })
             }
-            var inputId = $(newTr).find("input[name='inputId']");
+            var inputProjectID = $(trList).find("select[name='ProjectID']");
+            if (inputProjectID.length > 0) {//新增的需要去掉只读属性disabled
+                $(inputProjectID).removeAttr("disabled");
+            }
+            var inputWorkload = $(trList).find("input[name='Workload']");
+            if (inputWorkload.length > 0) {//新增的需要去掉只读属性disabled
+                $(inputWorkload).removeAttr("disabled");
+            }
+            var inputWorkContent = $(trList).find("input[name='WorkContent']");
+            if (inputWorkContent.length > 0) {//新增的需要去掉只读属性disabled
+                $(inputWorkContent).removeAttr("disabled");
+            }
+            var inputRemarks = $(trList).find("input[name='Remarks']");
+            if (inputRemarks.length > 0) {//新增的需要去掉只读属性disabled
+                $(inputRemarks).removeAttr("disabled");
+            }
+            var inputId = $(trList).find("input[name='Id']");
             if (inputId.length > 0) {//新增的需要把id赋值为0，否则会把原先的给替换掉
                 $(inputId).val(0);
+            }
+            var tsStatus = $(trList).find("input[name='Status']");
+            if (tsStatus.length > 0) {//新增的需要把Status赋值为Draft
+                $(tsStatus).val("Draft");
+            }
+            var tsApprover = $(trList).find("input[name='Approver']");
+            if (tsApprover.length > 0) {//新增的需要把Approver清空
+                $(tsApprover).val("");
+            }
+            var tsApprovedTime = $(trList).find("input[name='ApprovedTime']");
+            if (tsApprovedTime.length > 0) {//新增的需要把ApprovedTime清空
+                $(tsApprovedTime).val("");
+            }
+            var tsWorkflowInstanceID = $(trList).find("input[name='WorkflowInstanceID']");
+            if (tsWorkflowInstanceID.length > 0) {//新增的需要把WorkflowInstanceID清空
+                $(tsWorkflowInstanceID).val("");
             }
         }
 
         function RemoveNewTimesheet(bt) {
             //debugger;
-            var cf = confirm("你选择的工时将会被移除,确定要这么做吗？");
+            var cf = confirm("你选择的工时(未入库)将会被移除,确定要这么做吗？");
             if (cf) {
                 $(bt).parent().parent().remove();
                 $.notify('你选择的工时已经被移除', {

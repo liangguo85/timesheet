@@ -32,14 +32,14 @@ namespace ZNV.Timesheet.Web.Controllers
             list = list.Skip(start).Take(length).ToList();
             return Json(new { data = list, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
-
+        
         [HttpGet]
         public ActionResult AddOrEdit(int id = 0)
         {
             SetProjectListToViewData();
             if (id == 0)
             {
-                return View(new Timesheet.Timesheet());
+                return View(new Timesheet.Timesheet() { Status = "Draft" });
             }
             else
             {
@@ -127,7 +127,8 @@ namespace ZNV.Timesheet.Web.Controllers
                     tss.Add(new Timesheet.Timesheet()
                     {
                         Id = 0,
-                        TimesheetDate = startDate
+                        TimesheetDate = startDate,
+                        Status = "Draft",
                     });
                 }
                 startDate = startDate.AddDays(1);
@@ -161,6 +162,6 @@ namespace ZNV.Timesheet.Web.Controllers
                 return Json(new { success = false, message = "需要添加或更新周工时数据为空!" }, JsonRequestBehavior.AllowGet);
             }
         }
-
+        
     }
 }

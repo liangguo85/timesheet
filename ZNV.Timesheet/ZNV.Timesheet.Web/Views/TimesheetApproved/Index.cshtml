@@ -35,7 +35,14 @@
                     },
                 },
                 "columns": [
-                    { "data": "Id" },
+                    {
+                        "data": "Id",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, full, meta) {
+                            return meta.row + 1 + meta.settings._iDisplayStart;
+                        }
+                    },
                     {
                         "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
                             if (d)

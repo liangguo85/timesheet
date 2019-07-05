@@ -27,7 +27,7 @@
         $(document).ready(function () {
             dataTable = $("#dtTimesheet").DataTable({
                 "ajax": {
-                    "url": "/TimesheetPending/GetAllPendingTimesheets",
+                    "url": "/TimesheetSubmit/GetAllSubmitTimesheets",
                     "type": "POST",
                     "datatype": "json",
                     "data": {
@@ -58,7 +58,6 @@
                                 return "";
                         }
                     },
-                    { "data": "TimesheetUser" },
                     { "data": "ProjectID" },
                     { "data": "ProjectGroup" },
                     { "data": "Workload" },
@@ -73,7 +72,7 @@
                         "render": function (data, type, full, meta) {
                             console.log(data+","+type+","+full+","+meta);
                             if (data == 'Pending') {
-                                return "<a class='btn btn-info btn-sm' onclick=singleApprove('" + full.Id + "')><i class='fa fa-pencil'></i>通过</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=singleReject(" + full.Id + ")><i class='fa fa-trash'></i>拒绝</a >";
+                                return "<a class='btn btn-info btn-sm' onclick=singleRollback('" + full.Id + "')><i class='fa fa-pencil'></i>撤回</a >";
                             }  else {
                                 return "";
                             }
@@ -112,81 +111,34 @@
             });
         })
 
-        function batchApprove() {
+        function batchRollback() {
             //先获取所有勾选的工时
             var idList = GetCheckedTimesheetIdList();
             if (idList == "") {
-                $.notify("请先选择需要审批通过的工时", {
+                $.notify("请先选择需要撤回的工时", {
                     globalPosition: "top center",
                     className: "error"
                 })
                 return;
             }
             //然后询问是否提交
-            if (confirm("确认将选择的工时进行审批通过吗?")) {
-                commApprove(idList);
+            if (confirm("确认将选择的工时进行撤回吗?")) {
+                commRollback(idList);
             }
         }
 
-        function singleApprove(id) {
+        function singleRollback(id) {
             //询问是否提交
-            if (confirm("确认将该工时进行审批通过吗?")) {
-                commApprove(id);
+            if (confirm("确认将该工时进行撤回吗?")) {
+                commRollback(id);
             }
         }
 
-        //公用的Approve方法，参数是对应的工时id列表，多个则用英文逗号隔开
-        function commApprove(tsIdList) {
+        //公用的Rollback方法，参数是对应的工时id列表，多个则用英文逗号隔开
+        function commRollback(tsIdList) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("CommApprove", "TimesheetPending")',
-                data: { tsIdList: tsIdList },
-                success: function (data) {
-                    if (data.success) {
-                        dataTable.ajax.reload();
-                        $.notify(data.message, {
-                            globalPosition: "top center",
-                            className: "success"
-                        })
-                    }
-                    else {
-                        $.notify(data.message, {
-                            globalPosition: "top center",
-                            className: "error"
-                        })
-                    }
-                }
-            })
-        }
-
-        function batchReject() {
-            //先获取所有勾选的工时
-            var idList = GetCheckedTimesheetIdList();
-            if (idList == "") {
-                $.notify("请先选择需要拒绝的工时", {
-                    globalPosition: "top center",
-                    className: "error"
-                })
-                return;
-            }
-            //然后询问是否刪除
-            if (confirm("确认将选择的工时进行拒绝吗?")) {
-                commReject(idList);
-            }
-        }
-
-        function singleReject(id) {
-            //询问是否拒绝
-            if (confirm("确认将该工时进行拒绝吗?")) {
-                commReject(id);
-            }
-        }
-
-        //公用的拒绝方法，参数是对应的工时id列表，多个则用英文逗号隔开
-        function commReject(tsIdList) {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("CommReject", "TimesheetPending")',
+                url: '@Url.Action("CommRollback", "TimesheetSubmit")',
                 data: { tsIdList: tsIdList },
                 success: function (data) {
                     if (data.success) {
@@ -254,8 +206,7 @@
         <div class="box">
             <div class="box box-header">
                 <div class="btn-group-toggle">
-                    <button type="button" class="btn btn-info" title="提交所有勾选的工时" onclick="batchApprove()">批量通过 <i class="fa fa-plus"></i></button>
-                    <button type="button" class="btn btn-info" title="刪除所有勾选的工时" onclick="batchReject()">批量拒绝 <i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-info" title="提交所有勾选的工时" onclick="batchRollback()">批量撤回<i class="fa fa-plus"></i></button>
                 </div>
             </div>
             <!-- /.box-header -->
@@ -266,7 +217,6 @@
                             <th><input id="ckboxSelectAll" type="checkbox" title="全选或全不选" onchange="ChoseAll()" value="0"/></th>
                             <th>序号</th>
                             <th>日期</th>
-                            <th>提交人</th>
                             <th>项目代码</th>
                             <th>项目组</th>
                             <th>工时</th>

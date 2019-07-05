@@ -42,7 +42,14 @@
                             return "<input name='ckboxTS' type='checkbox' onchange='ChoseSingle(this)' value='" + d + "'/>";
                         }
                     },
-                    { "data": "Id" },
+                    {
+                        "data": "Id",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, full, meta) {
+                            return meta.row + 1 + meta.settings._iDisplayStart;
+                        }
+                    },
                     {
                         "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
                             if (d)
@@ -75,9 +82,9 @@
                 "serverSide": true,
                 "processing": true,
                 //"order": [1, "asc"],
-                "aaSorting": [[1, "desc"]],
+                "aaSorting": [[2, "desc"]],
                 "bSort": true,
-                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0] }],
+                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0,1] }],
                 "language": {
                     "emptyTable": "没有记录",
                     "processing": "处理中... 请等待!",

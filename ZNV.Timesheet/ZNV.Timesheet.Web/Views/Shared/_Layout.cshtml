@@ -259,6 +259,7 @@ desired effect
                         <ul class="treeview-menu">
                             <li class="active"><a href="/timesheet"><i class="fa fa-circle-o"></i>我的周报</a></li>
                             <li><a href="/TimesheetDraft"><i class="fa fa-circle-o"></i>我的草稿</a></li>
+                            <li><a href="/TimesheetSubmit"><i class="fa fa-circle-o"></i>我的提交</a></li>
                             <li><a href="/TimesheetPending"><i class="fa fa-circle-o"></i>待审周报</a></li>
                             <li><a href="/TimesheetApproved"><i class="fa fa-circle-o"></i>已审周报</a></li>
                             <li><a href="#"><i class="fa fa-circle-o"></i>个人设置</a></li>
@@ -304,8 +305,8 @@ desired effect
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
-                <h1>
-                    项目信息管理
+                <h1 id="pageTitle">
+                    
                 </h1>
             </section>
             <!-- Main content -->
@@ -415,6 +416,17 @@ desired effect
     <script>
         abp.localization.defaultSourceName = '@LocalizationSourceName';
         moment.locale('@Thread.CurrentThread.CurrentUICulture.Name.ToLower()'); //Localizing momentjs
+        var currentUrl = window.location.href.substring(window.location.href.lastIndexOf('/'));//例如：/timesheet
+        $("ul.treeview-menu li.active").removeClass("active");
+        $("ul.sidebar-menu li.active").removeClass("active").removeClass("menu-open");
+        $("ul.treeview-menu a").each(function () {
+            var menuUrl = $(this).attr("href");
+            if ($("#pageTitle") && currentUrl == menuUrl) {
+                $("#pageTitle").html($(this).text());
+                $(this).parent().addClass("active");
+                $(this).parent().parent().parent().addClass("active").addClass("menu-open");
+            }
+        });
     </script>
 
     <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->

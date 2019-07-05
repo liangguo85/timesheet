@@ -39,7 +39,14 @@
                     },
                 },
                 "columns": [
-                    { "data": "Id" },
+                    {
+                        "data": "Id",
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, full, meta) {
+                            return meta.row + 1 + meta.settings._iDisplayStart;
+                        }
+                    },
                     {
                         "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
                             if (d)
@@ -248,8 +255,8 @@
                 TimesheetList: []
             };
             var trList = $(form).find("tr");
-            //从1开始，第一行是标题
-            for (var i = 0; i < trList.length; i++) {
+            //这里取的是form，所以需要从1开始，第一行是标题
+            for (var i = 1; i < trList.length; i++) {
                 var ts = {};
                 var inputId = $(trList[i]).find("input[name='Id']");
                 if (inputId.length > 0) {

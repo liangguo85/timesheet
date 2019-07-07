@@ -49,7 +49,7 @@
                         },
                         "orderable": false,
                         "searchable": false,
-                        "width": "120px"
+                        "width": "150px"
                     }
                 ],
                 "serverSide": true,
@@ -74,26 +74,87 @@
                         "previous": "上一页"
                     }
                 },
-                "dom": '<"top"l>rt<"bottom"ip><"clear">',
-                "fnInitComplete": function (oSettings, json) {
-                    addSearchControl(json)
-                }
-            })
+                "dom": '<"top"l>rt<"bottom"ip><"clear">'
+            });
+
+            $('#searchTeamLeader').select2(
+                {
+                    placeholder: '输入工号或名字',
+                    //Does the user have to enter any data before sending the ajax request
+                    minimumInputLength: 0,
+                    allowClear: true,
+                    ajax: {
+                        //How long the user has to pause their typing before sending the next request
+                        delay: 150,
+                        //The url of the json service
+                        url: '@Url.Action("GetEmployeeList", "Team")',
+                        dataType: 'json',
+                        async: true,
+                        //Our search term and what page we are on
+                        data: function (params) {
+                            return {
+                                pageSize: 100,
+                                pageNum: params.page || 1,
+                                searchTerm: params.term,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: $.map(data.Results, function (obj) {
+                                    return { id: obj.EmployeeCode, text: obj.EmployeeName + "(" + obj.EmployeeCode + ")" };
+                                }),
+                                pagination: {
+                                    more: (params.page * 100) <= data.Total
+                                }
+                            };
+                        }
+                    }
+                });
+
+            $('#searchDepartment').select2(
+                {
+                    placeholder: '输入部门编码或名称',
+                    //Does the user have to enter any data before sending the ajax request
+                    minimumInputLength: 0,
+                    allowClear: true,
+                    ajax: {
+                        //How long the user has to pause their typing before sending the next request
+                        delay: 150,
+                        //The url of the json service
+                        url: '@Url.Action("GetDepartmentList", "Team")',
+                        dataType: 'json',
+                        async: true,
+                        //Our search term and what page we are on
+                        data: function (params) {
+                            return {
+                                pageSize: 100,
+                                pageNum: params.page || 1,
+                                searchTerm: params.term,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: $.map(data.Results, function (obj) {
+                                    return { id: obj.DeptCode1, text: obj.FullDeptName + "(" + obj.DeptCode1 + ")" };
+                                }),
+                                pagination: {
+                                    more: (params.page * 100) <= data.Total
+                                }
+                            };
+                        }
+                    }
+                });
+
+            $("#btnSearch").click(function () {
+                dataTable.columns(0).search($("#searchTeamName").val());
+                dataTable.columns(1).search($("#searchTeamLeader").val() == null ? "" : $("#searchTeamLeader").val());
+                dataTable.columns(2).search($("#searchDepartment").val() == null ? "" : $("#searchDepartment").val());
+                dataTable.draw();
+            });
+
         })
-
-        function addSearchControl(json) {
-            $("#teamTable thead").append($("#teamTable thead tr:first").clone());
-
-            $("#teamTable thead tr:eq(1) th").each(function (index) {
-                if (index != 3) {
-                    $(this).replaceWith('<th><input type="text"></input></th>');
-                    var searchControl = $("#teamTable thead tr:eq(1) th:eq(" + index + ") input");
-                    searchControl.on('keyup', function () {
-                        dataTable.column(index).search(searchControl.val()).draw();
-                    })
-                }
-            })
-        }
 
         function PopupForm(url) {
             var formDiv = $('<div/>');
@@ -181,6 +242,33 @@
         <!-- /.box -->
         <div class="box">
             <div class="box box-header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>科室名称</label>
+                            <input type="text" id="searchTeamName" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>科室领导</label>
+                            <select class="form-control select2" id="searchTeamLeader" >
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="search-column">
+                            <label>所属部门</label>
+                            <select class="form-control select2" id="searchDepartment">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-toggle pull-right">
+                    <button type="button" name="search" id="btnSearch" class="btn btn-success">
+                        查询 <i class="fa fa-search"></i>
+                    </button>
+                </div>
                 <div class="btn-group-toggle">
                     <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Team")')">新增 <i class="fa fa-plus"></i></button>
                 </div>

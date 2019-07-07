@@ -20,7 +20,6 @@ namespace ZNV.Timesheet.Web.Controllers
         // GET: Team
         public ActionResult Index()
         {
-            //List<HREmployee> employeeList = _employeeAppService.GetEmployeeList().Where(x => (x.ExitDate != null ? x.ExitDate.Value.AddDays(1) : DateTime.Now.AddDays(1)) > DateTime.Now).ToList();
             return View();
         }
 
@@ -32,14 +31,18 @@ namespace ZNV.Timesheet.Web.Controllers
             string sortColumnName = Request["columns[" + Request["order[0][column]"] + "][name]"];
             string sortDirection = Request["order[0][dir]"];
             List<Team.Team> teamList = _teamAppService.GetTeamList();
-            //if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
-            //{
-            //    holidayList = holidayList.Where(x => x.HolidayDate.ToString().Contains(Request["columns[0][search][value]"].ToLower())).ToList();
-            //}
-            //if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
-            //{
-            //    holidayList = holidayList.Where(x => x.HolidayType.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList();
-            //}
+            if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
+            {
+                teamList = teamList.Where(x => x.TeamName.ToString().Contains(Request["columns[0][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
+            {
+                teamList = teamList.Where(x => x.TeamLeader.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList();
+            }
+            if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
+            {
+                teamList = teamList.Where(x => x.DepartmentID.ToLower().Contains(Request["columns[2][search][value]"].ToLower())).ToList();
+            }
             int totalRow = teamList.Count;
             teamList = teamList.Skip(start).Take(length).ToList();
             teamList.ForEach(item => {

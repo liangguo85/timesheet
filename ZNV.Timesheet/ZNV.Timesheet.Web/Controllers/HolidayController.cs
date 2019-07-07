@@ -30,11 +30,11 @@ namespace ZNV.Timesheet.Web.Controllers
             List<Holiday.Holiday> holidayList = _holidayAppService.GetHolidayList();
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
             {
-                holidayList = holidayList.Where(x => x.HolidayDate.ToString().Contains(Request["columns[0][search][value]"].ToLower())).ToList();
+                holidayList = holidayList.Where(x => x.HolidayDate.Value.ToString("yyyy-MM-dd").Equals(Request["columns[0][search][value]"].ToLower())).ToList();
             }
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
             {
-                holidayList = holidayList.Where(x => x.HolidayType.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList();
+                holidayList = holidayList.Where(x => x.HolidayType.Equals(Request["columns[1][search][value]"].ToLower())).ToList();
             }
             int totalRow = holidayList.Count;
             holidayList = holidayList.Skip(start).Take(length).ToList();

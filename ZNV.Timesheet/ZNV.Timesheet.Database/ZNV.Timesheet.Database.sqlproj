@@ -61,4 +61,7 @@
   <ItemGroup>
     <None Include="Script.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="MAPSysDB_script.sql" />
+  </ItemGroup>
 </Project>

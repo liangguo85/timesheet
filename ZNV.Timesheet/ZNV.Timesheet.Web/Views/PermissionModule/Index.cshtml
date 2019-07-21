@@ -1,6 +1,5 @@
-﻿@using Abp.Web.Mvc.Extensions
-@{
-    ViewBag.Title = "角色管理";
+﻿@{
+    ViewBag.Title = "权限模块管理";
 }
 @section styles {
     <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
@@ -33,34 +32,22 @@
         var Popup, dataTable
 
         $(document).ready(function () {
-            dataTable = $("#roleTable").DataTable({
+            dataTable = $("#moduleTable").DataTable({
                 "ajax": {
-                    "url": "/RoleManagement/GetList",
+                    "url": "/PermissionModule/GetList",
                     "type": "POST",
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "RoleName", "name": "RoleName" },
-                    {
-                        "data": "Users", "render": function (data) {
-                            var roleUsers = ""
-                            if (data != null) {
-                                data.forEach(function (user) {
-                                    roleUsers += user.EmployeeName + "(" + user.EmployeeCode + ");"
-                                })
-                            }
-                            return roleUsers;
-                        },
-                        "orderable": false,
-                        "searchable": false
-                    },
+                    { "data": "ModuleCode", "name": "ModuleCode" },
+                    { "data": "ModuleName", "name": "ModuleName" },
                     {
                         "data": "Id", "render": function (data) {
-                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "RoleManagement")/" + data + "')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>权限管理</a>"
+                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "PermissionModule")/" + data + "')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a>"
                         },
                         "orderable": false,
                         "searchable": false,
-                        "width": "250px"
+                        "width": "150px"
                     }
                 ],
                 "serverSide": true,
@@ -99,7 +86,7 @@
                         autoOpen: true,
                         resizable: false,
                         modal: true,
-                        title: "编辑角色信息",
+                        title: "编辑权限模块信息",
                         height: 400,
                         width: 600,
                         close: function () {
@@ -154,7 +141,7 @@
             if (confirm("确认删除吗?")) {
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("Delete", "RoleManagement")/' + id,
+                    url: '@Url.Action("Delete", "PermissionModule")/' + id,
                     success: function (data) {
                         if (data.success) {
                             dataTable.ajax.reload();
@@ -176,16 +163,16 @@
         <div class="box">
             <div class="box box-header">
                 <div class="btn-group-toggle">
-                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","RoleManagement")')">新增 <i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","PermissionModule")')">新增 <i class="fa fa-plus"></i></button>
                 </div>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-                <table id="roleTable" class="table table-bordered table-striped table-hover">
+                <table id="moduleTable" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>角色名称</th>
-                            <th>角色成员</th>
+                            <th>模块编号</th>
+                            <th>模块名称</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -197,6 +184,8 @@
     </div>
     <!-- /.col -->
 </div>
+
+
 
 
 

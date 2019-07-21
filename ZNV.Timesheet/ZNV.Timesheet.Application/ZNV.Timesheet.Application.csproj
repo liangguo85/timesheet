@@ -215,6 +215,8 @@
     <Compile Include="Employee\IEmployeeAppService.cs" />
     <Compile Include="Holiday\HolidayAppService.cs" />
     <Compile Include="Holiday\IHolidayAppService.cs" />
+    <Compile Include="PermissionModule\IPermissionModuleAppService.cs" />
+    <Compile Include="PermissionModule\PermissionModuleAppService.cs" />
     <Compile Include="Project\IProjectAppService.cs" />
     <Compile Include="Project\ProjectAppService.cs" />
     <Compile Include="RoleManagement\IRoleManagementAppService.cs" />

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 
 namespace ZNV.Timesheet.Team
 {

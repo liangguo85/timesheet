@@ -203,6 +203,8 @@
     <Compile Include="Employee\IHREmployeeRepository.cs" />
     <Compile Include="Holiday\Holiday.cs" />
     <Compile Include="Holiday\IHolidayRepository.cs" />
+    <Compile Include="PermissionModule\IPermissionModuleRepository.cs" />
+    <Compile Include="PermissionModule\PermissionModule.cs" />
     <Compile Include="Project\IProjectRepository.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="RoleManagement\IRoleRepository.cs" />

@@ -51,6 +51,11 @@ namespace ZNV.Timesheet.RoleManagement
                             role.Users = new List<HREmployee>();
                         }
                         role.Users.Add(new HREmployee { EmployeeCode = userRole.UserId, EmployeeName = userRole.EmployeeName });
+                        if(role.UserIds == null)
+                        {
+                            role.UserIds = new List<string>();
+                        }
+                        role.UserIds.Add(userRole.UserId);
                     }
                 });
             });
@@ -61,7 +66,7 @@ namespace ZNV.Timesheet.RoleManagement
             //                          join em in _employeeRepository.GetAll() on userRole.UserId equals em.EmployeeCode
             //                          select new HREmployee { EmployeeCode = em.EmployeeCode, EmployeeName = em.EmployeeName })
             //             select new Role { Id = role.Id, RoleName = role.RoleName, Users = query.ToList() }).ToList();
-
+          
             return roles;
         }
         public Role GetRole(int id)
@@ -75,19 +80,20 @@ namespace ZNV.Timesheet.RoleManagement
             ).ToList();
 
             role.Users = users;
+            role.UserIds = users.Select(item => item.EmployeeCode).ToList();
             
             return role;
         }
         public int AddRole(Role role)
         {
             var roleId = _roleRepository.InsertAndGetId(role);
-            if (role.Users != null && role.Users.Count > 0)
+            if (role.UserIds != null && role.UserIds.Count > 0)
             {
-                role.Users.ForEach(u =>
+                role.UserIds.ForEach(userId =>
                 {
                     UserRole userRole = new UserRole
                     {
-                        UserId = u.EmployeeCode,
+                        UserId = userId,
                         RoleId = roleId,
                         Creator = role.Creator
                     };
@@ -100,14 +106,14 @@ namespace ZNV.Timesheet.RoleManagement
         public Role UpdateRole(Role role)
         {
             _roleRepository.Update(role);
-            if (role.Users != null && role.Users.Count > 0)
+            if (role.UserIds != null && role.UserIds.Count > 0)
             {
                 _userRoleRepository.Delete(userRole => userRole.RoleId == role.Id);
-                role.Users.ForEach(u =>
+                role.UserIds.ForEach(userId =>
                 {
                     UserRole userRole = new UserRole
                     {
-                        UserId = u.EmployeeCode,
+                        UserId = userId,
                         RoleId = role.Id,
                         Creator = role.Creator
                     };

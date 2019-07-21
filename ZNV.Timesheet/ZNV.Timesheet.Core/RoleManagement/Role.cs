@@ -17,6 +17,9 @@ namespace ZNV.Timesheet.RoleManagement
         [NotMapped]
         public List<HREmployee> Users { get; set; }
 
+        [NotMapped]
+        public List<string> UserIds { get; set; }
+
         public virtual string Creator { get; set; }
 
         public virtual DateTime CreationTime { get; set; }

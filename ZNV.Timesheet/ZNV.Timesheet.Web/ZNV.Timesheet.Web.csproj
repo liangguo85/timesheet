@@ -7747,6 +7747,7 @@
     <Compile Include="Controllers\HolidayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProjectManagementController.cs" />
+    <Compile Include="Controllers\RoleManagementController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\TimesheetApprovedController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
@@ -7802,6 +7803,8 @@
     <Content Include="Views\TimesheetApproved\Index.cshtml" />
     <Content Include="Views\TimesheetPending\Index.cshtml" />
     <Content Include="Views\TimesheetSubmit\Index.cshtml" />
+    <Content Include="Views\RoleManagement\Index.cshtml" />
+    <Content Include="Views\RoleManagement\AddOrEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

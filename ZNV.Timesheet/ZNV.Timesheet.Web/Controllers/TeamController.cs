@@ -45,13 +45,13 @@ namespace ZNV.Timesheet.Web.Controllers
             }
             int totalRow = teamList.Count;
             teamList = teamList.Skip(start).Take(length).ToList();
+            teamList = teamList.OrderBy(sortColumnName + " " + sortDirection).ToList();
             teamList.ForEach(item => {
                 var leader = _employeeAppService.GetEmployeeByCode(item.TeamLeader);
                 var dept = _employeeAppService.GetDepartmentByCode(item.DepartmentID);
                 item.TeamLeaderName = leader.EmployeeName + "(" + leader.EmployeeCode + ")";
                 item.DepartmentName = dept.FullDeptName + "(" + dept.DeptCode1 + ")";
             });
-            teamList = teamList.OrderBy(sortColumnName + " " + sortDirection).ToList();
             
             return Json(new { data = teamList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }

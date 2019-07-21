@@ -1,83 +1,28 @@
-﻿USE [master]
+﻿USE [ZNVTimesheet]
 GO
-/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/6/24 9:04:38 ******/
-CREATE DATABASE [ZNVTimesheet]
- CONTAINMENT = NONE
- ON  PRIMARY 
-( NAME = N'ZNVTimesheet', FILENAME = N'D:\Program Files\Microsoft SQL Server\MSSQL11.DEV\MSSQL\DATA\ZNVTimesheet.mdf' , SIZE = 5120KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
- LOG ON 
-( NAME = N'ZNVTimesheet_log', FILENAME = N'D:\Program Files\Microsoft SQL Server\MSSQL11.DEV\MSSQL\DATA\ZNVTimesheet_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 2019/7/21 23:40:07 ******/
+SET ANSI_NULLS ON
 GO
-ALTER DATABASE [ZNVTimesheet] SET COMPATIBILITY_LEVEL = 110
+SET QUOTED_IDENTIFIER ON
 GO
-IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
-begin
-EXEC [ZNVTimesheet].[dbo].[sp_fulltext_database] @action = 'enable'
-end
+SET ANSI_PADDING ON
 GO
-ALTER DATABASE [ZNVTimesheet] SET ANSI_NULL_DEFAULT OFF 
+CREATE TABLE [dbo].[__MigrationHistory](
+	[MigrationId] [nvarchar](150) NOT NULL,
+	[ContextKey] [nvarchar](300) NOT NULL,
+	[Model] [varbinary](max) NOT NULL,
+	[ProductVersion] [nvarchar](32) NOT NULL,
+ CONSTRAINT [PK_dbo.__MigrationHistory] PRIMARY KEY CLUSTERED 
+(
+	[MigrationId] ASC,
+	[ContextKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
 GO
-ALTER DATABASE [ZNVTimesheet] SET ANSI_NULLS OFF 
+SET ANSI_PADDING OFF
 GO
-ALTER DATABASE [ZNVTimesheet] SET ANSI_PADDING OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET ANSI_WARNINGS OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET ARITHABORT OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET AUTO_CLOSE OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET AUTO_CREATE_STATISTICS ON 
-GO
-ALTER DATABASE [ZNVTimesheet] SET AUTO_SHRINK OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET AUTO_UPDATE_STATISTICS ON 
-GO
-ALTER DATABASE [ZNVTimesheet] SET CURSOR_CLOSE_ON_COMMIT OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET CURSOR_DEFAULT  GLOBAL 
-GO
-ALTER DATABASE [ZNVTimesheet] SET CONCAT_NULL_YIELDS_NULL OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET NUMERIC_ROUNDABORT OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET QUOTED_IDENTIFIER OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET RECURSIVE_TRIGGERS OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET  DISABLE_BROKER 
-GO
-ALTER DATABASE [ZNVTimesheet] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET DATE_CORRELATION_OPTIMIZATION OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET TRUSTWORTHY OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET ALLOW_SNAPSHOT_ISOLATION OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET PARAMETERIZATION SIMPLE 
-GO
-ALTER DATABASE [ZNVTimesheet] SET READ_COMMITTED_SNAPSHOT OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET HONOR_BROKER_PRIORITY OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET RECOVERY FULL 
-GO
-ALTER DATABASE [ZNVTimesheet] SET  MULTI_USER 
-GO
-ALTER DATABASE [ZNVTimesheet] SET PAGE_VERIFY CHECKSUM  
-GO
-ALTER DATABASE [ZNVTimesheet] SET DB_CHAINING OFF 
-GO
-ALTER DATABASE [ZNVTimesheet] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
-GO
-ALTER DATABASE [ZNVTimesheet] SET TARGET_RECOVERY_TIME = 0 SECONDS 
-GO
-EXEC sys.sp_db_vardecimal_storage_format N'ZNVTimesheet', N'ON'
-GO
-USE [ZNVTimesheet]
-GO
-/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/6/24 9:04:38 ******/
+/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/7/21 23:40:07 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -98,7 +43,48 @@ CREATE TABLE [dbo].[Holiday](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project]    Script Date: 2019/6/24 9:04:38 ******/
+/****** Object:  Table [dbo].[HREmployee]    Script Date: 2019/7/21 23:40:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[HREmployee](
+	[UserID] [nvarchar](128) NOT NULL,
+	[EmployeeCode] [nvarchar](max) NULL,
+	[EmployeeName] [nvarchar](max) NULL,
+	[EntryDate] [datetime] NULL,
+	[ExitDate] [datetime] NULL,
+ CONSTRAINT [PK_dbo.HREmployee] PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[PermissionModule]    Script Date: 2019/7/21 23:40:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PermissionModule](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleCode] [nvarchar](50) NULL,
+	[ModuleName] [nvarchar](50) NOT NULL,
+	[ParentModuleId] [int] NULL,
+	[Level] [int] NOT NULL,
+	[Creator] [nvarchar](50) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](50) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_PermissionModule] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Project]    Script Date: 2019/7/21 23:40:07 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -130,7 +116,48 @@ CREATE TABLE [dbo].[Project](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Team]    Script Date: 2019/6/24 9:04:38 ******/
+/****** Object:  Table [dbo].[Role]    Script Date: 2019/7/21 23:40:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Role](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RoleName] [nvarchar](50) NOT NULL,
+	[Creator] [nvarchar](50) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](50) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_Role] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[RoleModule]    Script Date: 2019/7/21 23:40:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RoleModule](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RoleId] [int] NOT NULL,
+	[ModuleId] [int] NOT NULL,
+	[Creator] [nvarchar](50) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](50) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_RoleModule] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Team]    Script Date: 2019/7/21 23:40:07 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -152,7 +179,7 @@ CREATE TABLE [dbo].[Team](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/6/24 9:04:38 ******/
+/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/7/21 23:40:07 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -181,6 +208,29 @@ CREATE TABLE [dbo].[Timesheet](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+GO
+/****** Object:  Table [dbo].[UserRole]    Script Date: 2019/7/21 23:40:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserRole](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [nvarchar](50) NOT NULL,
+	[RoleId] [int] NOT NULL,
+	[Creator] [nvarchar](50) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](50) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_UserRole] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+ALTER TABLE [dbo].[PermissionModule] ADD  CONSTRAINT [DF_PermissionModule_Level]  DEFAULT ((0)) FOR [Level]
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'节假日日期' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Holiday', @level2type=N'COLUMN',@level2name=N'HolidayDate'
 GO
@@ -229,8 +279,4 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'部门ID' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Team', @level2type=N'COLUMN',@level2name=N'DepartmentID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'科室领导' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Team', @level2type=N'COLUMN',@level2name=N'TeamLeader'
-GO
-USE [master]
-GO
-ALTER DATABASE [ZNVTimesheet] SET  READ_WRITE 
 GO

@@ -5,15 +5,18 @@ using System.Web;
 using System.Web.Mvc;
 using ZNV.Timesheet.RoleManagement;
 using System.Linq.Dynamic;
+using ZNV.Timesheet.Employee;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
     public class RoleManagementController : Controller
     {
         private readonly IRoleManagementAppService _roleManagementAppService;
-        public RoleManagementController(IRoleManagementAppService roleManagementAppService)
+        private readonly IEmployeeAppService _employeeAppService;
+        public RoleManagementController(IRoleManagementAppService roleManagementAppService, IEmployeeAppService employeeAppService)
         {
             _roleManagementAppService = roleManagementAppService;
+            _employeeAppService = employeeAppService;
         }
         // GET: RoleManagement
         public ActionResult Index()
@@ -38,15 +41,11 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             if (id == 0)
             {
-                //ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Take(10), "EmployeeCode", "EmployeeName");
-                //ViewBag.Departments = new SelectList(_employeeAppService.GetDepartmentList().Take(10), "DeptCode1", "DeptName1");
-                return View(new Role());
+                return View(new Role { Users = _employeeAppService.GetEmployeeList().Take(10).ToList() });
             }
             else
             {
                 var role = _roleManagementAppService.GetRole(id);
-                //ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Where(x => x.EmployeeCode == team.TeamLeader).ToList(), "EmployeeCode", "EmployeeName");
-                //ViewBag.Departments = new SelectList(_employeeAppService.GetDepartmentList().Where(x => x.DeptCode1 == team.DepartmentID).ToList(), "DeptCode1", "DeptName1");
                 return View(role);
             }
         }

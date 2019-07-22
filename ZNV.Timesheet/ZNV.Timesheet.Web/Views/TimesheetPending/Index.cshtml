@@ -36,56 +36,88 @@
                 },
                 "columns": [
                     {
-                        "data": "Id",
-                        "name": "Id",
+                        "data": "IDList",
+                        "name": "IDList",
                         "render": function (d) {
                             return "<input name='ckboxTS' type='checkbox' onchange='ChoseSingle(this)' value='" + d + "'/>";
                         }
                     },
-                    {
-                        "data": "Id",
-                        "orderable": false,
-                        "searchable": false,
-                        "render": function (data, type, full, meta) {
-                            return meta.row + 1 + meta.settings._iDisplayStart;
-                        }
-                    },
+                    { "data": "TimesheetUser" },
                     {
                         "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
                             if (d)
-                                return moment(d).format("YYYY-MM-DD");
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
                             else
                                 return "";
                         }
                     },
-                    { "data": "TimesheetUser" },
-                    { "data": "ProjectID" },
-                    { "data": "ProjectGroup" },
+                    {
+                        "data": "ProjectName", "name": "ProjectName", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
                     { "data": "Workload" },
-                    { "data": "WorkContent" },
-                    { "data": "Remarks" },
-                    { "data": "Status" },
+                    {
+                        "data": "WorkContent", "name": "WorkContent", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
+                    {
+                        "data": "Remarks", "name": "Remarks", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
                     {
                         "data": "Status",
                         "orderable": false,
                         "searchable": false,
-                        "width": "125px",
+                        "width": "190px",
                         "render": function (data, type, full, meta) {
-                            console.log(data+","+type+","+full+","+meta);
-                            if (data == 'Pending') {
-                                return "<a class='btn btn-info btn-sm' onclick=singleApprove('" + full.Id + "')><i class='fa fa-pencil'></i>通过</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=singleReject(" + full.Id + ")><i class='fa fa-trash'></i>拒绝</a >";
-                            }  else {
-                                return "";
-                            }
+                            return "<a class='btn btn-info btn-sm' onclick=singleApprove('" + full.IDList + "')><i class='fa fa-pencil'></i>通过</a ><a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=singleReject('" + full.IDList + "')><i class='fa fa-trash'></i>驳回</a ><a class='btn btn-primary btn-sm' style='margin-left:5px' onclick=singleAssign('" + full.IDList + "')><i class='fa fa-send'></i>转办</a >";
                         }
                     }
                 ],
+                "fnCreatedRow": function (nRow, aData, iDataIndex) {
+                    $('td:eq(1)', nRow).html("<span class='row-details' title='展开' style = 'padding-left: 5px;padding - right: 5px;cursor: pointer;color: blue;'>+</span> " + aData.TimesheetUser);
+                    //再把工时清单加载到子表格中
+                    var tb = '';
+                    for (var i = 0; i < aData.TimesheetList.length; i++) {
+                        tb += '<tr name = "tr' + aData.IDList +'">';
+                        tb += '<td></td><td>' + aData.TimesheetList[i].TimesheetUser + '</td><td>' + ConvertStringToDatetimeEx(aData.TimesheetList[i].TimesheetDate) + '</td><td>' + aData.TimesheetList[i].ProjectName + '</td><td>' + aData.TimesheetList[i].Workload + '</td>';
+                        tb += '<td><label title="' + aData.TimesheetList[i].WorkContent + '">' + GetShortStringForCell(aData.TimesheetList[i].WorkContent) + '</label></td>';
+                        tb += '<td><label title="' + aData.TimesheetList[i].Remarks + '">' + GetShortStringForCell(aData.TimesheetList[i].Remarks) + '</label></td>';
+                        tb += '<td></td>';
+                        tb += '</tr>'
+                    }
+                    $('#dtTimesheet').on('click', ' tbody td .row-details', function () {
+                        var nTr = $(this).parents('tr')[0];
+                        var idlist = $(nTr).find("input[name='ckboxTS']").val();
+                        var childTR = $("tr[name='tr" + idlist + "']");
+                        if (childTR.length == 0) {//没有找到则加上
+                            $(tb).insertAfter($(nTr));
+                            $(this).html('-').attr("title","折叠");
+                        }
+                        else {//找到了则移除
+                            $(childTR).remove();
+                            $(this).html('+').attr("title", "展开");
+                        }
+                    });
+                },
                 "serverSide": true,
                 "processing": true,
                 //"order": [1, "asc"],
-                "aaSorting": [[2, "desc"]],
+                "aaSorting": [[1, "desc"]],
                 "bSort": true,
-                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0,1] }],
+                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0] }],
                 "language": {
                     "emptyTable": "没有记录",
                     "processing": "处理中... 请等待!",
@@ -110,7 +142,14 @@
 
                 }
             });
-        })
+
+            $('#dtTimesheet').on('click', ' tbody tr .mainTR', function () {
+                debugger;
+                var nTr = $(this).next("tr");
+                $(nTr).show();
+            });
+            }
+        )
 
         function batchApprove() {
             //先获取所有勾选的工时
@@ -163,26 +202,26 @@
             //先获取所有勾选的工时
             var idList = GetCheckedTimesheetIdList();
             if (idList == "") {
-                $.notify("请先选择需要拒绝的工时", {
+                $.notify("请先选择需要驳回的工时", {
                     globalPosition: "top center",
                     className: "error"
                 })
                 return;
             }
             //然后询问是否刪除
-            if (confirm("确认将选择的工时进行拒绝吗?")) {
+            if (confirm("确认将选择的工时进行驳回吗?")) {
                 commReject(idList);
             }
         }
 
         function singleReject(id) {
-            //询问是否拒绝
-            if (confirm("确认将该工时进行拒绝吗?")) {
+            //询问是否驳回
+            if (confirm("确认将该工时进行驳回吗?")) {
                 commReject(id);
             }
         }
 
-        //公用的拒绝方法，参数是对应的工时id列表，多个则用英文逗号隔开
+        //公用的驳回方法，参数是对应的工时id列表，多个则用英文逗号隔开
         function commReject(tsIdList) {
             $.ajax({
                 type: "POST",
@@ -255,7 +294,7 @@
             <div class="box box-header">
                 <div class="btn-group-toggle">
                     <button type="button" class="btn btn-info" title="提交所有勾选的工时" onclick="batchApprove()">批量通过 <i class="fa fa-plus"></i></button>
-                    <button type="button" class="btn btn-info" title="刪除所有勾选的工时" onclick="batchReject()">批量拒绝 <i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-info" title="刪除所有勾选的工时" onclick="batchReject()">批量驳回 <i class="fa fa-trash"></i></button>
                 </div>
             </div>
             <!-- /.box-header -->
@@ -263,16 +302,13 @@
                 <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th><input id="ckboxSelectAll" type="checkbox" title="全选或全不选" onchange="ChoseAll()" value="0"/></th>
-                            <th>序号</th>
-                            <th>日期</th>
+                            <th><input id="ckboxSelectAll" type="checkbox" title="全选或全不选" onchange="ChoseAll()" value="0" /></th>
                             <th>提交人</th>
-                            <th>项目代码</th>
-                            <th>项目组</th>
+                            <th>日期</th>
+                            <th>项目名称</th>
                             <th>工时</th>
                             <th>工作内容</th>
                             <th>备注</th>
-                            <th>状态</th>
                             <th></th>
                         </tr>
                     </thead>

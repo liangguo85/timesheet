@@ -22,12 +22,10 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProjectManagerID, "项目经理", new { @class = "control-label" })
-            @*@Html.EditorFor(model => model.ProjectManagerID, new { htmlAttributes = new { @class = "form-control" } })*@
             @Html.DropDownListFor(model => model.ProjectManagerID, (IEnumerable<SelectListItem>)ViewBag.Employees, String.Empty, new { id = "projectManager", @class = "form-control select2" })
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProductManagerID, "产品经理", new { @class = "control-label" })
-            @*@Html.EditorFor(model => model.ProductManagerID, new { htmlAttributes = new { @class = "form-control" } })*@
             @Html.DropDownListFor(model => model.ProductManagerID, (IEnumerable<SelectListItem>)ViewBag.Employees, String.Empty, new { id = "productionManager", @class = "form-control select2" })
         </div>
     </div>
@@ -38,7 +36,8 @@
                 new SelectListItem { Value="平台", Text="平台"},
                 new SelectListItem { Value="产品", Text="产品"},
                 new SelectListItem { Value="预研", Text="预研"},
-                new SelectListItem { Value="合同", Text="合同"}
+                new SelectListItem { Value="合同", Text="合同"},
+                new SelectListItem { Value="非项目", Text="非项目"}
             }, new { @class="form-control"})
         </div>
         <div class="form-group col-md-6">

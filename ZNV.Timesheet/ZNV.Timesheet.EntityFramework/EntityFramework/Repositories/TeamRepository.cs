@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using ZNV.Timesheet.Team;
+﻿using ZNV.Timesheet.Team;
 using Abp.EntityFramework;
 
 namespace ZNV.Timesheet.EntityFramework.Repositories

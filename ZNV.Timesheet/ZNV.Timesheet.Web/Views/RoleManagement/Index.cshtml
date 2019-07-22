@@ -1,12 +1,16 @@
 ﻿@using Abp.Web.Mvc.Extensions
 @{
-                ViewBag.Title = "节假日管理";
+    ViewBag.Title = "角色管理";
 }
 @section styles {
     <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
     <!-- iCheck for checkboxes and radio inputs -->
     <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/plugins/iCheck/all.css">
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <!-- bootstrap datepicker -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/css/select2.min.css">
 }
 @section scripts
 {
@@ -15,35 +19,48 @@
     <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     <!-- iCheck 1.0.1 -->
     <script src="~/lib/AdminLTE-2.4.10/plugins/iCheck/icheck.min.js"></script>
+    <!-- bootstrap datepicker -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/notify.min.js"></script>
+    <!-- Select2 -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-    <script src="~/lib/My97DatePicker/WdatePicker.js"></script>
+
     <script>
         var Popup, dataTable
 
         $(document).ready(function () {
-            dataTable = $("#holidayTable").DataTable({
+            dataTable = $("#roleTable").DataTable({
                 "ajax": {
-                    "url": "/Holiday/GetList",
+                    "url": "/RoleManagement/GetList",
                     "type": "POST",
                     "datatype": "json"
                 },
                 "columns": [
+                    { "data": "RoleName", "name": "RoleName" },
                     {
-                        "data": "HolidayDate", "name": "HolidayDate", "render": function (d) {
-                            return moment(d).format("YYYY-MM-DD");
-                        }
+                        "data": "Users", "render": function (data) {
+                            var roleUsers = ""
+                            if (data != null) {
+                                data.forEach(function (user) {
+                                    roleUsers += user.EmployeeName + "(" + user.EmployeeCode + ");"
+                                })
+                            }
+                            return roleUsers;
+                        },
+                        "orderable": false,
+                        "searchable": false
                     },
-                    { "data": "HolidayType", "name": "HolidayType" },
                     {
                         "data": "Id", "render": function (data) {
-                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Holiday")/" + data + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a >"
+                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "RoleManagement")/" + data + "')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>权限管理</a>"
                         },
                         "orderable": false,
                         "searchable": false,
-                        "width": "150px"
+                        "width": "250px"
                     }
                 ],
                 "serverSide": true,
@@ -70,12 +87,6 @@
                 },
                 "dom": '<"top"l>rt<"bottom"ip><"clear">'
             });
-
-            $("#btnSearch").click(function () {
-                dataTable.columns(0).search($("#searchHolidayDate").val());
-                dataTable.columns(1).search($("#searchHolidayType").val());
-                dataTable.draw();
-            });
         })
 
         function PopupForm(url) {
@@ -88,12 +99,30 @@
                         autoOpen: true,
                         resizable: false,
                         modal: true,
-                        title: "新增节假日信息",
-                        height: 300,
-                        width: 400,
+                        title: "编辑角色信息",
+                        height: 400,
+                        width: 600,
                         close: function () {
                             Popup.dialog('destroy').remove();
                         }
+                        //// fixed select2 search input not working issue
+                        //open: function () {
+                        //    if ($.ui && $.ui.dialog && !$.ui.dialog.prototype._allowInteractionRemapped && $(this).closest(".ui-dialog").length) {
+                        //        if ($.ui.dialog.prototype._allowInteraction) {
+                        //            $.ui.dialog.prototype._allowInteraction = function (e) {
+                        //                if ($(e.target).closest('.select2-drop').length) return true;
+                        //                return ui_dialog_interaction.apply(this, arguments);
+                        //            };
+                        //            $.ui.dialog.prototype._allowInteractionRemapped = true;
+                        //        }
+                        //        else {
+                        //            $.error("You must upgrade jQuery UI or else.");
+                        //        }
+                        //    }
+                        //},
+                        //_allowInteraction: function (event) {
+                        //    return !!$(event.target).is(".select2-input") || this._super(event);
+                        //}
                     });
                 });
         }
@@ -125,7 +154,7 @@
             if (confirm("确认删除吗?")) {
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("Delete", "Holiday")/' + id,
+                    url: '@Url.Action("Delete", "RoleManagement")/' + id,
                     success: function (data) {
                         if (data.success) {
                             dataTable.ajax.reload();
@@ -146,40 +175,17 @@
         <!-- /.box -->
         <div class="box">
             <div class="box box-header">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>日期</label>
-                            <input type="text" class="form-control" id="searchHolidayDate" onclick="WdatePicker()" />
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>类型</label>
-                            <select class="form-control select2" id="searchHolidayType">
-                                <option selected></option>
-                                <option value="节假日">节假日</option>
-                                <option value="工作日">工作日</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="btn-group-toggle pull-right">
-                    <button type="button" name="search" id="btnSearch" class="btn btn-success">
-                        查询 <i class="fa fa-search"></i>
-                    </button>
-                </div>
                 <div class="btn-group-toggle">
-                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Holiday")')">新增 <i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","RoleManagement")')">新增 <i class="fa fa-plus"></i></button>
                 </div>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-                <table id="holidayTable" class="table table-bordered table-striped table-hover">
+                <table id="roleTable" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>日期</th>
-                            <th>类型</th>
+                            <th>角色名称</th>
+                            <th>角色成员</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -190,28 +196,6 @@
         <!-- /.box -->
     </div>
     <!-- /.col -->
-</div>
-
-<div class="modal modal-info fade" id="modal-info">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">确认信息</h4>
-            </div>
-            <div class="modal-body">
-                <p>确认删除该条记录吗？</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-outline">确认</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
 </div>
 
 

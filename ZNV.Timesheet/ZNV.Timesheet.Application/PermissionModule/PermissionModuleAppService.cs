@@ -15,7 +15,45 @@ namespace ZNV.Timesheet.PermissionModule
         }
         public List<PermissionModule> GetPermissionModuleList()
         {
-            return _permissionModuleRepository.GetAll().OrderBy(item => item.ModuleCode).ToList();
+            var list = (
+                         from module in _permissionModuleRepository.GetAll()
+                         join parentModule in _permissionModuleRepository.GetAll() on module.ParentModuleId equals parentModule.Id into gj
+                         from parentItem in gj.DefaultIfEmpty()
+                         select new
+                         {
+                             module.Id,
+                             module.ModuleCode,
+                             module.ModuleName,
+                             module.ParentModuleId,
+                             ParentModuleCode = parentItem.ModuleCode ?? string.Empty,
+                             ParentModuleName = parentItem.ModuleName ?? string.Empty,
+                             module.Level,
+                             module.CreationTime,
+                             module.Creator,
+                             module.LastModifier,
+                             module.LastModifyTime,
+                             module.IsDeleted
+                         }).OrderBy(item => item.ModuleCode).ToList();
+            var moduleList = new List<PermissionModule>();
+            list.ForEach(module =>
+            {
+                moduleList.Add(new PermissionModule
+                {
+                    Id = module.Id,
+                    ModuleCode = module.ModuleCode,
+                    ModuleName = module.ModuleName,
+                    ParentModuleId = module.ParentModuleId,
+                    ParentModuleCode = module.ParentModuleCode,
+                    ParentModuleName = module.ParentModuleName,
+                    Level = module.Level,
+                    CreationTime = module.CreationTime,
+                    Creator = module.Creator,
+                    LastModifier = module.LastModifier,
+                    LastModifyTime = module.LastModifyTime,
+                    IsDeleted = module.IsDeleted
+                });
+            });
+            return moduleList;
         }
         public List<PermissionModule> GetPermissionModuleList(int start, int length, string sortColumnName, string sortDirection, out int totalCount)
         {
@@ -34,10 +72,32 @@ namespace ZNV.Timesheet.PermissionModule
             return _permissionModuleRepository.InsertAndGetId(permissionModule);
         }
         public PermissionModule UpdatePermissionModule(PermissionModule permissionModule) {
+            if (permissionModule.ParentModuleId != null)
+            {
+                permissionModule.Level = GetPermissionModule(permissionModule.ParentModuleId.Value).Level + 1;
+            }
             return _permissionModuleRepository.Update(permissionModule);
         }
-        public void DeleteRole(int id) {
+        public void DeleteModule(int id) {
             _permissionModuleRepository.Delete(id);
+            var children = new List<PermissionModule>();
+            children = GetChildren(id, children);
+            foreach(var item in children)
+            {
+                _permissionModuleRepository.Delete(item.Id);
+            }
         }
+
+        private List<PermissionModule> GetChildren(int parentId, List<PermissionModule> moduleList)
+        {
+            var list = _permissionModuleRepository.GetAll().Where(item => item.ParentModuleId == parentId).ToList();
+            foreach(var item in list)
+            {
+                moduleList.Add(item);
+                GetChildren(item.Id, moduleList);
+            }
+            return moduleList;
+        }
+
     }
 }

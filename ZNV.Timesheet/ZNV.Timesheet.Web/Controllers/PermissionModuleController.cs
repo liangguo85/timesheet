@@ -17,26 +17,19 @@ namespace ZNV.Timesheet.Web.Controllers
         // GET: PermissionModule
         public ActionResult Index()
         {
+            List<PermissionModule.PermissionModule> moduleList = _permissionModuleAppService.GetPermissionModuleList();
+            ViewBag.PermissionModules = moduleList;
             return View();
-        }
-        [HttpPost]
-        public JsonResult GetList()
-        {
-            int start = Convert.ToInt32(Request["start"]);
-            int length = Convert.ToInt32(Request["length"]);
-            string sortColumnName = Request["columns[" + Request["order[0][column]"] + "][name]"];
-            string sortDirection = Request["order[0][dir]"];
-            int totalRow = 0;
-            List<PermissionModule.PermissionModule> roleList = _permissionModuleAppService.GetPermissionModuleList(start, length, sortColumnName, sortDirection, out totalRow);
-            return Json(new { data = roleList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public ActionResult AddOrEdit(int id = 0)
         {
             var list = _permissionModuleAppService.GetPermissionModuleList();
-            //list.ForEach(item => { item.ModuleName = GetSpace(item.Level) + item.ModuleName; });
-            ViewBag.Modules = new SelectList(list, "ModuleCode", "ModuleName");
+            list.ForEach(item => {
+                item.ModuleName = GetSpace(item.Level) + item.ModuleName;
+            });
+            ViewBag.Modules = new SelectList(list, "Id", "ModuleName");
             if (id == 0)
             {
                 return View(new PermissionModule.PermissionModule());
@@ -67,18 +60,18 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
-            _permissionModuleAppService.DeleteRole(id);
+            _permissionModuleAppService.DeleteModule(id);
             return Json(new { success = true, message = "删除权限模块信息成功!" }, JsonRequestBehavior.AllowGet);
         }
 
-        //private string GetSpace(int level)
-        //{
-        //    string space = "";
-        //    for (int i = 0; i < level; i++)
-        //    {
-        //        space = space + "    ";
-        //    }
-        //    return space;
-        //}
+        private string GetSpace(int level)
+        {
+            string space = "|----";
+            for(int i =0;i <level; i++)
+            {
+                space = space + "----";
+            }
+            return space;
+        }
     }
 }

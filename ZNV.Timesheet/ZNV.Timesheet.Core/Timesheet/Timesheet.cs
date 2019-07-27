@@ -22,6 +22,9 @@ namespace ZNV.Timesheet.Timesheet
 
         public virtual int? ProjectID { get; set; }
 
+        [NotMapped]
+        public virtual string ProjectName { get; set; }
+
         public virtual string ProjectGroup { get; set; }
 
         public virtual decimal? Workload { get; set; }
@@ -30,7 +33,7 @@ namespace ZNV.Timesheet.Timesheet
 
         public virtual string Remarks { get; set; }
 
-        public virtual string Status { get; set; }
+        public virtual ApproveStatus Status { get; set; }
 
         public virtual string Approver { get; set; }
 
@@ -52,6 +55,24 @@ namespace ZNV.Timesheet.Timesheet
         {
             CreationTime = DateTime.Now;
         }
+    }
+
+    /// <summary>
+    /// 审批状态
+    /// </summary>
+    public enum ApproveStatus {
+        /// <summary>
+        /// 草稿
+        /// </summary>
+        Draft=0,
+        /// <summary>
+        /// 审核中
+        /// </summary>
+        Approving = 1,
+        /// <summary>
+        /// 审批通过
+        /// </summary>
+        Approved = 2
     }
 }
 

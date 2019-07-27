@@ -36,14 +36,6 @@
                 },
                 "columns": [
                     {
-                        "data": "Id",
-                        "orderable": false,
-                        "searchable": false,
-                        "render": function (data, type, full, meta) {
-                            return meta.row + 1 + meta.settings._iDisplayStart;
-                        }
-                    },
-                    {
                         "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
                             if (d)
                                 return moment(d).format("YYYY-MM-DD");
@@ -51,19 +43,47 @@
                                 return "";
                         }
                     },
-                    { "data": "ProjectID" },
-                    { "data": "ProjectGroup" },
+                    { "data": "ProjectName" },
                     { "data": "Workload" },
-                    { "data": "WorkContent" },
-                    { "data": "Remarks" },
-                    { "data": "Status" }
+                    {
+                        "data": "WorkContent", "name": "WorkContent", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
+                    {
+                        "data": "Remarks", "name": "Remarks", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
+                    {
+                        "data": "Status",
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "80px",
+                        "render": function (data, type, full, meta) {
+                            if (data == "" || data == null || data == ApproveStatus.Draft) {
+                                return "草稿";
+                            }
+                            else if (data == ApproveStatus.Approving) {
+                                return "审核中";
+                            }
+                            else {
+                                return "审批完成";
+                            }
+                        }
+                    }
                 ],
                 "serverSide": true,
                 "processing": true,
                 //"order": [1, "asc"],
-                "aaSorting": [[1, "desc"]],
+                "aaSorting": [[0, "desc"]],
                 "bSort": true,
-                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0] }],
                 "language": {
                     "emptyTable": "没有记录",
                     "processing": "处理中... 请等待!",
@@ -106,10 +126,8 @@
                 <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>序号</th>
                             <th>日期</th>
-                            <th>项目代码</th>
-                            <th>项目组</th>
+                            <th>项目名称</th>
                             <th>工时</th>
                             <th>工作内容</th>
                             <th>备注</th>

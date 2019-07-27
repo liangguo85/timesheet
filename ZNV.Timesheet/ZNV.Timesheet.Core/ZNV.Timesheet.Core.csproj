@@ -218,6 +218,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timesheet\ITimesheetRepository.cs" />
     <Compile Include="Timesheet\Timesheet.cs" />
+    <Compile Include="Timesheet\TimesheetForPending.cs" />
     <Compile Include="Timesheet\TimesheetForWeek.cs" />
   </ItemGroup>
   <ItemGroup>

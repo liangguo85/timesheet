@@ -16,6 +16,7 @@ namespace ZNV.Timesheet.Web.Controllers
             _appService = appService;
             _projectService = projectService;
         }
+
         // GET: Timesheet
         public ActionResult Index()
         {
@@ -30,16 +31,21 @@ namespace ZNV.Timesheet.Web.Controllers
             var list = _appService.GetAllTimesheetsByUser(user, startDate, endDate);
             int totalRow = list.Count;
             list = list.Skip(start).Take(length).ToList();
+            List<Project.Project> projects = _projectService.GetAllProjectList();
+            list.ForEach(item =>
+            {
+                item.ProjectName = Common.CommonHelper.GetProjectNameByProjectID(projects, item.ProjectID.Value);
+            });
             return Json(new { data = list, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
-        
+
         [HttpGet]
         public ActionResult AddOrEdit(int id = 0)
         {
             SetProjectListToViewData();
             if (id == 0)
             {
-                return View(new Timesheet.Timesheet() { Status = "Draft" });
+                return View(new Timesheet.Timesheet() { Status = ApproveStatus.Draft });
             }
             else
             {
@@ -128,7 +134,7 @@ namespace ZNV.Timesheet.Web.Controllers
                     {
                         Id = 0,
                         TimesheetDate = startDate,
-                        Status = "Draft",
+                        Status = ApproveStatus.Draft,
                     });
                 }
                 startDate = startDate.AddDays(1);
@@ -142,26 +148,86 @@ namespace ZNV.Timesheet.Web.Controllers
         }
 
         /// <summary>
-        /// 添加或更新周工时数据
+        /// 保存草稿
         /// </summary>
         /// <param name="tsfw">周工时数据</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult AddOrEditForWeek(Timesheet.TimesheetForWeek tsfw)
+        public ActionResult SaveDraftForWeek(Timesheet.TimesheetForWeek tsfw)
         {
             if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
             {
                 foreach (var ts in tsfw.TimesheetList)
                 {
+                    ts.Status = ApproveStatus.Draft;
                     AddOrEdit(ts);
                 }
-                return Json(new { success = true, message = "添加或更新周工时数据成功!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, message = "保存周工时草稿数据成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                return Json(new { success = false, message = "需要添加或更新周工时数据为空!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "需要保存的周工时草稿数据为空!" }, JsonRequestBehavior.AllowGet);
             }
         }
-        
+
+        /// <summary>
+        /// 提交
+        /// </summary>
+        /// <param name="tsfw">周工时数据</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SubmitFormForWeek(Timesheet.TimesheetForWeek tsfw)
+        {
+            if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
+            {
+                var newWorkflowInstanceID = Guid.NewGuid().ToString();
+                foreach (var ts in tsfw.TimesheetList)
+                {
+                    ts.WorkflowInstanceID = newWorkflowInstanceID;
+                    ts.Status = ApproveStatus.Approving;
+                    AddOrEdit(ts);
+                }
+                return Json(new { success = true, message = "提交周工时数据成功!" }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false, message = "需要提交周工时数据为空!" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        /// <summary>
+        /// 提交或撤回工时
+        /// </summary>
+        /// <param name="id">需要提交或撤回的工时id列表</param>
+        /// <param name="actionType">submit是提交，rollback是撤回</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult CommAction(string tsIdList, string actionType)
+        {
+            if (string.IsNullOrEmpty(actionType))
+            {
+                return Json(new { success = true, message = "操作类型未定义!" }, JsonRequestBehavior.AllowGet);
+            }
+            actionType = actionType.ToLower().Trim();
+            if (!(actionType == "submit" || actionType == "rollback"))
+            {
+                return Json(new { success = true, message = "操作类型异常!" }, JsonRequestBehavior.AllowGet);
+            }
+            if (!string.IsNullOrEmpty(tsIdList))
+            {
+                var idList = tsIdList.Split(',');
+                foreach (var id in idList)
+                {
+                    var ts = _appService.GetTimesheetsByID(int.Parse(id));
+                    ts.Status = actionType == "submit" ? ApproveStatus.Approving : ApproveStatus.Draft;
+                    AddOrEdit(ts);
+                }
+                return Json(new { success = true, message = (actionType == "submit" ? "提交" : "撤回") + "工时数据成功!" }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false, message = "需要" + (actionType == "submit" ? "提交" : "撤回") + "的工时数据为空!" }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

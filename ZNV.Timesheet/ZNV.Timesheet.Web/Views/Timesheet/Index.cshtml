@@ -40,14 +40,6 @@
                 },
                 "columns": [
                     {
-                        "data": "Id",
-                        "orderable": false,
-                        "searchable": false,
-                        "render": function (data, type, full, meta) {
-                            return meta.row + 1 + meta.settings._iDisplayStart;
-                        }
-                    },
-                    {
                         "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
                             if (d)
                                 return moment(d).format("YYYY-MM-DD");
@@ -55,12 +47,41 @@
                                 return "";
                         }
                     },
-                    { "data": "ProjectID" },
-                    { "data": "ProjectGroup" },
+                    { "data": "ProjectName" },
                     { "data": "Workload" },
-                    { "data": "WorkContent" },
-                    { "data": "Remarks" },
-                    { "data": "Status" },
+                    {
+                        "data": "WorkContent", "name": "WorkContent", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
+                    {
+                        "data": "Remarks", "name": "Remarks", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
+                    {
+                        "data": "Status",
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "80px",
+                        "render": function (data, type, full, meta) {
+                            if (data == "" || data == null || data == ApproveStatus.Draft) {
+                                return "草稿";
+                            }
+                            else if (data == ApproveStatus.Approving) {
+                                return "审核中";
+                            }
+                            else {
+                                return "审批完成";
+                            }
+                        }
+                    },
                     {
                         "data": "Status",
                         "orderable": false,
@@ -68,9 +89,15 @@
                         "width": "125px",
                         "render": function (data, type, full, meta) {
                             console.log(data+","+type+","+full+","+meta);
-                            if (data=="" || data == null || data == 'Draft') {
-                                return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Timesheet")/" + full.Id + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + full.Id + ")><i class='fa fa-trash'></i>删除</a >";
-                            }  else {
+                            if (data == "" || data == null || data == ApproveStatus.Draft) {
+                                //return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Timesheet")/" + full.Id + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + full.Id + ")><i class='fa fa-trash'></i>删除</a >";
+                                //return "<a class='btn btn-info btn-sm' onclick=singleSubmit(" + full.Id + ")><i class='fa fa-arrow-circle-o-up'></i>提交</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + full.Id + ")><i class='fa fa-trash'></i>删除</a >";
+                                return "<a class='btn btn-danger btn-sm' onclick=Delete(" + full.Id + ")><i class='fa fa-trash'></i>删除</a >";
+                           }
+                            else if (data == ApproveStatus.Approving) {
+                                return "<a class='btn btn-danger btn-sm' onclick=singleRollBack(" + full.Id + ")><i class='fa fa-trash'></i>撤回</a >";
+                            }
+                            else {
                                 return "";
                             }
                         }
@@ -79,7 +106,7 @@
                 "serverSide": true,
                 "processing": true,
                 //"order": [1, "asc"],
-                "aaSorting": [[1, "desc"]],
+                //"aaSorting": [[0, "desc"]],
                 "bSort": true,
                 "language": {
                     "emptyTable": "没有记录, 请点击 <b>新增</b> 按钮添加记录!",
@@ -108,7 +135,7 @@
             InitWeekList();
         })
 
-        //初始化周列表，只需初始化当前周以及前后8周
+        //初始化周列表，只需初始化当前周以及前1周
         function InitWeekList() {
             var selectWeek = $("#selectWeek");
             var dateNow = new Date();
@@ -116,7 +143,7 @@
             if (dayOfWeek === 0)
                 dayOfWeek = 7;
             var optionNow = "";
-            for (var i = -8; i <= 8; i++) {
+            for (var i = -1; i <= 0; i++) {
                 var firstDayOfWeek = new Date();
                 var lastDayOfWeek = new Date();
                 firstDayOfWeek.setDate(dateNow.getDate() + i * 7 - dayOfWeek + 1);
@@ -249,12 +276,85 @@
         function SubmitFormForWeek(form) {
             //按周操作的是多个工时对象，需要把form表单进行转换
             debugger;
+            var weekData = GetTimeSheetFromForm(form);
+            //检验，同一个日期的工时不能超过8
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SubmitFormForWeek", "Timesheet")',
+                data: weekData,//JSON.stringify(weekData),
+                success: function (data) {
+                    if (data.success) {
+                        Popup.dialog('close');
+                        dataTable.ajax.reload();
+
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+                    }
+                    else {
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "error"
+                        })
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $.notify(error, {
+                        globalPosition: "top center",
+                        className: "error"
+                    })
+                }
+            });
+            //}
+            return false;
+        }
+
+        function SaveDraftForWeek(form) {
+            //按周操作的是多个工时对象，需要把form表单进行转换
+            debugger;
+            var weekData = GetTimeSheetFromForm(form);
+            //检验，同一个日期的工时不能超过8
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SaveDraftForWeek", "Timesheet")',
+                data: weekData,//JSON.stringify(weekData),
+                success: function (data) {
+                    if (data.success) {
+                        Popup.dialog('close');
+                        dataTable.ajax.reload();
+
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+                    }
+                    else {
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "error"
+                        })
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $.notify(error, {
+                        globalPosition: "top center",
+                        className: "error"
+                    })
+                }
+            });
+            //}
+            return false;
+        }
+
+        //获取周工时的数据，不管是保存草稿还是提交，都只针对状态是ApproveStatus.Draft的
+        function GetTimeSheetFromForm(form) {
             var weekData = {
                 startDate: $("#startDate").val(),
                 endDate: $("#endDate").val(),
                 TimesheetList: []
             };
-            var trList = $(form).find("tr");
+            var trList = $(form.form).find("tr");
             //这里取的是form，所以需要从1开始，第一行是标题
             for (var i = 1; i < trList.length; i++) {
                 var ts = {};
@@ -292,50 +392,22 @@
                 }
                 var tsApprover = $(trList[i]).find("input[name='Approver']");
                 if (tsApprover.length > 0) {
-                    ts.Approver =  $(tsApprover).val();
+                    ts.Approver = $(tsApprover).val();
                 }
                 var tsApprovedTime = $(trList[i]).find("input[name='ApprovedTime']");
                 if (tsApprovedTime.length > 0) {
-                    ts.ApprovedTime =  $(tsApprovedTime).val();
+                    ts.ApprovedTime = $(tsApprovedTime).val();
                 }
                 var tsWorkflowInstanceID = $(trList[i]).find("input[name='WorkflowInstanceID']");
                 if (tsWorkflowInstanceID.length > 0) {
-                    ts.WorkflowInstanceID =  $(tsWorkflowInstanceID).val();
+                    ts.WorkflowInstanceID = $(tsWorkflowInstanceID).val();
                 }
-                weekData.TimesheetList.push(ts);
+                //都只针对状态是ApproveStatus.Draft的
+                if (ts.Status == ApproveStatus.Draft) {
+                    weekData.TimesheetList.push(ts);
+                }
             }
-            //检验，同一个日期的工时不能超过8
-            
-            $.ajax({
-                type: "POST",
-                url: form.action,
-                data: weekData,//JSON.stringify(weekData),
-                success: function (data) {
-                    if (data.success) {
-                        Popup.dialog('close');
-                        dataTable.ajax.reload();
-
-                        $.notify(data.message, {
-                            globalPosition: "top center",
-                            className: "success"
-                        })
-                    }
-                    else {
-                        $.notify(data.message, {
-                            globalPosition: "top center",
-                            className: "error"
-                        })
-                    }
-                },
-                error: function (xhr, status, error) {
-                    $.notify(error, {
-                        globalPosition: "top center",
-                        className: "error"
-                    })
-                }
-            });
-            //}
-            return false;
+            return weekData;
         }
 
         function CreateNewTimesheet(bt) {
@@ -381,7 +453,7 @@
             }
             var tsStatus = $(trList).find("input[name='Status']");
             if (tsStatus.length > 0) {//新增的需要把Status赋值为Draft
-                $(tsStatus).val("Draft");
+                $(tsStatus).val(ApproveStatus.Draft);
             }
             var tsApprover = $(trList).find("input[name='Approver']");
             if (tsApprover.length > 0) {//新增的需要把Approver清空
@@ -408,6 +480,50 @@
                 });
             }
         }
+        
+        function singleSubmit(id) {
+            //询问是否提交
+            if (confirm("确认将该工时进行提交吗?")) {
+                commAction(id,'submit');
+            }
+        }
+
+        function singleRollBack(id) {
+            //询问是否撤回
+            if (confirm("确认将该工时进行撤回吗?")) {
+                commAction(id,'rollback');
+            }
+        }
+
+        //公用的Action方法，参数是对应的工时id列表，多个则用英文逗号隔开
+        //actionType:submit是提交，rollback是撤回
+        function commAction(tsIdList, actionType) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CommAction", "Timesheet")',
+                data: {
+                    tsIdList: tsIdList,
+                    actionType: actionType,
+                },
+                success: function (data) {
+                    if (data.success) {
+                        dataTable.ajax.reload();
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "success"
+                        })
+                    }
+                    else {
+                        $.notify(data.message, {
+                            globalPosition: "top center",
+                            className: "error"
+                        })
+                    }
+                }
+            })
+        }
+
+
     </script>
 }
 <div class="row">
@@ -416,7 +532,9 @@
         <div class="box">
             <div class="box box-header">
                 <div class="btn-group-toggle">
-                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Timesheet")','create')">按天新增 <i class="fa fa-plus"></i></button>
+                    <!--
+        <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","Timesheet")','create')">按天新增 <i class="fa fa-plus"></i></button>
+    -->
                     <select id="selectWeek"></select>
                     <button type="button" class="btn btn-info" onclick="PopupFormForWeek('@Url.Action("AddOrEditForWeek","Timesheet")')">按周新增或编辑 <i class="fa fa-plus"></i></button>
                 </div>
@@ -426,10 +544,8 @@
                 <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>序号</th>
                             <th>日期</th>
-                            <th>项目代码</th>
-                            <th>项目组</th>
+                            <th>项目名称</th>
                             <th>工时</th>
                             <th>工作内容</th>
                             <th>备注</th>

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ZNV.Timesheet.Employee;
 using System.Linq.Dynamic;
 
 namespace ZNV.Timesheet.PermissionModule

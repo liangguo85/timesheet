@@ -7749,6 +7749,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\CommonHelper.cs" />
     <Compile Include="Controllers\AboutController.cs" />
+    <Compile Include="Controllers\EmailTemplateController.cs" />
     <Compile Include="Controllers\HolidayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PermissionModuleController.cs" />
@@ -7812,6 +7813,8 @@
     <Content Include="Views\PermissionModule\Index.cshtml" />
     <Content Include="Views\PermissionModule\AddOrEdit.cshtml" />
     <Content Include="Views\RoleManagement\Permission.cshtml" />
+    <Content Include="Views\EmailTemplate\Index.cshtml" />
+    <Content Include="Views\EmailTemplate\AddOrEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

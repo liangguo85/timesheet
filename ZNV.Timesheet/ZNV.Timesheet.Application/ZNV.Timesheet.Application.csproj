@@ -211,6 +211,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmailTemplate\EmailTemplateAppService.cs" />
+    <Compile Include="EmailTemplate\IEmailTemplateAppService.cs" />
     <Compile Include="Employee\EmployeeAppService.cs" />
     <Compile Include="Employee\IEmployeeAppService.cs" />
     <Compile Include="Holiday\HolidayAppService.cs" />

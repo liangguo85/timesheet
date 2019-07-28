@@ -1,28 +1,28 @@
 ﻿USE [ZNVTimesheet]
 GO
-/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[EmailTemplate]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-SET ANSI_PADDING ON
-GO
-CREATE TABLE [dbo].[__MigrationHistory](
-	[MigrationId] [nvarchar](150) NOT NULL,
-	[ContextKey] [nvarchar](300) NOT NULL,
-	[Model] [varbinary](max) NOT NULL,
-	[ProductVersion] [nvarchar](32) NOT NULL,
- CONSTRAINT [PK_dbo.__MigrationHistory] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[EmailTemplate](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[EmailTemplateCode] [nvarchar](50) NOT NULL,
+	[EmailTemplateName] [nvarchar](50) NOT NULL,
+	[EmailTemplateBody] [nvarchar](max) NOT NULL,
+	[Creator] [nvarchar](20) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](20) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_EmailTemplate] PRIMARY KEY CLUSTERED 
 (
-	[MigrationId] ASC,
-	[ContextKey] ASC
+	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-SET ANSI_PADDING OFF
-GO
-/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -43,25 +43,7 @@ CREATE TABLE [dbo].[Holiday](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[HREmployee]    Script Date: 2019/7/21 23:40:07 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[HREmployee](
-	[UserID] [nvarchar](128) NOT NULL,
-	[EmployeeCode] [nvarchar](max) NULL,
-	[EmployeeName] [nvarchar](max) NULL,
-	[EntryDate] [datetime] NULL,
-	[ExitDate] [datetime] NULL,
- CONSTRAINT [PK_dbo.HREmployee] PRIMARY KEY CLUSTERED 
-(
-	[UserID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
-GO
-/****** Object:  Table [dbo].[PermissionModule]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[PermissionModule]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -84,7 +66,7 @@ CREATE TABLE [dbo].[PermissionModule](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[Project]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -116,7 +98,7 @@ CREATE TABLE [dbo].[Project](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Role]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[Role]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -136,7 +118,7 @@ CREATE TABLE [dbo].[Role](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[RoleModule]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[RoleModule]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -157,7 +139,7 @@ CREATE TABLE [dbo].[RoleModule](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Team]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[Team]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -179,7 +161,7 @@ CREATE TABLE [dbo].[Team](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -209,7 +191,7 @@ CREATE TABLE [dbo].[Timesheet](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserRole]    Script Date: 2019/7/21 23:40:07 ******/
+/****** Object:  Table [dbo].[UserRole]    Script Date: 2019/7/28 12:18:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

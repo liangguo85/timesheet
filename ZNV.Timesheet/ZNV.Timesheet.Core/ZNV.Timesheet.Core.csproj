@@ -207,9 +207,11 @@
     <Compile Include="PermissionModule\PermissionModule.cs" />
     <Compile Include="Project\IProjectRepository.cs" />
     <Compile Include="Project\Project.cs" />
+    <Compile Include="RoleManagement\IRoleModuleRepository.cs" />
     <Compile Include="RoleManagement\IRoleRepository.cs" />
     <Compile Include="RoleManagement\IUserRoleRepository.cs" />
     <Compile Include="RoleManagement\Role.cs" />
+    <Compile Include="RoleManagement\RoleModule.cs" />
     <Compile Include="RoleManagement\UserRole.cs" />
     <Compile Include="Team\ITeamRepository.cs" />
     <Compile Include="Team\Team.cs" />

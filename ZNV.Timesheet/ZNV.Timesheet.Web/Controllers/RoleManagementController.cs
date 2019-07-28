@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using ZNV.Timesheet.RoleManagement;
 using System.Linq.Dynamic;
 using ZNV.Timesheet.Employee;
+using ZNV.Timesheet.Web.Models;
+using ZNV.Timesheet.PermissionModule;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
@@ -13,10 +15,12 @@ namespace ZNV.Timesheet.Web.Controllers
     {
         private readonly IRoleManagementAppService _roleManagementAppService;
         private readonly IEmployeeAppService _employeeAppService;
-        public RoleManagementController(IRoleManagementAppService roleManagementAppService, IEmployeeAppService employeeAppService)
+        private readonly IPermissionModuleAppService _permissionModuleAppService;
+        public RoleManagementController(IRoleManagementAppService roleManagementAppService, IEmployeeAppService employeeAppService, IPermissionModuleAppService permissionModuleAppService)
         {
             _roleManagementAppService = roleManagementAppService;
             _employeeAppService = employeeAppService;
+            _permissionModuleAppService = permissionModuleAppService;
         }
         // GET: RoleManagement
         public ActionResult Index()
@@ -71,6 +75,27 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             _roleManagementAppService.DeleteRole(id);
             return Json(new { success = true, message = "删除角色信息成功!" }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult Permission(int id)
+        {
+            var roleModules = _roleManagementAppService.GetRoleModules(id);
+            RolePermissionModel model = new RolePermissionModel {
+                RoleId = id,
+                RoleName = _roleManagementAppService.GetRole(id).RoleName,
+                PermissionModules = roleModules,
+                AllPermissionModules = _permissionModuleAppService.GetPermissionModuleList()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Permission(RolePermissionModel model)
+        {
+            string creator = "0001";
+            _roleManagementAppService.AddRoleModules(model.RoleId, model.PermissionModuleIds ?? new List<int> { }, creator);
+            return Json(new { success = true, message = "角色授权成功!" }, JsonRequestBehavior.AllowGet);
         }
     }
 }

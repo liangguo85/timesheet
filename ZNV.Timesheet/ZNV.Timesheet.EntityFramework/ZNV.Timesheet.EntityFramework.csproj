@@ -213,12 +213,14 @@
   <ItemGroup>
     <Compile Include="EntityFramework\MAPSysDbContext.cs" />
     <Compile Include="EntityFramework\Repositories\ApproveLogRepository.cs" />
+    <Compile Include="EntityFramework\Repositories\EmailTemplateRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HRDepartmentRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HREmployeeRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HolidayRepository.cs" />
     <Compile Include="EntityFramework\Repositories\MAPSysDbRepositoryBase.cs" />
     <Compile Include="EntityFramework\Repositories\PermissionModuleRepository.cs" />
     <Compile Include="EntityFramework\Repositories\ProjectRepository.cs" />
+    <Compile Include="EntityFramework\Repositories\RoleModuleRepository.cs" />
     <Compile Include="EntityFramework\Repositories\RoleRepository.cs" />
     <Compile Include="EntityFramework\Repositories\TeamRepository.cs" />
     <Compile Include="EntityFramework\Repositories\TimesheetRepository.cs" />

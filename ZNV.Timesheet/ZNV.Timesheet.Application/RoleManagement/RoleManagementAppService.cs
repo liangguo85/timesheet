@@ -2,6 +2,7 @@
 using System.Linq;
 using ZNV.Timesheet.Employee;
 using System.Linq.Dynamic;
+using ZNV.Timesheet.PermissionModule;
 
 namespace ZNV.Timesheet.RoleManagement
 {
@@ -10,12 +11,17 @@ namespace ZNV.Timesheet.RoleManagement
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IHREmployeeRepository _employeeRepository;
+        private readonly IRoleModuleRepository _roleModuleRepository;
+        private readonly IPermissionModuleRepository _permissionModuleRepository;
 
-        public RoleManagementAppService(IRoleRepository roleRepository, IUserRoleRepository userRoleRepository, IHREmployeeRepository employeeRepository)
+        public RoleManagementAppService(IRoleRepository roleRepository, IUserRoleRepository userRoleRepository, 
+            IHREmployeeRepository employeeRepository, IRoleModuleRepository roleModuleRepository, IPermissionModuleRepository permissionModuleRepository)
         {
             _roleRepository = roleRepository;
             _userRoleRepository = userRoleRepository;
             _employeeRepository = employeeRepository;
+            _roleModuleRepository = roleModuleRepository;
+            _permissionModuleRepository = permissionModuleRepository;
         }
         public List<Role> GetRoleList(int start, int length, string sortColumnName, string sortDirection, out int totalCount)
         {
@@ -126,6 +132,30 @@ namespace ZNV.Timesheet.RoleManagement
         {
             _roleRepository.Delete(id);
             _userRoleRepository.Delete(userRole => userRole.RoleId == id);
+        }
+
+        public List<PermissionModule.PermissionModule> GetRoleModules(int roleId)
+        {
+            var modules = (from roleModule in _roleModuleRepository.GetAll()
+                           join module in _permissionModuleRepository.GetAll() on roleModule.ModuleId equals module.Id
+                           where roleModule.RoleId == roleId
+                           select module).Distinct().ToList();
+            return modules;
+        }
+
+        public void AddRoleModules(int roleId, List<int> moduleIds, string creator)
+        {
+            _roleModuleRepository.Delete(roleModule => roleModule.RoleId == roleId);
+            moduleIds.ForEach(moduleId =>
+            {
+                RoleModule roleModule = new RoleModule
+                {
+                    RoleId = roleId,
+                    ModuleId = moduleId,
+                    Creator = creator
+                };
+                _roleModuleRepository.Insert(roleModule);
+            });
         }
     }
 }

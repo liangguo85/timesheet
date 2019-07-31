@@ -10,6 +10,6 @@ namespace ZNV.Timesheet.PermissionModule
         PermissionModule GetPermissionModule(int id);
         int AddPermissionModule(PermissionModule permissionModule);
         PermissionModule UpdatePermissionModule(PermissionModule permissionModule);
-        void DeleteRole(int id);
+        void DeleteModule(int id);
     }
 }

@@ -10,5 +10,7 @@ namespace ZNV.Timesheet.RoleManagement
         int AddRole(Role role);
         Role UpdateRole(Role role);
         void DeleteRole(int id);
+        List<PermissionModule.PermissionModule> GetRoleModules(int roleId);
+        void AddRoleModules(int roleId, List<int> moduleIds, string creator);
     }
 }

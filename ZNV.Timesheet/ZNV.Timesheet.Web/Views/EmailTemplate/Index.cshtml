@@ -1,13 +1,10 @@
 ﻿@using Abp.Web.Mvc.Extensions
 @{
-    ViewBag.Title = "角色管理";
+    ViewBag.Title = "邮件模板管理";
 }
 @section styles {
     <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
-    <!-- Select2 -->
-    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/css/select2.min.css">
-    <link href="~/Content/hummingbird_treeview.css" rel="stylesheet" />
 }
 @section scripts
 {
@@ -16,43 +13,30 @@
     <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/notify.min.js"></script>
-    <!-- Select2 -->
-    <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
-    <script src="~/Scripts/hummingbird_treeview.js"></script>
+
     <script>
         var Popup, dataTable
 
         $(document).ready(function () {
-            dataTable = $("#roleTable").DataTable({
+            dataTable = $("#emailTemplateTable").DataTable({
                 "ajax": {
-                    "url": "/RoleManagement/GetList",
+                    "url": "/EmailTemplate/GetList",
                     "type": "POST",
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "RoleName", "name": "RoleName" },
-                    {
-                        "data": "Users", "render": function (data) {
-                            var roleUsers = ""
-                            if (data != null) {
-                                data.forEach(function (user) {
-                                    roleUsers += user.EmployeeName + "(" + user.EmployeeCode + ");"
-                                })
-                            }
-                            return roleUsers;
-                        },
-                        "orderable": false,
-                        "searchable": false
-                    },
+                    { "data": "EmailTemplateCode", "name": "EmailTemplateCode" },
+                    { "data": "EmailTemplateName", "name": "EmailTemplateName" },
+                    { "data": "EmailTemplateBody", "name": "EmailTemplateBody" },
                     {
                         "data": "Id", "render": function (data) {
-                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "RoleManagement")/"+ data+"','编辑角色信息')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("Permission", "RoleManagement")/"+ data+"','角色权限管理')><i class='fa fa-pencil'></i>权限管理</a>"
+                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "EmailTemplate")/" + data + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a >"
                         },
                         "orderable": false,
                         "searchable": false,
-                        "width": "250px"
+                        "width": "150px"
                     }
                 ],
                 "serverSide": true,
@@ -81,14 +65,8 @@
             });
         })
 
-        function PopupForm(url, title) {
+        function PopupForm(url) {
             var formDiv = $('<div/>');
-            var height = 400;
-            var width = 800;
-            if (title == "角色权限管理") {
-                height = 600;
-                width = 800;
-            }
             $.get(url)
                 .done(function (response) {
                     formDiv.html(response);
@@ -97,9 +75,9 @@
                         autoOpen: true,
                         resizable: false,
                         modal: true,
-                        title: title,
-                        height: height,
-                        width: width,
+                        title: "新增邮件模板",
+                        height: 600,
+                        width: 800,
                         close: function () {
                             Popup.dialog('destroy').remove();
                         }
@@ -108,7 +86,6 @@
         }
 
         function SubmitForm(form) {
-            console.info($(form).serialize())
             $.validator.unobtrusive.parse(form);
             if ($(form).valid()) {
                 $.ajax({
@@ -135,7 +112,7 @@
             if (confirm("确认删除吗?")) {
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("Delete", "RoleManagement")/' + id,
+                    url: '@Url.Action("Delete", "EmailTemplate")/' + id,
                     success: function (data) {
                         if (data.success) {
                             dataTable.ajax.reload();
@@ -157,16 +134,17 @@
         <div class="box">
             <div class="box box-header">
                 <div class="btn-group-toggle">
-                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","RoleManagement")', '编辑角色信息')">新增 <i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","EmailTemplate")')">新增 <i class="fa fa-plus"></i></button>
                 </div>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-                <table id="roleTable" class="table table-bordered table-striped table-hover">
+                <table id="emailTemplateTable" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>角色名称</th>
-                            <th>角色成员</th>
+                            <th>邮件模板编码</th>
+                            <th>邮件模板名称</th>
+                            <th>邮件模板</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -178,6 +156,4 @@
     </div>
     <!-- /.col -->
 </div>
-
-
 

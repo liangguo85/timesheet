@@ -19,6 +19,8 @@ namespace ZNV.Timesheet.PermissionModule
 
         [NotMapped]
         public virtual string ParentModuleName { get; set; }
+        [NotMapped]
+        public virtual string ParentModuleCode { get; set; }
 
         public virtual int Level { get; set; }
 

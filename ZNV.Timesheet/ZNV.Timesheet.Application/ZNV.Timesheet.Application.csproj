@@ -211,6 +211,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApproveLog\IApproveLogAppService.cs" />
+    <Compile Include="ApproveLog\ApproveLogAppService.cs" />
     <Compile Include="Employee\EmployeeAppService.cs" />
     <Compile Include="Employee\IEmployeeAppService.cs" />
     <Compile Include="Holiday\HolidayAppService.cs" />

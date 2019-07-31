@@ -7740,6 +7740,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\TimeSheetAuthorizationFilter.cs" />
     <Compile Include="App_Start\TimesheetNavigationProvider.cs" />
     <Compile Include="App_Start\TimesheetWebModule.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -7751,6 +7752,7 @@
     <Compile Include="Controllers\ProjectManagementController.cs" />
     <Compile Include="Controllers\RoleManagementController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
+    <Compile Include="Controllers\ApproveLogController.cs" />
     <Compile Include="Controllers\TimesheetApprovedController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
     <Compile Include="Controllers\TimesheetPendingController.cs" />
@@ -7806,6 +7808,8 @@
     <Content Include="Views\RoleManagement\AddOrEdit.cshtml" />
     <Content Include="Views\PermissionModule\Index.cshtml" />
     <Content Include="Views\PermissionModule\AddOrEdit.cshtml" />
+    <Content Include="Views\Timesheet\ApproveComment.cshtml" />
+    <Content Include="Views\TimesheetPending\SelectTransferUser.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

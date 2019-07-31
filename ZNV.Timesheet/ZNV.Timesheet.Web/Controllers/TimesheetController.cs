@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ZNV.Timesheet.ApproveLog;
+using ZNV.Timesheet.Project;
 using ZNV.Timesheet.Timesheet;
 
 namespace ZNV.Timesheet.Web.Controllers
@@ -10,11 +12,19 @@ namespace ZNV.Timesheet.Web.Controllers
     public class TimesheetController : Controller
     {
         private readonly ITimesheetAppService _appService;
-        private readonly Project.IProjectAppService _projectService;
-        public TimesheetController(ITimesheetAppService appService, Project.IProjectAppService projectService)
+        private readonly IProjectAppService _projectService;
+        private readonly IApproveLogAppService _alService;
+        private readonly Holiday.IHolidayAppService _holidayService;
+
+        public TimesheetController(ITimesheetAppService appService, 
+            IProjectAppService projectService, 
+            IApproveLogAppService alService,
+            Holiday.IHolidayAppService holidayService)
         {
             _appService = appService;
             _projectService = projectService;
+            _alService = alService;
+            _holidayService = holidayService;
         }
 
         // GET: Timesheet
@@ -23,9 +33,21 @@ namespace ZNV.Timesheet.Web.Controllers
             return View();
         }
 
-        [HttpPost]
-        public JsonResult GetAllTimesheets(string user, DateTime? startDate, DateTime? endDate)
+        /// <summary>
+        /// 获取当前工时的下一个操作人
+        /// </summary>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        private string GetNextOperator(Timesheet.Timesheet ts)
         {
+            //为了测试方便，先默认成当前登陆者
+            return Common.CommonHelper.CurrentUser;
+        }
+
+        [HttpPost]
+        public JsonResult GetAllTimesheets(DateTime? startDate, DateTime? endDate)
+        {
+            string user = Common.CommonHelper.CurrentUser;
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
             var list = _appService.GetAllTimesheetsByUser(user, startDate, endDate);
@@ -75,11 +97,11 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             if (string.IsNullOrEmpty(ts.TimesheetUser))
             {
-                ts.TimesheetUser = "kojar.liu";
+                ts.TimesheetUser = Common.CommonHelper.CurrentUser;
             }
             if (ts.Id == 0)
             {
-                ts.Creator = "kojar.liu";
+                ts.Creator = Common.CommonHelper.CurrentUser;
                 _appService.CreateTimesheet(ts);
                 return Json(new { success = true, message = "新增工时成功!" }, JsonRequestBehavior.AllowGet);
             }
@@ -121,10 +143,16 @@ namespace ZNV.Timesheet.Web.Controllers
                 startDate = DateTime.Parse(id.Split('到')[0]);
                 endDate = DateTime.Parse(id.Split('到')[1]);
             }
+            //判断endDate是否为调休成上班，如果是则周日也允许填写工时
+            var isSundayWork = _holidayService.GetHolidayByDate(endDate);
+            if (isSundayWork == null || isSundayWork.HolidayType != "周末转上班")
+            {
+                endDate = endDate.AddDays(-1);
+            }
             Timesheet.TimesheetForWeek tfw = new TimesheetForWeek();
             tfw.startDate = startDate.ToString("yyyy-MM-dd");
             tfw.endDate = endDate.ToString("yyyy-MM-dd");
-            var tss = _appService.GetAllTimesheetsByUser("kojar.liu", startDate, endDate);
+            var tss = _appService.GetAllTimesheetsByUser(Common.CommonHelper.CurrentUser, startDate, endDate);
 
             while (startDate <= endDate)
             {
@@ -176,16 +204,30 @@ namespace ZNV.Timesheet.Web.Controllers
         /// <param name="tsfw">周工时数据</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult SubmitFormForWeek(Timesheet.TimesheetForWeek tsfw)
+        public ActionResult SubmitFormForWeek(Timesheet.TimesheetForWeek tsfw, string comment)
         {
             if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
             {
+                var operateTime = DateTime.Now;
                 var newWorkflowInstanceID = Guid.NewGuid().ToString();
                 foreach (var ts in tsfw.TimesheetList)
                 {
-                    ts.WorkflowInstanceID = newWorkflowInstanceID;
+                    if (string.IsNullOrEmpty(ts.WorkflowInstanceID))
+                    {
+                        ts.WorkflowInstanceID = newWorkflowInstanceID;
+                    }
                     ts.Status = ApproveStatus.Approving;
                     AddOrEdit(ts);
+                    _alService.AddApproveLog(new ApproveLog.ApproveLog()
+                    {
+                        WorkflowInstanceID = ts.WorkflowInstanceID,
+                        OperateTime = operateTime,
+                        Comment = comment,
+                        OperateType = "提交",
+                        CurrentOperator = Common.CommonHelper.CurrentUser,
+                        NextOperator = GetNextOperator(ts),
+                        Creator = Common.CommonHelper.CurrentUser
+                    });
                 }
                 return Json(new { success = true, message = "提交周工时数据成功!" }, JsonRequestBehavior.AllowGet);
             }
@@ -196,38 +238,53 @@ namespace ZNV.Timesheet.Web.Controllers
         }
 
         /// <summary>
-        /// 提交或撤回工时
+        /// 撤回工时
         /// </summary>
-        /// <param name="id">需要提交或撤回的工时id列表</param>
-        /// <param name="actionType">submit是提交，rollback是撤回</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult CommAction(string tsIdList, string actionType)
+        public ActionResult CommRollBack(Timesheet.TimesheetForWeek tsfw, string comment)
         {
-            if (string.IsNullOrEmpty(actionType))
+            if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
             {
-                return Json(new { success = true, message = "操作类型未定义!" }, JsonRequestBehavior.AllowGet);
-            }
-            actionType = actionType.ToLower().Trim();
-            if (!(actionType == "submit" || actionType == "rollback"))
-            {
-                return Json(new { success = true, message = "操作类型异常!" }, JsonRequestBehavior.AllowGet);
-            }
-            if (!string.IsNullOrEmpty(tsIdList))
-            {
-                var idList = tsIdList.Split(',');
-                foreach (var id in idList)
+                var operateTime = DateTime.Now;
+                foreach (var ts in tsfw.TimesheetList)
                 {
-                    var ts = _appService.GetTimesheetsByID(int.Parse(id));
-                    ts.Status = actionType == "submit" ? ApproveStatus.Approving : ApproveStatus.Draft;
+                    ts.Status = ApproveStatus.Draft;
                     AddOrEdit(ts);
+                    _alService.AddApproveLog(new ApproveLog.ApproveLog()
+                    {
+                        WorkflowInstanceID = ts.WorkflowInstanceID,
+                        OperateTime = operateTime,
+                        Comment = comment,
+                        OperateType = "撤回",
+                        CurrentOperator = Common.CommonHelper.CurrentUser,
+                        NextOperator = "",
+                        Creator = Common.CommonHelper.CurrentUser
+                    });
                 }
-                return Json(new { success = true, message = (actionType == "submit" ? "提交" : "撤回") + "工时数据成功!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, message = "撤回周工时数据成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                return Json(new { success = false, message = "需要" + (actionType == "submit" ? "提交" : "撤回") + "的工时数据为空!" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "需要撤回周工时数据为空!" }, JsonRequestBehavior.AllowGet);
             }
+        }
+
+
+        [HttpGet]
+        public ActionResult GetProjectList(string searchTerm, int pageSize, int pageNum)
+        {
+            var itemList = _projectService.GetAllProjectList().Where(x => string.IsNullOrEmpty(searchTerm) || x.ProjectName.Contains(searchTerm) || x.ProjectCode.Contains(searchTerm)).ToList();
+            var result = new
+            {
+                Total = itemList.Count(),
+                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
+            };
+            return new JsonResult
+            {
+                Data = result,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
         }
     }
 }

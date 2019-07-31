@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityFramework\MAPSysDbContext.cs" />
+    <Compile Include="EntityFramework\Repositories\ApproveLogRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HRDepartmentRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HREmployeeRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HolidayRepository.cs" />

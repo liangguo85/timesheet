@@ -25,6 +25,8 @@ namespace ZNV.Timesheet.EntityFramework
 
         public virtual IDbSet<ZNV.Timesheet.PermissionModule.PermissionModule> PermissionModules { get; set; }
 
+        public virtual IDbSet<ZNV.Timesheet.ApproveLog.ApproveLog> ApproveLogs { get; set; }
+
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.
          *   But it may cause problems when working Migrate.exe of EF. If you will apply migrations on command line, do not

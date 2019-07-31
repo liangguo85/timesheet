@@ -197,6 +197,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApproveLog\ApproveLogForComment.cs" />
+    <Compile Include="ApproveLog\IApproveLogRepository.cs" />
+    <Compile Include="ApproveLog\ApproveLog.cs" />
     <Compile Include="Employee\HRDepartment.cs" />
     <Compile Include="Employee\HREmployee.cs" />
     <Compile Include="Employee\IHRDepartmentRepository.cs" />

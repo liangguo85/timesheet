@@ -235,6 +235,21 @@ CREATE TABLE [dbo].[ApproveLog](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+CREATE TABLE [dbo].[UserSetting](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [nvarchar](50) NOT NULL,
+	[TeamId] int NOT NULL,
+	[Creator] [nvarchar](20) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](20) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_UserSetting] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
 GO
 ALTER TABLE [dbo].[PermissionModule] ADD  CONSTRAINT [DF_PermissionModule_Level]  DEFAULT ((0)) FOR [Level]
 GO

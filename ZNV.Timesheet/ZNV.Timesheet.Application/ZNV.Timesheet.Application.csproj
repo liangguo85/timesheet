@@ -232,6 +232,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timesheet\ITimesheetAppService.cs" />
     <Compile Include="Timesheet\TimesheetAppService.cs" />
+    <Compile Include="UserSetting\IUserSettingAppService.cs" />
+    <Compile Include="UserSetting\UserSettingAppService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

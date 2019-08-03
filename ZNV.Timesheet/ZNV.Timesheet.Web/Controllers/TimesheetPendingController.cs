@@ -38,7 +38,7 @@ namespace ZNV.Timesheet.Web.Controllers
             string user = Common.CommonHelper.CurrentUser;
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
-            var list = _appService.GetAllTimesheetsByUser(user, null, null).Where(ts => ts.Status == ApproveStatus.Approving).ToList();
+            var list = _appService.GetAllTimesheets().Where(ts => ts.Status == ApproveStatus.Approving && ts.Approver == user).ToList();
             List<Project.Project> projects = _projectService.GetAllProjectList();
             foreach (var ts in list)
             {
@@ -112,6 +112,8 @@ namespace ZNV.Timesheet.Web.Controllers
                 {
                     var ts = _appService.GetTimesheetsByID(int.Parse(id));
                     ts.Status = ApproveStatus.Approved;
+                    ts.Approver = Common.CommonHelper.CurrentUser;
+                    ts.ApprovedTime = operateTime;
                     AddOrEdit(ts);
                     _alService.AddApproveLog(new ApproveLog.ApproveLog()
                     {
@@ -148,6 +150,8 @@ namespace ZNV.Timesheet.Web.Controllers
                 {
                     var ts = _appService.GetTimesheetsByID(int.Parse(id));
                     ts.Status = ApproveStatus.Draft;
+                    ts.Approver = ts.Creator;
+                    ts.ApprovedTime = operateTime;
                     AddOrEdit(ts);
                     _alService.AddApproveLog(new ApproveLog.ApproveLog()
                     {
@@ -185,6 +189,16 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult SelectTransferUser(string workflowInstanceID, string nextOperator)
         {
+            var timeNow = DateTime.Now;
+            //先把对应的timesheet的approver都改成转办人
+            var targetTimeSheetList = _appService.GetTimesheetsByWorkflowInstanceID(workflowInstanceID);
+            foreach (var ts in targetTimeSheetList)
+            {
+                ts.Approver = nextOperator;
+                ts.ApprovedTime = timeNow;
+                _appService.UpdateTimesheet(ts);
+            }
+            //然后再记录审批日志
             _alService.AddApproveLog(new ApproveLog.ApproveLog()
             {
                 WorkflowInstanceID = workflowInstanceID,
@@ -219,16 +233,7 @@ namespace ZNV.Timesheet.Web.Controllers
                 var listGroup = tsList.GroupBy(ts => new { ts.WorkflowInstanceID }).ToList();
                 foreach (var wiid in listGroup)
                 {
-                    _alService.AddApproveLog(new ApproveLog.ApproveLog()
-                    {
-                        WorkflowInstanceID = wiid.Key.WorkflowInstanceID,
-                        OperateTime = operateTime,
-                        Comment = "转办",
-                        OperateType = "转办",
-                        CurrentOperator = Common.CommonHelper.CurrentUser,
-                        NextOperator = transferUser,
-                        Creator = Common.CommonHelper.CurrentUser
-                    });
+                    SelectTransferUser(wiid.Key.WorkflowInstanceID, transferUser);
                 }
 
                 return Json(new { success = true, message = "转办成功!" }, JsonRequestBehavior.AllowGet);

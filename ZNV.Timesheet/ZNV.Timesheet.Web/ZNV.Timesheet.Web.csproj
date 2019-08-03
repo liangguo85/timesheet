@@ -7758,6 +7758,7 @@
     <Compile Include="Controllers\RoleManagementController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\ApproveLogController.cs" />
+    <Compile Include="Controllers\UserSettingController.cs" />
     <Compile Include="Controllers\TimesheetApprovedController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
     <Compile Include="Controllers\TimesheetPendingController.cs" />
@@ -7819,6 +7820,8 @@
     <Content Include="Views\RoleManagement\Permission.cshtml" />
     <Content Include="Views\EmailTemplate\Index.cshtml" />
     <Content Include="Views\EmailTemplate\AddOrEdit.cshtml" />
+    <Content Include="Views\UserSetting\Index.cshtml" />
+    <Content Include="Views\UserSetting\AddOrEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

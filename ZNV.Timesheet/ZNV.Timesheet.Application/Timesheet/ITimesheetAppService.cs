@@ -17,7 +17,9 @@ namespace ZNV.Timesheet.Timesheet
         /// <param name="endDate">结束日期</param>
         /// <returns></returns>
         List<Timesheet> GetAllTimesheetsByUser(string user, DateTime? startDate, DateTime? endDate);
-        
+
+        List<Timesheet> GetAllTimesheets();
+
         /// <summary>
         /// 通过ID去获取工时数据
         /// </summary>
@@ -31,6 +33,13 @@ namespace ZNV.Timesheet.Timesheet
         /// <param name="date">日期</param>
         /// <returns></returns>
         List<Timesheet> GetTimesheetsByUserAndDate(string user, DateTime date);
+
+        /// <summary>
+        /// 通过WorkflowInstanceID获取工时记录
+        /// </summary>
+        /// <param name="WorkflowInstanceID">流程审批id</param>
+        /// <returns></returns>
+        List<Timesheet> GetTimesheetsByWorkflowInstanceID(string workflowInstanceID);
 
         /// <summary>
         /// 添加或更新工时记录

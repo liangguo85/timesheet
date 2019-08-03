@@ -212,11 +212,14 @@ namespace ZNV.Timesheet.Web.Controllers
                 var newWorkflowInstanceID = Guid.NewGuid().ToString();
                 foreach (var ts in tsfw.TimesheetList)
                 {
+                    var nextOperator = GetNextOperator(ts);
                     if (string.IsNullOrEmpty(ts.WorkflowInstanceID))
                     {
                         ts.WorkflowInstanceID = newWorkflowInstanceID;
                     }
                     ts.Status = ApproveStatus.Approving;
+                    ts.Approver = nextOperator;
+                    ts.ApprovedTime = operateTime;
                     AddOrEdit(ts);
                     _alService.AddApproveLog(new ApproveLog.ApproveLog()
                     {
@@ -225,7 +228,7 @@ namespace ZNV.Timesheet.Web.Controllers
                         Comment = comment,
                         OperateType = "提交",
                         CurrentOperator = Common.CommonHelper.CurrentUser,
-                        NextOperator = GetNextOperator(ts),
+                        NextOperator = nextOperator,
                         Creator = Common.CommonHelper.CurrentUser
                     });
                 }
@@ -250,6 +253,8 @@ namespace ZNV.Timesheet.Web.Controllers
                 foreach (var ts in tsfw.TimesheetList)
                 {
                     ts.Status = ApproveStatus.Draft;
+                    ts.Approver = ts.Creator;
+                    ts.ApprovedTime = operateTime;
                     AddOrEdit(ts);
                     _alService.AddApproveLog(new ApproveLog.ApproveLog()
                     {

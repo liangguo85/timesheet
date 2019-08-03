@@ -78,6 +78,10 @@ namespace ZNV.Timesheet
             }
             else
             {
+                if (string.IsNullOrEmpty(CommonHelper.CurrentUser))
+                {
+                    CommonHelper.CurrentUser = filterContext.HttpContext.Session["OAUserName"].ToString().Trim();
+                }
                 return true;
             }
         }

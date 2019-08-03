@@ -227,6 +227,8 @@
     <Compile Include="Timesheet\Timesheet.cs" />
     <Compile Include="Timesheet\TimesheetForPending.cs" />
     <Compile Include="Timesheet\TimesheetForWeek.cs" />
+    <Compile Include="UserSetting\IUserSettingRepository.cs" />
+    <Compile Include="UserSetting\UserSetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

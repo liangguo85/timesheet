@@ -490,6 +490,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="js\main.js" />
+    <Content Include="js\mergeCell.js" />
     <Content Include="js\Timesheet\Index备份.js" />
     <Content Include="js\Timesheet\Index.js" />
     <Content Include="lib\AdminLTE-2.4.10\bower_components\bootstrap-colorpicker\dist\css\bootstrap-colorpicker.css" />
@@ -7749,6 +7750,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\CommonHelper.cs" />
     <Compile Include="Controllers\AboutController.cs" />
+    <Compile Include="Controllers\DepartmentReportController.cs" />
     <Compile Include="Controllers\EmailTemplateController.cs" />
     <Compile Include="Controllers\HolidayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -7815,6 +7817,7 @@
     <Content Include="Views\RoleManagement\Permission.cshtml" />
     <Content Include="Views\EmailTemplate\Index.cshtml" />
     <Content Include="Views\EmailTemplate\AddOrEdit.cshtml" />
+    <Content Include="Views\DepartmentReport\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

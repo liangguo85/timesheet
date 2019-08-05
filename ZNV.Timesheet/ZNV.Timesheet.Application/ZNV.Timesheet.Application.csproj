@@ -221,6 +221,8 @@
     <Compile Include="PermissionModule\PermissionModuleAppService.cs" />
     <Compile Include="Project\IProjectAppService.cs" />
     <Compile Include="Project\ProjectAppService.cs" />
+    <Compile Include="Report\IReportAppService.cs" />
+    <Compile Include="Report\ReportAppService.cs" />
     <Compile Include="RoleManagement\IRoleManagementAppService.cs" />
     <Compile Include="RoleManagement\RoleManagementAppService.cs" />
     <Compile Include="Team\ITeamAppService.cs" />

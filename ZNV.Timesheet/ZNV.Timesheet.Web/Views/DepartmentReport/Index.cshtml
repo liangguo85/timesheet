@@ -1,0 +1,50 @@
+﻿@using ZNV.Timesheet.PermissionModule;
+@{
+    ViewBag.Title = "部门工时统计表";
+}
+@section styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-simple-tree-table.css" rel="stylesheet" />
+}
+@section scripts
+{
+    <script src="~/js/mergeCell.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            MergeCommonRows($('#tbReport'), [1, 2]);
+            mergeCommonColumns($('#tbReport'));
+        })
+    </script>
+}
+<div class="row">
+    <div class="col-xs-12">
+        <!-- /.box -->
+        <div class="box">
+            <table id="tbReport" class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        @foreach (System.Data.DataColumn col in Model.Columns)
+                        {
+                            <th>@col.Caption</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (System.Data.DataRow row in Model.Rows)
+                    {
+                    <tr>
+                        @foreach (var cell in row.ItemArray)
+                        {
+                            <td>@cell.ToString()</td>
+                        }
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+

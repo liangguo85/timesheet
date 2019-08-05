@@ -262,3 +262,67 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'部门ID' , @l
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'科室领导' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'Team', @level2type=N'COLUMN',@level2name=N'TeamLeader'
 GO
+
+
+USE [ZNVTimesheet]
+GO
+/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/8/5 7:17:36 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Proc [dbo].[Proc_DepartmentReport]
+(
+	@startDate datetime,
+	@endDate datetime
+	--@departmentIDs nvarchar(max) -- 多个departmentID 以,号分开， 如果为空则查询所有
+)
+as
+begin
+	--with cte as
+	--(
+	--	SELECT    B.departmentID
+	--	  FROM      ( SELECT    [value] = CONVERT(XML , '<v>' + REPLACE(@departmentIDs , ',' , '</v><v>')
+	--							+ '</v>')
+	--				) A
+	--	  OUTER APPLY ( SELECT  departmentID = N.v.value('.' , 'varchar(100)')
+	--					FROM    A.[value].nodes('/v') N ( v )
+	--				  ) B
+ --   )
+
+	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX) 
+
+
+	SELECT D.DeptCode1 as '部门编码'
+	  , D.DeptName1 as '部门名称'
+	  ,[TimesheetUser] as '人员姓名'
+	  , C.EmployeeName as '人员编号'
+	  ,SUM([Workload]) AS Workload
+	  , B.ProjectName
+	INTO #TempTimesheet
+	FROM [Timesheet] A
+		INNER JOIN [Project] B ON A.ProjectID = B.Id
+		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
+		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
+	--WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+	GROUP BY [TimesheetUser]
+      ,[ProjectID]
+	  , B.ProjectName
+	  , D.DeptCode1
+	  , D.DeptName1
+	  , C.EmployeeName
+	ORDER BY D.DeptName1, C.EmployeeName
+
+	SELECT @ColumnGroup = COALESCE(@ColumnGroup + ',' ,'' ) + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName) 
+
+	SELECT @PivotSQL = N'
+	SELECT * FROM #TempTimesheet PIVOT (SUM(Workload) FOR ProjectName 
+	 IN (' + @ColumnGroup +  N') ) AS pvt' 
+
+	EXEC sp_executesql  @PivotSQL;
+
+	drop table #TempTimesheet
+end
+GO

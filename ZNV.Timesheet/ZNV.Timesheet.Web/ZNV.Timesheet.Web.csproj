@@ -7824,6 +7824,7 @@
     <Content Include="Views\EmailTemplate\AddOrEdit.cshtml" />
     <Content Include="Views\UserSetting\Index.cshtml" />
     <Content Include="Views\UserSetting\AddOrEdit.cshtml" />
+    <Content Include="Views\DepartmentReport\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

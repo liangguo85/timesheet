@@ -21,14 +21,14 @@
                     <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
-                                <th style="display:none"></th>
-                                <th>日期</th>
-                                <th>项目代码</th>
-                                <th>工时</th>
-                                <th>工作内容</th>
+                                <th style="display:none;width:0px"></th>
+                                <th style="width:100px">日期</th>
+                                <th style="width:120px">项目代码</th>
+                                <th style="width:60px">工时</th>
+                                <th style="width:150px">工作内容</th>
                                 <th>备注</th>
-                                <th>状态</th>
-                                <th></th>
+                                <th style="width:80px">状态</th>
+                                <th style="width:85px"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,15 +46,15 @@
                                     <td>
                                         @if (Model.TimesheetList[i].TimesheetDate.HasValue)
                                         {
-                                            <input name="TimesheetDate" style="width:100px" type="text" @eleDisabled value='@Model.TimesheetList[i].TimesheetDate.Value.ToString("yyyy-MM-dd")' />
+                                            <input name="TimesheetDate" style="width:100%" type="text" @eleDisabled value='@Model.TimesheetList[i].TimesheetDate.Value.ToString("yyyy-MM-dd")' />
                                         }
                                         else
                                         {
-                                            <input name="TimesheetDate" type="text" @eleDisabled value='' />
+                                            <input name="TimesheetDate" style="width:100%" type="text" @eleDisabled value='' />
                                         }
                                     </td>
                                     <td>
-                                        <select name="ProjectID" style="width:100px" @eleDisabled>
+                                        <select name="ProjectID" style="width:100%" @eleDisabled>
                                             @foreach (var project in ViewData["Projects"] as List<SelectListItem>)
                                             {
                                                 if (Model.TimesheetList[i].ProjectID.HasValue && project.Value == Model.TimesheetList[i].ProjectID.Value.ToString())
@@ -68,9 +68,9 @@
                                             }
                                         </select>
                                     </td>
-                                    <td><input type="text" name="Workload" @eleDisabled style="width:80px" value="@Model.TimesheetList[i].Workload" /></td>
-                                    <td><input type="text" name="WorkContent" @eleDisabled style="width:100px" value="@Model.TimesheetList[i].WorkContent" /></td>
-                                    <td><input type="text" name="Remarks" @eleDisabled style="width:100px" value="@Model.TimesheetList[i].Remarks" /></td>
+                                    <td><input type="text" name="Workload" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].Workload" /></td>
+                                    <td><input type="text" name="WorkContent" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].WorkContent" /></td>
+                                    <td><input type="text" name="Remarks" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].Remarks" /></td>
                                     <td>
                                         @if (Model.TimesheetList[i].Status == ZNV.Timesheet.Timesheet.ApproveStatus.Draft)
                                         {
@@ -110,7 +110,8 @@
                     </table>
                     <div class="form-group pull-right">
                         <input type="button" onclick="return SubmitFormForWeek(this)" value="提交" class="btn btn-primary btn-lg" />
-                        <input type="submit" onclick="return SaveDraftForWeek(this)" value="保存草稿" class="btn btn-primary btn-lg" />
+                        <input type="button" onclick="return RollBackForWeek(this)" value="撤回" class="btn btn-primary btn-lg" />
+                        <input type="button" onclick="return SaveDraftForWeek(this)" value="保存草稿" class="btn btn-primary btn-lg" />
                     </div>
                 </div>
                 <!-- /.box-body -->
@@ -129,7 +130,39 @@
             minDate: $("#startDate").val(),
             maxDate: $("#endDate").val(),
             weekStart: 1,
-        })
+        });
+
+
+        $("select[name=ProjectID]").select2(
+            {
+                placeholder: '输入项目编号或名称',
+                minimumInputLength: 0,
+                allowClear: false,
+                ajax: {
+                    delay: 150,
+                    url: 'Timesheet/GetProjectList',
+                    dataType: 'json',
+                    async: true,
+                    data: function (params) {
+                        return {
+                            pageSize: 100,
+                            pageNum: params.page || 1,
+                            searchTerm: params.term,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.Results, function (obj) {
+                                return { id: obj.ProjectCode, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
+                            }),
+                            pagination: {
+                                more: (params.page * 100) <= data.Total
+                            }
+                        };
+                    }
+                }
+            });
     })
 
 </script>

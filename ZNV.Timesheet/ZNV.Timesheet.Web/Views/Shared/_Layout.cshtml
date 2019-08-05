@@ -206,7 +206,7 @@ desired effect
                                         <a href="#" class="btn btn-default btn-flat">个人信息</a>
                                     </div>
                                     <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">退出</a>
+                                        <a id="alogout" href="#" class="btn btn-default btn-flat">退出</a>
                                     </div>
                                 </li>
                             </ul>
@@ -260,7 +260,7 @@ desired effect
                             <li class="active"><a href="/timesheet"><i class="fa fa-circle-o"></i>我的周报</a></li>
                             <li><a href="/TimesheetPending"><i class="fa fa-circle-o"></i>待审周报</a></li>
                             <li><a href="/TimesheetApproved"><i class="fa fa-circle-o"></i>已审周报</a></li>
-                            <li><a href="#"><i class="fa fa-circle-o"></i>个人设置</a></li>
+                            <li><a href="/UserSetting"><i class="fa fa-circle-o"></i>个人设置</a></li>
                         </ul>
                     </li>
                     <li class="treeview">
@@ -424,6 +424,18 @@ desired effect
                 $(this).parent().addClass("active");
                 $(this).parent().parent().parent().addClass("active").addClass("menu-open");
             }
+        });
+        $("#alogout").click(function () {
+            $.ajax({
+                type: "POST",
+                url: 'Home/SSOLogOut',
+                success: function (data) {
+                    alert("data.message");
+                    if (data.success) {
+                        $(location).prop('href', 'http://oatest.znv.com:8112/sso/logout')
+                    }
+                }
+            })
         });
     </script>
 

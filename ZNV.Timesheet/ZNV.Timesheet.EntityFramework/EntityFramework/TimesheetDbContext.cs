@@ -25,9 +25,13 @@ namespace ZNV.Timesheet.EntityFramework
 
         public virtual IDbSet<ZNV.Timesheet.PermissionModule.PermissionModule> PermissionModules { get; set; }
 
+        public virtual IDbSet<ZNV.Timesheet.ApproveLog.ApproveLog> ApproveLogs { get; set; }
+
         public virtual IDbSet<ZNV.Timesheet.RoleManagement.RoleModule> RoleModules { get; set; }
 
         public virtual IDbSet<ZNV.Timesheet.EmailTemplate.EmailTemplate> EmailTemplates { get; set; }
+
+        public virtual IDbSet<ZNV.Timesheet.UserSetting.UserSetting> UserSettings { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.

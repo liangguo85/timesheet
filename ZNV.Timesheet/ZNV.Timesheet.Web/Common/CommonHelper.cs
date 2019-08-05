@@ -7,6 +7,11 @@ namespace ZNV.Timesheet.Web.Common
 {
     public class CommonHelper
     {
+        /// <summary>
+        /// 当前登陆的用户
+        /// </summary>
+        public static string CurrentUser { get; set; }
+
         public static string GetProjectNameByProjectID(List<Project.Project> projects, int projectID)
         {
             if (projects != null && projects.Count > 0)

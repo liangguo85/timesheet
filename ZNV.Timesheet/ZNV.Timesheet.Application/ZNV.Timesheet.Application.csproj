@@ -211,6 +211,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApproveLog\IApproveLogAppService.cs" />
+    <Compile Include="ApproveLog\ApproveLogAppService.cs" />
     <Compile Include="EmailTemplate\EmailTemplateAppService.cs" />
     <Compile Include="EmailTemplate\IEmailTemplateAppService.cs" />
     <Compile Include="Employee\EmployeeAppService.cs" />
@@ -232,6 +234,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Timesheet\ITimesheetAppService.cs" />
     <Compile Include="Timesheet\TimesheetAppService.cs" />
+    <Compile Include="UserSetting\IUserSettingAppService.cs" />
+    <Compile Include="UserSetting\UserSettingAppService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

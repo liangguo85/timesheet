@@ -25,8 +25,9 @@ namespace ZNV.Timesheet.Web.Controllers
         }
         
         [HttpPost]
-        public JsonResult GetAllApprovedTimesheets(string user)
+        public JsonResult GetAllApprovedTimesheets()
         {
+            string user = Common.CommonHelper.CurrentUser;
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
             var list = _appService.GetAllTimesheetsByUser(user, null, null).Where(ts=>ts.Status == ApproveStatus.Approved).ToList();

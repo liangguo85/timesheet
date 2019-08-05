@@ -63,7 +63,6 @@ function searchData() {
                 "url": "/Timesheet/GetAllTimesheets",
                 "type": "POST",
                 "data": {
-                    "user": "kojar.liu",
                     "startDate": $('#startDate').val(),
                     "endDate": $('#endDate').val()
                 },

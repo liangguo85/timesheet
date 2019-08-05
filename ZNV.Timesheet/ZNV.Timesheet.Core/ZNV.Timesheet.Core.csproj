@@ -197,6 +197,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApproveLog\ApproveLogForComment.cs" />
+    <Compile Include="ApproveLog\IApproveLogRepository.cs" />
+    <Compile Include="ApproveLog\ApproveLog.cs" />
     <Compile Include="EmailTemplate\EmailTemplate.cs" />
     <Compile Include="EmailTemplate\IEmailTemplateRepository.cs" />
     <Compile Include="Employee\HRDepartment.cs" />
@@ -225,6 +228,8 @@
     <Compile Include="Timesheet\Timesheet.cs" />
     <Compile Include="Timesheet\TimesheetForPending.cs" />
     <Compile Include="Timesheet\TimesheetForWeek.cs" />
+    <Compile Include="UserSetting\IUserSettingRepository.cs" />
+    <Compile Include="UserSetting\UserSetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

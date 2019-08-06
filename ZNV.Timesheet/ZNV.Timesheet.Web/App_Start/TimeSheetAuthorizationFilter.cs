@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using ZNV.Timesheet.UserSetting;
 using ZNV.Timesheet.Web.Common;
 
 namespace ZNV.Timesheet
@@ -14,14 +15,11 @@ namespace ZNV.Timesheet
     {
         public void OnAuthorization(AuthorizationContext filterContext)
         {
-            
             var request = filterContext.HttpContext.Request;
             var response = filterContext.HttpContext.Response;
-
-          
+            
             if (!isLogin(filterContext))
             {
-
                 string casServerUrlPrefix = ConfigurationManager.AppSettings["casServerUrlPrefix"];
 
                 //SSO的业务逻辑
@@ -66,8 +64,16 @@ namespace ZNV.Timesheet
                     }
                 }
             }
-
-            
+            else
+            {
+                ////登陆成功之后，判断该用户是否已经设置了科室，如果没有设置则需要跳转到个人设置界面
+                //if (!CommonHelper.IsUserSettingOk())
+                //{
+                //    response.Redirect("/UserSetting");
+                //    response.End();
+                //    return;
+                //}
+            }
         }
         private bool isLogin(AuthorizationContext filterContext)
         {

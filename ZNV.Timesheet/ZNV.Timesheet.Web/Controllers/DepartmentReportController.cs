@@ -31,7 +31,7 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             DataTable dt = _reportAppService.GetDepartmentReport(DateTime.Now.AddYears(-1), DateTime.Now.AddYears(1));
             string sheetName = "部门工时统计报表";
-            var book = Common.CommonHelper.CreateHSSFromDataTable("sheetName", dt, new List<int>() { 0,1 });
+            var book = Common.CommonHelper.CreateHSSFromDataTable(sheetName, dt, new List<int>() { 0 });
             MemoryStream ms = new MemoryStream();
             book.Write(ms);
             ms.Seek(0, SeekOrigin.Begin);

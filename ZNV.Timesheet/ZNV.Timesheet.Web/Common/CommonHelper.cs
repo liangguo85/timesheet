@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web;
+using ZNV.Timesheet.UserSetting;
 
 namespace ZNV.Timesheet.Web.Common
 {
@@ -31,7 +32,7 @@ namespace ZNV.Timesheet.Web.Common
         }
 
         /// <summary>
-        /// 把数据库返回的表格数据生成excel对象，如果某些列需要相同值合并，则在第三个参数设置需要合并的列集合即可，暂不支持行合并
+        /// 把数据库返回的表格数据生成excel对象，如果某些列需要相同值合并，则在第三个参数设置需要合并的列集合即可，暂不支持横向合并
         /// </summary>
         /// <param name="exportTableName">excel的第一个sheet的名称</param>
         /// <param name="dt">数据库返回的表格数据</param>
@@ -118,7 +119,14 @@ namespace ZNV.Timesheet.Web.Common
                     }
                 }
             }
+            //所有数据填充完毕后，合并处理完毕后，再来设置列的自动宽度
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                //这里第二个参数必须设置成true，否则合并的列不会设置自动宽度
+                sheet.AutoSizeColumn(i, true);
+            }
             return book;
         }
+        
     }
 }

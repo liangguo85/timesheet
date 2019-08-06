@@ -305,12 +305,12 @@ GO
 
 USE [ZNVTimesheet]
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/8/5 7:17:36 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/8/6 8:29:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE Proc [dbo].[Proc_DepartmentReport]
+ALTER Proc [dbo].[Proc_DepartmentReport]
 (
 	@startDate datetime,
 	@endDate datetime
@@ -331,11 +331,8 @@ begin
 
 	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX) 
 
-
-	SELECT D.DeptCode1 as '部门编码'
-	  , D.DeptName1 as '部门名称'
-	  ,[TimesheetUser] as '人员姓名'
-	  , C.EmployeeName as '人员编号'
+	SELECT  D.DeptName1+ '('+D.DeptCode1+')' as '部门名称'
+	  , C.EmployeeName+'('+[TimesheetUser]+')' as '人员姓名'
 	  ,SUM([Workload]) AS Workload
 	  , B.ProjectName
 	INTO #TempTimesheet
@@ -343,8 +340,8 @@ begin
 		INNER JOIN [Project] B ON A.ProjectID = B.Id
 		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
 		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
-	--WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
-	GROUP BY [TimesheetUser]
+	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+	GROUP BY  [TimesheetUser]
       ,[ProjectID]
 	  , B.ProjectName
 	  , D.DeptCode1
@@ -356,12 +353,62 @@ begin
 	FROM #TempTimesheet
 	GROUP BY QUOTENAME(ProjectName) 
 
-	SELECT @PivotSQL = N'
-	SELECT * FROM #TempTimesheet PIVOT (SUM(Workload) FOR ProjectName 
-	 IN (' + @ColumnGroup +  N') ) AS pvt' 
+	DECLARE @columnHeaders NVARCHAR (MAX)
+	SELECT @columnHeaders = COALESCE(@columnHeaders + ',' ,'') + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
 
-	EXEC sp_executesql  @PivotSQL;
+	DECLARE @GrandTotalCol	NVARCHAR (MAX)
+	SELECT @GrandTotalCol = 
+	COALESCE (@GrandTotalCol + 'ISNULL ('+ QUOTENAME(ProjectName) +',0) + ', 'ISNULL(' + QUOTENAME(ProjectName)+ ',0) + ')
+	FROM	#TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
+	SET @GrandTotalCol = LEFT (@GrandTotalCol, LEN (@GrandTotalCol)-1)
 
-	drop table #TempTimesheet
+	DECLARE @GrandTotalRow	NVARCHAR(MAX)
+	SELECT @GrandTotalRow = COALESCE(@GrandTotalRow + ',ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)', 'ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)')
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	DECLARE @GrandSum NVARCHAR(MAX)
+	SELECT @GrandSum = COALESCE(@GrandSum + ',SUM(' + QUOTENAME(ProjectName) +') as '+QUOTENAME(ProjectName), 'SUM(' + QUOTENAME(ProjectName) +') as '+ QUOTENAME(ProjectName))
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	DECLARE @FinalQuery NVARCHAR (MAX)
+	SET @FinalQuery = 	'SELECT *, ('+ @GrandTotalCol + ')
+	AS [行总计] INTO #temp_MatchesTotal
+				FROM
+					(SELECT *
+					FROM #TempTimesheet
+					) A
+				PIVOT
+					(
+					 SUM(Workload)
+					 FOR ProjectName
+					 IN ('+@columnHeaders +')
+					) B
+	ORDER BY [部门名称], [人员姓名]
+	
+
+	SELECT [部门名称],[人员姓名], '+@GrandSum+', SUM([行总计]) as [行总计(小时)] into #temp_FinalTotal FROM #temp_MatchesTotal
+	group by [部门名称], [人员姓名] with rollup
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''部门总计(小时)'' WHERE [部门名称] IS NOT NULL AND [人员姓名] IS NULL
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''全部总计(小时)'', [部门名称]='''' WHERE [部门名称] IS NULL AND [人员姓名] IS NULL
+
+	SELECT * FROM #temp_FinalTotal
+
+	DROP TABLE #temp_MatchesTotal
+
+	DROP TABLE #temp_FinalTotal'
+	PRINT 'Pivot Query '+@FinalQuery
+	EXECUTE(@FinalQuery)
+	DROP TABLE #TempTimesheet
 end
 GO

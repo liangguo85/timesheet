@@ -21,30 +21,36 @@
     <div class="col-xs-12">
         <!-- /.box -->
         <div class="box">
-            <table id="tbReport" class="table table-bordered table-striped table-hover">
-                <thead>
-                    <tr>
-                        @foreach (System.Data.DataColumn col in Model.Columns)
+            <div class="box box-header">
+                <div class="btn-group-toggle pull-right">
+                    <a href="/DepartmentReport/GetExcelForReport" class="btn btn-danger">下载Excel</a>
+                </div>
+            </div>
+            <div class="box-body">
+                <table id="tbReport" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            @foreach (System.Data.DataColumn col in Model.Columns)
+                            {
+                                <th>@col.Caption</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (System.Data.DataRow row in Model.Rows)
                         {
-                            <th>@col.Caption</th>
+                            <tr>
+                                @foreach (var cell in row.ItemArray)
+                                {
+                                    <td>@cell.ToString()</td>
+                                }
+                            </tr>
                         }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (System.Data.DataRow row in Model.Rows)
-                    {
-                    <tr>
-                        @foreach (var cell in row.ItemArray)
-                        {
-                            <td>@cell.ToString()</td>
-                        }
-                    </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box -->
         </div>
-        <!-- /.box -->
-    </div>
     <!-- /.col -->
 </div>
 

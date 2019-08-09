@@ -7708,6 +7708,7 @@
     <Content Include="lib\AdminLTE-2.4.10\bower_components\fullcalendar\CONTRIBUTING.md" />
     <Content Include="lib\AdminLTE-2.4.10\bower_components\fullcalendar\README.md" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\freeze-table.min.js" />
     <Content Include="Scripts\hummingbird_treeview.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />

@@ -13,7 +13,7 @@ namespace ZNV.Timesheet.Web
             AbpBootstrapper.IocManager.IocContainer.AddFacility<LoggingFacility>(
                 f => f.UseAbpLog4Net().WithConfig(Server.MapPath("log4net.config"))
             );
-            //GlobalFilters.Filters.Add(new TimeSheetAuthorizationFilter());
+            GlobalFilters.Filters.Add(new TimeSheetAuthorizationFilter());
             base.Application_Start(sender, e);
         }
     }

@@ -8,7 +8,7 @@
             //How long the user has to pause their typing before sending the next request
             delay: 150,
             //The url of the json service
-            url: "Team/GetDepartmentList",
+            url: "/Team/GetDepartmentList",
             dataType: 'json',
             async: true,
             //Our search term and what page we are on
@@ -41,7 +41,7 @@
             //How long the user has to pause their typing before sending the next request
             delay: 150,
             //The url of the json service
-            url: "Team/GetEmployeeList",
+            url: "/Team/GetEmployeeList",
             dataType: 'json',
             async: true,
             //Our search term and what page we are on

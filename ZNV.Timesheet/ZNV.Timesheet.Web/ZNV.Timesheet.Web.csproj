@@ -7758,7 +7758,6 @@
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -7767,11 +7766,9 @@
     <Compile Include="App_Start\TimesheetWebModule.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\CommonHelper.cs" />
-    <Compile Include="Controllers\AboutController.cs" />
     <Compile Include="Controllers\DepartmentReportController.cs" />
     <Compile Include="Controllers\EmailTemplateController.cs" />
     <Compile Include="Controllers\HolidayController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PermissionModuleController.cs" />
     <Compile Include="Controllers\ProjectManagementController.cs" />
     <Compile Include="Controllers\RoleManagementController.cs" />
@@ -7782,7 +7779,6 @@
     <Compile Include="Controllers\TimesheetController.cs" />
     <Compile Include="Controllers\TimesheetPendingController.cs" />
     <Compile Include="Models\Layout\LanguageSelectionViewModel.cs" />
-    <Compile Include="Controllers\LayoutController.cs" />
     <Compile Include="Controllers\TimesheetControllerBase.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -7798,10 +7794,7 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\About\Index.cshtml" />
     <Content Include="Views\Shared\_TopBar.cshtml" />
-    <Content Include="Views\Layout\_LanguageSelection.cshtml" />
-    <Content Include="Views\Layout\_TopMenu.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Scripts\sweetalert\sweet-alert.scss" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />

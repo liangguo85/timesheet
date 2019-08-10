@@ -114,14 +114,16 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult AddOrEdit(Project.Project project)
         {
-            project.Creator = "0001";
             if (project.Id == 0)
             {
+                project.Creator = Common.CommonHelper.CurrentUser;
                 _projectAppService.CreateProject(project);
                 return Json(new { success = true, message = "新增项目成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                project.LastModifier = Common.CommonHelper.CurrentUser;
+                project.LastModifyTime = DateTime.Now;
                 _projectAppService.UpdateProject(project);
                 return Json(new { success = true, message = "更新项目成功!" }, JsonRequestBehavior.AllowGet);
             }

@@ -20,13 +20,22 @@ namespace ZNV.Timesheet.Team
         {
             return _teamRepository.GetAllList();
         }
+        public Team GetTeam(int id) {
+            return _teamRepository.GetAllList().Where(x => x.Id == id).FirstOrDefault();
+        }
         public int AddTeam(Team team)
         {
             return _teamRepository.InsertAndGetId(team);
         }
         public Team UpdateTeam(Team team)
         {
-            return _teamRepository.Update(team);
+            var updatedTeam = GetTeam(team.Id);
+            updatedTeam.DepartmentID = team.DepartmentID;
+            updatedTeam.TeamLeader = team.TeamLeader;
+            updatedTeam.TeamName = team.TeamName;
+            updatedTeam.LastModifier = team.LastModifier;
+            updatedTeam.LastModifyTime = team.LastModifyTime;
+            return _teamRepository.Update(updatedTeam);
         }
         public void DeleteTeam(int id)
         {

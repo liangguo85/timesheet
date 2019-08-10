@@ -25,6 +25,7 @@ namespace ZNV.Timesheet.Project
 
         public void UpdateProject(Project project)
         {
+            //var updatedProject = _projectRepository.GetAll().Where(x => x.Id == project.Id).FirstOrDefault();
             _projectRepository.Update(project);
         }
 

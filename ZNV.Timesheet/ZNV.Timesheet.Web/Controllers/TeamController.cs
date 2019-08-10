@@ -77,14 +77,16 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult AddOrEdit(Team.Team team)
         {
-            team.Creator = "0001";
             if (team.Id == 0)
             {
+                team.Creator = Common.CommonHelper.CurrentUser;
                 _teamAppService.AddTeam(team);
                 return Json(new { success = true, message = "新增科室信息成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                team.LastModifier = Common.CommonHelper.CurrentUser;
+                team.LastModifyTime = DateTime.Now;
                 _teamAppService.UpdateTeam(team);
                 return Json(new { success = true, message = "更新科室信息成功!" }, JsonRequestBehavior.AllowGet);
             }

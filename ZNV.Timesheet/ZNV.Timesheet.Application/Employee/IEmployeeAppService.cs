@@ -8,9 +8,13 @@ namespace ZNV.Timesheet.Employee
     {
         List<HREmployee> GetEmployeeList();
 
+        List<HREmployee> GetEmployeeList(string searchTerm, int pageSize, int pageNum, out int totalCount);
+
         HREmployee GetEmployeeByCode(string employeeCode);
 
         List<HRDepartment> GetDepartmentList();
+
+        List<HRDepartment> GetDepartmentList(string searchTerm, int pageSize, int pageNum, out int totalCount);
 
         HRDepartment GetDepartmentByCode(string departmentCode);
     }

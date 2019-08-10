@@ -111,39 +111,6 @@
         $('#EffectiveDate, #ExpirationDate').datepicker({
             autoclose: true
         });
-        $('#projectManager, #productionManager').select2(
-            {
-                placeholder: '输入工号或名字',
-                //Does the user have to enter any data before sending the ajax request
-                minimumInputLength: 0,
-                allowClear: false,
-                ajax: {
-                    //How long the user has to pause their typing before sending the next request
-                    delay: 150,
-                    //The url of the json service
-                    url: '@Url.Action("GetEmployeeList", "ProjectManagement")',
-                    dataType: 'json',
-                    async: true,
-                    //Our search term and what page we are on
-                    data: function (params) {
-                        return {
-                            pageSize: 100,
-                            pageNum: params.page || 1,
-                            searchTerm: params.term,
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.Results, function (obj) {
-                                return { id: obj.EmployeeCode, text: obj.EmployeeName + "(" + obj.EmployeeCode + ")" };
-                            }),
-                            pagination: {
-                                more: (params.page * 100) <= data.Total
-                            }
-                        };
-                    }
-                }
-            });
+        $('#projectManager, #productionManager').select2(select2.employee);
     })
 </script>

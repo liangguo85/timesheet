@@ -504,6 +504,7 @@
     <Content Include="Content\flags\famfamfam-flags.png" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="js\config.js" />
     <Content Include="js\main.js" />
     <Content Include="js\mergeCell.js" />
     <Content Include="js\Timesheet\Index备份.js" />

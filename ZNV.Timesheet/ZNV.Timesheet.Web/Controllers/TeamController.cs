@@ -100,11 +100,12 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpGet]
         public ActionResult GetEmployeeList(string searchTerm, int pageSize, int pageNum)
         {
-            var itemList = _employeeAppService.GetEmployeeList().Where(x => string.IsNullOrEmpty(searchTerm) || x.EmployeeName.Contains(searchTerm) || x.EmployeeCode.Contains(searchTerm)).ToList();
+            int totalCount = 0;
+            var itemList = _employeeAppService.GetEmployeeList(searchTerm, pageSize, pageNum, out totalCount);
             var result = new
             {
-                Total = itemList.Count(),
-                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
+                Total = totalCount,
+                Results = itemList
             };
             return new JsonResult
             {
@@ -116,11 +117,12 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpGet]
         public ActionResult GetDepartmentList(string searchTerm, int pageSize, int pageNum)
         {
-            var itemList = _employeeAppService.GetDepartmentList().Where(x => string.IsNullOrEmpty(searchTerm) || x.DeptName1.Contains(searchTerm) || x.DeptCode1.Contains(searchTerm)).ToList();
+            int totalCount = 0;
+            var itemList = _employeeAppService.GetDepartmentList(searchTerm, pageSize, pageNum, out totalCount);
             var result = new
             {
-                Total = itemList.Count(),
-                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
+                Total = totalCount,
+                Results = itemList
             };
             return new JsonResult
             {

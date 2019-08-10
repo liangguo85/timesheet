@@ -13,5 +13,8 @@ namespace ZNV.Timesheet.Employee
         public virtual string EmployeeName { get; set; }
         public virtual DateTime? EntryDate { get; set; }
         public virtual DateTime? ExitDate { get; set; }
+        public virtual string DeptCode { get; set; }
+        [NotMapped]
+        public virtual string DeptName { get; set; }
     }
 }

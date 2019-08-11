@@ -200,6 +200,7 @@
     <Compile Include="ApproveLog\ApproveLogForComment.cs" />
     <Compile Include="ApproveLog\IApproveLogRepository.cs" />
     <Compile Include="ApproveLog\ApproveLog.cs" />
+    <Compile Include="BaseEntity.cs" />
     <Compile Include="EmailTemplate\EmailTemplate.cs" />
     <Compile Include="EmailTemplate\IEmailTemplateRepository.cs" />
     <Compile Include="Employee\HRDepartment.cs" />

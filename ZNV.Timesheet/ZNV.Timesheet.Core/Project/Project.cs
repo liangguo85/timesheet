@@ -1,12 +1,10 @@
 ﻿using System;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZNV.Timesheet.Project
 {
     [Table("Project")]
-    public class Project : Entity<int>, IHasCreationTime
+    public class Project : BaseEntity
     {
         public virtual bool IsApproval { get; set; }
 
@@ -39,20 +37,5 @@ namespace ZNV.Timesheet.Project
         public virtual DateTime? EffectiveDate { get; set; }
 
         public virtual DateTime? ExpirationDate { get; set; }
-
-        public virtual string Creator { get; set; }
-
-        public virtual DateTime CreationTime { get; set; }
-
-        public virtual string LastModifier { get; set; }
-
-        public virtual DateTime? LastModifyTime { get; set; }
-
-        public virtual bool IsDeleted { get; set; }
-
-        public Project()
-        {
-            CreationTime = DateTime.Now;
-        }
     }
 }

@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
-using ZNV.Timesheet.Project;
 
 namespace ZNV.Timesheet.Timesheet
 {
     [Table("Timesheet")]
-    public class Timesheet : Entity<int>, IHasCreationTime
+    public class Timesheet : BaseEntity
     {
         public virtual string TimesheetUser { get; set; }
 
@@ -40,21 +32,6 @@ namespace ZNV.Timesheet.Timesheet
         public virtual DateTime? ApprovedTime { get; set; }
 
         public virtual string WorkflowInstanceID { get; set; }
-        
-        public virtual string Creator { get; set; }
-
-        public virtual DateTime CreationTime { get; set; }
-
-        public virtual string LastModifier { get; set; }
-
-        public virtual DateTime? LastModifyTime { get; set; }
-
-        public virtual bool IsDeleted { get; set; }
-
-        public Timesheet()
-        {
-            CreationTime = DateTime.Now;
-        }
     }
 
     /// <summary>

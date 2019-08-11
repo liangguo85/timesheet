@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using ZNV.Timesheet.Employee;
 
 namespace ZNV.Timesheet.Team
@@ -30,11 +31,7 @@ namespace ZNV.Timesheet.Team
         public Team UpdateTeam(Team team)
         {
             var updatedTeam = GetTeam(team.Id);
-            updatedTeam.DepartmentID = team.DepartmentID;
-            updatedTeam.TeamLeader = team.TeamLeader;
-            updatedTeam.TeamName = team.TeamName;
-            updatedTeam.LastModifier = team.LastModifier;
-            updatedTeam.LastModifyTime = team.LastModifyTime;
+            Mapper.Map(team, updatedTeam);
             return _teamRepository.Update(updatedTeam);
         }
         public void DeleteTeam(int id)

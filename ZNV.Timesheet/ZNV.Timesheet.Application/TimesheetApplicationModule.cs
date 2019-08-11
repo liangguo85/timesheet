@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using Abp.Configuration;
 using Abp.Modules;
 
 namespace ZNV.Timesheet
@@ -8,7 +10,7 @@ namespace ZNV.Timesheet
     {
         public override void PreInitialize()
         {
-            //Configuration.UnitOfWork.Scope = System.Transactions.TransactionScopeOption.Suppress;
+            AutoMappperExtension.InitializeAutomapper();
             base.PreInitialize();
         }
         public override void Initialize()

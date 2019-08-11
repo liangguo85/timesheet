@@ -213,7 +213,6 @@
   <ItemGroup>
     <Compile Include="ApproveLog\IApproveLogAppService.cs" />
     <Compile Include="ApproveLog\ApproveLogAppService.cs" />
-    <Compile Include="AutoMapperExtension.cs" />
     <Compile Include="EmailTemplate\EmailTemplateAppService.cs" />
     <Compile Include="EmailTemplate\IEmailTemplateAppService.cs" />
     <Compile Include="Employee\EmployeeAppService.cs" />

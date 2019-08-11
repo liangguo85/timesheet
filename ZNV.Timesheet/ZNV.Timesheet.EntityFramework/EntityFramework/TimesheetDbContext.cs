@@ -29,6 +29,8 @@ namespace ZNV.Timesheet.EntityFramework
 
         public virtual IDbSet<ZNV.Timesheet.RoleManagement.RoleModule> RoleModules { get; set; }
 
+        public virtual IDbSet<ZNV.Timesheet.RoleManagement.RoleDepartment> RoleDepartments { get; set; }
+
         public virtual IDbSet<ZNV.Timesheet.EmailTemplate.EmailTemplate> EmailTemplates { get; set; }
 
         public virtual IDbSet<ZNV.Timesheet.UserSetting.UserSetting> UserSettings { get; set; }

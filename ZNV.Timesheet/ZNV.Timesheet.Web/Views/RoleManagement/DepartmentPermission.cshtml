@@ -1,0 +1,26 @@
+﻿@model ZNV.Timesheet.Web.Models.RoleDepartmentModel
+@{
+    Layout = null;
+}
+
+
+@using (Html.BeginForm("DepartmentPermission", "RoleManagement", FormMethod.Post, new { onsubmit = "return SubmitForm(this)" }))
+{
+    @Html.HiddenFor(model => model.RoleId)
+    <div class="box-header">
+        @Html.LabelFor(model => model.RoleName, Model.RoleName)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Departments, "部门", new { @class = "control-label" })
+        @Html.ListBoxFor(model => model.DepartmentIds, new SelectList(Model.Departments, "DeptCode1", "FullDeptName"), new { @id = "departmentIds", @class = "form-control select2", multiple = "multiple" })
+    </div>
+    <div class="form-group pull-right">
+        <input type="submit" value="保存" class="btn btn-primary btn-lg" />
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#departmentIds').select2(select2.department);
+    });
+</script>

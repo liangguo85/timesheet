@@ -98,5 +98,26 @@ namespace ZNV.Timesheet.Web.Controllers
             _roleManagementAppService.AddRoleModules(model.RoleId, model.PermissionModuleIds ?? new List<int> { }, Common.CommonHelper.CurrentUser);
             return Json(new { success = true, message = "角色授权成功!" }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public ActionResult DepartmentPermission(int id)
+        {
+            var roleDepartments = _roleManagementAppService.GetRoleDepartments(id);
+            RoleDepartmentModel model = new RoleDepartmentModel
+            {
+                RoleId = id,
+                RoleName = _roleManagementAppService.GetRole(id).RoleName,
+                Departments = roleDepartments,
+                DepartmentIds = roleDepartments.Select(x=>x.DeptCode1).ToList()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult DepartmentPermission(RoleDepartmentModel model)
+        {
+            _roleManagementAppService.AddRoleDepartments(model.RoleId, model.DepartmentIds ?? new List<string> { }, Common.CommonHelper.CurrentUser);
+            return Json(new { success = true, message = "角色部门权限操作成功!" }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

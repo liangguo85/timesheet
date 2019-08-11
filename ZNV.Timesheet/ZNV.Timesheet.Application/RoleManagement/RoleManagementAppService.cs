@@ -14,15 +14,20 @@ namespace ZNV.Timesheet.RoleManagement
         private readonly IHREmployeeRepository _employeeRepository;
         private readonly IRoleModuleRepository _roleModuleRepository;
         private readonly IPermissionModuleRepository _permissionModuleRepository;
+        private readonly IRoleDepartmentRepository _roleDepartmentRepository;
+        private readonly IHRDepartmentRepository _departmentRepository;
 
         public RoleManagementAppService(IRoleRepository roleRepository, IUserRoleRepository userRoleRepository, 
-            IHREmployeeRepository employeeRepository, IRoleModuleRepository roleModuleRepository, IPermissionModuleRepository permissionModuleRepository)
+            IHREmployeeRepository employeeRepository, IRoleModuleRepository roleModuleRepository, IPermissionModuleRepository permissionModuleRepository, 
+            IRoleDepartmentRepository roleDepartmentRepository, IHRDepartmentRepository departmentRepository)
         {
             _roleRepository = roleRepository;
             _userRoleRepository = userRoleRepository;
             _employeeRepository = employeeRepository;
             _roleModuleRepository = roleModuleRepository;
             _permissionModuleRepository = permissionModuleRepository;
+            _roleDepartmentRepository = roleDepartmentRepository;
+            _departmentRepository = departmentRepository;
         }
         public List<Role> GetRoleList(int start, int length, string sortColumnName, string sortDirection, out int totalCount)
         {
@@ -158,6 +163,27 @@ namespace ZNV.Timesheet.RoleManagement
                     Creator = creator
                 };
                 _roleModuleRepository.Insert(roleModule);
+            });
+        }
+
+        public List<HRDepartment> GetRoleDepartments(int roleId)
+        {
+            var roleDepartmentIds = _roleDepartmentRepository.GetAll().Where(x => x.RoleId == roleId).Select(x=>x.DepartmentId).ToList();
+            return _departmentRepository.GetAll().Where(x => roleDepartmentIds.Contains(x.DeptCode1)).ToList();
+        }
+
+        public void AddRoleDepartments(int roleId, List<string> departmentIds, string creator)
+        {
+            _roleDepartmentRepository.Delete(roleDepartment => roleDepartment.RoleId == roleId);
+            departmentIds.ForEach(departmentId =>
+            {
+                RoleDepartment roleDepartment = new RoleDepartment
+                {
+                    RoleId = roleId,
+                    DepartmentId = departmentId,
+                    Creator = creator
+                };
+                _roleDepartmentRepository.Insert(roleDepartment);
             });
         }
     }

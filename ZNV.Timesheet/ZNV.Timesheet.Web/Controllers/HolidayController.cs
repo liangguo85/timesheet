@@ -58,14 +58,16 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult AddOrEdit(Holiday.Holiday holiday)
         {
-            holiday.Creator = "0001";
             if (holiday.Id == 0)
             {
+                holiday.Creator = Common.CommonHelper.CurrentUser;
                 _holidayAppService.AddHoliday(holiday);
                 return Json(new { success = true, message = "新增节假日信息成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                holiday.LastModifier = Common.CommonHelper.CurrentUser;
+                holiday.LastModifyTime = DateTime.Now;
                 _holidayAppService.UpdateHoliday(holiday);
                 return Json(new { success = true, message = "更新节假日信息成功!" }, JsonRequestBehavior.AllowGet);
             }

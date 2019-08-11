@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 
 namespace ZNV.Timesheet.Project
 {
     public class ProjectAppService: TimesheetAppServiceBase, IProjectAppService
     {
         private readonly IProjectRepository _projectRepository;
-        //private readonly IRepository<Holiday>
 
         public ProjectAppService(IProjectRepository projectRepository)
         {
@@ -25,8 +25,9 @@ namespace ZNV.Timesheet.Project
 
         public void UpdateProject(Project project)
         {
-            //var updatedProject = _projectRepository.GetAll().Where(x => x.Id == project.Id).FirstOrDefault();
-            _projectRepository.Update(project);
+            var updatedProject = _projectRepository.GetAll().Where(x => x.Id == project.Id).FirstOrDefault();
+            Mapper.Map(project, updatedProject);
+            _projectRepository.Update(updatedProject);
         }
 
         public void DeleteProject(int id)

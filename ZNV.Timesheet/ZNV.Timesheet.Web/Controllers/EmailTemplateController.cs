@@ -49,14 +49,16 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult AddOrEdit(EmailTemplate.EmailTemplate emailTemplate)
         {
-            emailTemplate.Creator = "0001";
             if (emailTemplate.Id == 0)
             {
+                emailTemplate.Creator = Common.CommonHelper.CurrentUser;
                 _emailTemplateAppService.AddEmailTemplate(emailTemplate);
                 return Json(new { success = true, message = "新增邮件模板信息成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                emailTemplate.LastModifier = Common.CommonHelper.CurrentUser;
+                emailTemplate.LastModifyTime = DateTime.Now;
                 _emailTemplateAppService.UpdateEmailTemplate(emailTemplate);
                 return Json(new { success = true, message = "更新邮件模板信息成功!" }, JsonRequestBehavior.AllowGet);
             }

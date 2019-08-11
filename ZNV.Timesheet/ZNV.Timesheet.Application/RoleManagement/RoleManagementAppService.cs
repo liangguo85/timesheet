@@ -3,6 +3,7 @@ using System.Linq;
 using ZNV.Timesheet.Employee;
 using System.Linq.Dynamic;
 using ZNV.Timesheet.PermissionModule;
+using AutoMapper;
 
 namespace ZNV.Timesheet.RoleManagement
 {
@@ -111,7 +112,9 @@ namespace ZNV.Timesheet.RoleManagement
         }
         public Role UpdateRole(Role role)
         {
-            _roleRepository.Update(role);
+            var updatedRole = _roleRepository.GetAll().Where(item => item.Id == role.Id).FirstOrDefault();
+            Mapper.Map(role, updatedRole);
+            _roleRepository.Update(updatedRole);
             if (role.UserIds != null && role.UserIds.Count > 0)
             {
                 _userRoleRepository.Delete(userRole => userRole.RoleId == role.Id);
@@ -121,7 +124,7 @@ namespace ZNV.Timesheet.RoleManagement
                     {
                         UserId = userId,
                         RoleId = role.Id,
-                        Creator = role.Creator
+                        Creator = role.LastModifier
                     };
                     _userRoleRepository.Insert(userRole);
                 });

@@ -57,14 +57,16 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult AddOrEdit(Role role)
         {
-            role.Creator = "0001";
             if (role.Id == 0)
             {
+                role.Creator = Common.CommonHelper.CurrentUser;
                 _roleManagementAppService.AddRole(role);
                 return Json(new { success = true, message = "新增角色信息成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                role.LastModifier = Common.CommonHelper.CurrentUser;
+                role.LastModifyTime = DateTime.Now;
                 _roleManagementAppService.UpdateRole(role);
                 return Json(new { success = true, message = "更新角色信息成功!" }, JsonRequestBehavior.AllowGet);
             }
@@ -93,8 +95,7 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult Permission(RolePermissionModel model)
         {
-            string creator = "0001";
-            _roleManagementAppService.AddRoleModules(model.RoleId, model.PermissionModuleIds ?? new List<int> { }, creator);
+            _roleManagementAppService.AddRoleModules(model.RoleId, model.PermissionModuleIds ?? new List<int> { }, Common.CommonHelper.CurrentUser);
             return Json(new { success = true, message = "角色授权成功!" }, JsonRequestBehavior.AllowGet);
         }
     }

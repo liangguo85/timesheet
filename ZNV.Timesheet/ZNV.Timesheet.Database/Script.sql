@@ -412,3 +412,30 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
+
+USE [ZNVTimesheet]
+GO
+
+/****** Object:  Table [dbo].[RoleDepartment]    Script Date: 2019/8/12 8:15:41 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[RoleDepartment](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RoleId] [int] NOT NULL,
+	[DepartmentId] [nvarchar](50) NOT NULL,
+	[Creator] [nvarchar](50) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](50) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_RoleDepartment] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO

@@ -220,6 +220,7 @@
     <Compile Include="PermissionModule\PermissionModule.cs" />
     <Compile Include="Project\IProjectRepository.cs" />
     <Compile Include="Project\Project.cs" />
+    <Compile Include="Report\DepartmentReportSearch.cs" />
     <Compile Include="Report\IReportRepository.cs" />
     <Compile Include="RoleManagement\IRoleDepartmentRepository.cs" />
     <Compile Include="RoleManagement\IRoleModuleRepository.cs" />

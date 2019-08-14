@@ -20,16 +20,25 @@ namespace ZNV.Timesheet.Web.Controllers
         // GET: DepartmentReport
         public ActionResult Index()
         {
-            DataTable dt = _reportAppService.GetDepartmentReport(DateTime.Now.AddYears(-1), DateTime.Now.AddYears(1));
+            DepartmentReportSearch search = new DepartmentReportSearch { startDate = DateTime.Now.AddYears(-1), endDate = DateTime.Now.AddYears(1), departmentIds = null };
+            DataTable dt = _reportAppService.GetDepartmentReport(search);
+            return View(dt);
+        }
+
+        [HttpPost]
+        public ActionResult GetDepartmentReport(DepartmentReportSearch search)
+        {
+
+            DataTable dt = _reportAppService.GetDepartmentReport(search);
             string JSONresult;
             JSONresult = JsonConvert.SerializeObject(dt);
-            //Response.Write(JSONresult);
-            return View(dt);
+            return Json(new { data = JSONresult }, JsonRequestBehavior.AllowGet);
         }
 
         public FileResult GetExcelForReport()
         {
-            DataTable dt = _reportAppService.GetDepartmentReport(DateTime.Now.AddYears(-1), DateTime.Now.AddYears(1));
+            DepartmentReportSearch search = new DepartmentReportSearch { startDate = DateTime.Now.AddYears(-1), endDate = DateTime.Now.AddYears(1), departmentIds = null };
+            DataTable dt = _reportAppService.GetDepartmentReport(search);
             string sheetName = "部门工时统计报表";
             var book = Common.CommonHelper.CreateHSSFromDataTable(sheetName, dt, new List<int>() { 0 });
             MemoryStream ms = new MemoryStream();

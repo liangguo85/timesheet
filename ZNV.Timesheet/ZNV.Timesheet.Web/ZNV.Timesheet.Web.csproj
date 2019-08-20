@@ -7758,7 +7758,6 @@
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -7767,11 +7766,11 @@
     <Compile Include="App_Start\TimesheetWebModule.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\CommonHelper.cs" />
-    <Compile Include="Controllers\AboutController.cs" />
     <Compile Include="Controllers\DepartmentReportController.cs" />
     <Compile Include="Controllers\EmailTemplateController.cs" />
     <Compile Include="Controllers\HolidayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LayoutController.cs" />
     <Compile Include="Controllers\PermissionModuleController.cs" />
     <Compile Include="Controllers\ProjectManagementController.cs" />
     <Compile Include="Controllers\RoleManagementController.cs" />
@@ -7782,12 +7781,12 @@
     <Compile Include="Controllers\TimesheetController.cs" />
     <Compile Include="Controllers\TimesheetPendingController.cs" />
     <Compile Include="Models\Layout\LanguageSelectionViewModel.cs" />
-    <Compile Include="Controllers\LayoutController.cs" />
     <Compile Include="Controllers\TimesheetControllerBase.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Layout\TopMenuViewModel.cs" />
+    <Compile Include="Models\RoleDepartmentModel.cs" />
     <Compile Include="Models\RolePermissionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\TimesheetWebViewPageBase.cs" />
@@ -7798,10 +7797,7 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\About\Index.cshtml" />
-    <Content Include="Views\Shared\_TopBar.cshtml" />
-    <Content Include="Views\Layout\_LanguageSelection.cshtml" />
-    <Content Include="Views\Layout\_TopMenu.cshtml" />
+    <Content Include="Views\Shared\_Menu.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Scripts\sweetalert\sweet-alert.scss" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
@@ -7839,6 +7835,8 @@
     <Content Include="Views\UserSetting\Index.cshtml" />
     <Content Include="Views\UserSetting\AddOrEdit.cshtml" />
     <Content Include="Views\DepartmentReport\Index.cshtml" />
+    <Content Include="Views\RoleManagement\DepartmentPermission.cshtml" />
+    <Content Include="Views\Layout\_EmployeeInfo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -7866,6 +7864,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Home\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

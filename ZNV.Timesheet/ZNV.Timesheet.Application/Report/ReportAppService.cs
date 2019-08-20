@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 
 namespace ZNV.Timesheet.Report
 {
@@ -12,9 +11,9 @@ namespace ZNV.Timesheet.Report
             _reportRepository = reportRepository;
         }
 
-        public DataTable GetDepartmentReport(DateTime startDate, DateTime endDate)
+        public DataTable GetDepartmentReport(DepartmentReportSearch search)
         {
-            return _reportRepository.GetDepartmentReport(startDate, endDate);
+            return _reportRepository.GetDepartmentReport(search);
         }
     }
 }

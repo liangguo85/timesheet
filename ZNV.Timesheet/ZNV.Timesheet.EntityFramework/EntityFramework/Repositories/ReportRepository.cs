@@ -1,5 +1,4 @@
-﻿using System;
-using Abp.EntityFramework;
+﻿using Abp.EntityFramework;
 using ZNV.Timesheet.Report;
 using System.Data;
 using System.Data.SqlClient;
@@ -14,12 +13,12 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
 
         }
 
-        public DataTable GetDepartmentReport(DateTime startDate, DateTime endDate)
+        public DataTable GetDepartmentReport(DepartmentReportSearch search)
         {
             DataTable dt = new DataTable();
             EnsureConnectionOpen();
 
-            using (var command = CreateCommand("Proc_DepartmentReport", CommandType.StoredProcedure, new SqlParameter("startDate", startDate), new SqlParameter("endDate", endDate)))
+            using (var command = CreateCommand("Proc_DepartmentReport", CommandType.StoredProcedure, new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate)))
             {
                 using (var da = new SqlDataAdapter(command)) {
                     da.Fill(dt);

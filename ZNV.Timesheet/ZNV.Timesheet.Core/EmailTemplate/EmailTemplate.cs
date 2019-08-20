@@ -1,13 +1,10 @@
-﻿using System;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace ZNV.Timesheet.EmailTemplate
 {
     [Table("EmailTemplate")]
-    public class EmailTemplate : Entity<int>, IHasCreationTime
+    public class EmailTemplate : BaseEntity
     {
         [Required(ErrorMessage = "邮件模板编码不能为空!")]
         public virtual string EmailTemplateCode { get; set; }
@@ -17,20 +14,5 @@ namespace ZNV.Timesheet.EmailTemplate
 
         [Required(ErrorMessage = "邮件模板不能为空!")]
         public virtual string EmailTemplateBody { get; set; }
-
-        public virtual string Creator { get; set; }
-
-        public virtual DateTime CreationTime { get; set; }
-
-        public virtual string LastModifier { get; set; }
-
-        public virtual DateTime? LastModifyTime { get; set; }
-
-        public virtual bool IsDeleted { get; set; }
-
-        public EmailTemplate()
-        {
-            CreationTime = DateTime.Now;
-        }
     }
 }

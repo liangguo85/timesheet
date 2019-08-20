@@ -17,5 +17,5 @@ namespace ZNV.Timesheet.Web.Controllers
             CommonHelper.CurrentUser = "";
             return Json(new { success = true, message = "清空Session成功" }, JsonRequestBehavior.AllowGet);
         }
-	}
+    }
 }

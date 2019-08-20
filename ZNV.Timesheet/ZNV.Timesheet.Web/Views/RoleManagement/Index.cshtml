@@ -49,11 +49,11 @@
                     },
                     {
                         "data": "Id", "render": function (data) {
-                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "RoleManagement")/"+ data+"','编辑角色信息')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("Permission", "RoleManagement")/"+ data+"','角色权限管理')><i class='fa fa-pencil'></i>权限管理</a>"
+                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "RoleManagement")/"+ data+"','编辑角色信息')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("Permission", "RoleManagement")/"+ data+"','角色权限管理')><i class='fa fa-pencil'></i>权限管理</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("DepartmentPermission", "RoleManagement")/"+ data+"','部门权限管理')><i class='fa fa-pencil'></i>部门权限</a>"
                         },
                         "orderable": false,
                         "searchable": false,
-                        "width": "250px"
+                        "width": "300px"
                     }
                 ],
                 "serverSide": true,

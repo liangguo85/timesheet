@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Abp.Application.Services;
+using ZNV.Timesheet.Employee;
 
 namespace ZNV.Timesheet.RoleManagement
 {
@@ -12,5 +13,7 @@ namespace ZNV.Timesheet.RoleManagement
         void DeleteRole(int id);
         List<PermissionModule.PermissionModule> GetRoleModules(int roleId);
         void AddRoleModules(int roleId, List<int> moduleIds, string creator);
+        List<HRDepartment> GetRoleDepartments(int roleId);
+        void AddRoleDepartments(int roleId, List<string> departmentIds, string creator);
     }
 }

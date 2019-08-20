@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using AutoMapper;
 
 namespace ZNV.Timesheet.Holiday
 {
@@ -22,7 +24,9 @@ namespace ZNV.Timesheet.Holiday
         }
         public Holiday UpdateHoliday(Holiday holiday)
         {
-            return _holidayRepository.Update(holiday);
+            var updatedHoliday = _holidayRepository.GetAll().Where(x => x.Id == holiday.Id).FirstOrDefault();
+            Mapper.Map(holiday, updatedHoliday);
+            return _holidayRepository.Update(updatedHoliday);
         }
         public void DeleteHoliday(int id)
         {

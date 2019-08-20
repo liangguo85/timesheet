@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
+using AutoMapper;
 
 namespace ZNV.Timesheet.EmailTemplate
 {
@@ -29,9 +30,11 @@ namespace ZNV.Timesheet.EmailTemplate
         {
             return _emailTemplateRepository.InsertAndGetId(emailTemplate);
         }
-        public EmailTemplate UpdateEmailTemplate(EmailTemplate team)
+        public EmailTemplate UpdateEmailTemplate(EmailTemplate emailTemplate)
         {
-            return _emailTemplateRepository.Update(team);
+            var updatedEmailTemplate = GetEmailTemplate(emailTemplate.Id);
+            Mapper.Map(emailTemplate, updatedEmailTemplate);
+            return _emailTemplateRepository.Update(updatedEmailTemplate);
         }
         public void DeleteEmailTemplate(int id)
         {

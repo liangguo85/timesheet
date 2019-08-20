@@ -1,48 +1,27 @@
-﻿using System.Web.Mvc;
-using Abp.Application.Navigation;
-using Abp.Localization;
-using Abp.Runtime.Session;
-using Abp.Threading;
-using ZNV.Timesheet.Web.Models.Layout;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using ZNV.Timesheet.Employee;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
-    public class LayoutController : TimesheetControllerBase
+    public class LayoutController : Controller
     {
-        private readonly IUserNavigationManager _userNavigationManager;
-        private readonly ILanguageManager _languageManager;
+        private readonly IEmployeeAppService _empService;
 
-        public LayoutController(
-            IUserNavigationManager userNavigationManager, 
-            ILocalizationManager localizationManager,
-            ILanguageManager languageManager)
+        public LayoutController(IEmployeeAppService empService)
         {
-            _userNavigationManager = userNavigationManager;
-            _languageManager = languageManager;
+            _empService = empService;
         }
 
         [ChildActionOnly]
-        public PartialViewResult TopMenu(string activeMenu = "")
+        public PartialViewResult EmployeeInfo()
         {
-            var model = new TopMenuViewModel
-                        {
-                            MainMenu = AsyncHelper.RunSync(() => _userNavigationManager.GetMenuAsync("MainMenu", AbpSession.ToUserIdentifier())),
-                            ActiveMenuItemName = activeMenu
-                        };
+            var model = _empService.GetEmployeeByCode(Common.CommonHelper.CurrentUser);
 
-            return PartialView("_TopMenu", model);
-        }
-
-        [ChildActionOnly]
-        public PartialViewResult LanguageSelection()
-        {
-            var model = new LanguageSelectionViewModel
-                        {
-                            CurrentLanguage = _languageManager.CurrentLanguage,
-                            Languages = _languageManager.GetLanguages()
-                        };
-
-            return PartialView("_LanguageSelection", model);
+            return PartialView("_EmployeeInfo", model);
         }
     }
 }

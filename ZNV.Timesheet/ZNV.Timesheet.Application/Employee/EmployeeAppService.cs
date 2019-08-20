@@ -24,12 +24,19 @@ namespace ZNV.Timesheet.Employee
 
         public List<HREmployee> GetEmployeeList(string searchTerm, int pageSize, int pageNum, out int totalCount)
         {
+            var current_date = DateTime.Now;
+            var tomorrow_date = current_date.AddDays(1);
+
             totalCount = _employeeRepository.GetAll()
-                .Where(x => string.IsNullOrEmpty(searchTerm) || x.EmployeeName.Contains(searchTerm) || x.EmployeeCode.Contains(searchTerm)).Count();
+                .Where(
+                    x => (string.IsNullOrEmpty(searchTerm) || x.EmployeeName.Contains(searchTerm) || x.EmployeeCode.Contains(searchTerm))
+                        && current_date > x.EntryDate && current_date < (x.ExitDate ?? tomorrow_date)
+                ).Count();
 
             var employeeList = (from user in _employeeRepository.GetAll()
                          join department in _departmentRepository.GetAll() on user.DeptCode equals department.DeptCode1
-                         where string.IsNullOrEmpty(searchTerm) || user.EmployeeName.Contains(searchTerm) || user.EmployeeCode.Contains(searchTerm)
+                         where (string.IsNullOrEmpty(searchTerm) || user.EmployeeName.Contains(searchTerm) || user.EmployeeCode.Contains(searchTerm))
+                            && current_date > user.EntryDate && current_date < (user.ExitDate ?? tomorrow_date)
                          orderby user.EmployeeName
                          select new {
                              EmployeeCode = user.EmployeeCode,

@@ -1,14 +1,11 @@
 ﻿using System;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
 
 namespace ZNV.Timesheet.ApproveLog
 {
     [Table("ApproveLog")]
-    public class ApproveLog : Entity<int>, IHasCreationTime
+    public class ApproveLog : BaseEntity
     {
         [Required(ErrorMessage = "WorkflowInstanceID不能为空!")]
         public virtual string WorkflowInstanceID { get; set; }
@@ -28,20 +25,5 @@ namespace ZNV.Timesheet.ApproveLog
 
         [Required(ErrorMessage = "OperateTime不能为空!")]
         public virtual DateTime OperateTime { get; set; }
-        
-        public virtual string Creator { get; set; }
-
-        public virtual DateTime CreationTime { get; set; }
-
-        public virtual string LastModifier { get; set; }
-
-        public virtual DateTime? LastModifyTime { get; set; }
-
-        public virtual bool IsDeleted { get; set; }
-
-        public ApproveLog()
-        {
-            CreationTime = DateTime.Now;
-        }
     }
 }

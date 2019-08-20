@@ -1,5 +1,4 @@
-﻿@using ZNV.Timesheet.PermissionModule;
-@{
+﻿@{
 
     ViewBag.Title = "部门工时统计表";
 }
@@ -16,6 +15,7 @@
     <script src="~/lib/My97DatePicker/WdatePicker.js"></script>
     <!-- Select2 -->
     <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/js/config.js"></script>
     <script>
         $(document).ready(function () {
             MergeCommonRows($('#tbReport'), [1, 2]);
@@ -25,41 +25,51 @@
             //    'columnNum': 2,
             //});
 
-            $('#searchDepartment').select2(
-                {
-                    placeholder: '输入部门编码或名称',
-                    //Does the user have to enter any data before sending the ajax request
-                    minimumInputLength: 0,
-                    allowClear: true,
-                    multiple: true,
-                    ajax: {
-                        //How long the user has to pause their typing before sending the next request
-                        delay: 150,
-                        //The url of the json service
-                        url: '@Url.Action("GetDepartmentList", "Team")',
-                        dataType: 'json',
-                        async: true,
-                        //Our search term and what page we are on
-                        data: function (params) {
-                            return {
-                                pageSize: 100,
-                                pageNum: params.page || 1,
-                                searchTerm: params.term,
-                            };
-                        },
-                        processResults: function (data, params) {
-                            params.page = params.page || 1;
-                            return {
-                                results: $.map(data.Results, function (obj) {
-                                    return { id: obj.DeptCode1, text: obj.FullDeptName + "(" + obj.DeptCode1 + ")" };
-                                }),
-                                pagination: {
-                                    more: (params.page * 100) <= data.Total
-                                }
-                            };
-                        }
+            var config = select2.department
+            config.multiple = true
+            $('#searchDepartment').select2(config);
+
+            $("#btnSearch").click(function () {
+
+                alert($("#searchDepartment").val())
+                $.ajax({
+                    url: '@Url.Action("GetDepartmentReport", "DepartmentReport")',
+                    type: 'POST',
+                    data: {
+                        startDate: $("#beginDate").val(),
+                        endDate: $("#endDate").val(),
+                        departmentIds: $("#searchDepartment").val()
+                    },
+                    success: function (data) {
+
+                        var head = $("#head")
+                        var body = $("#body")
+                        
+                        jsonData = JSON.parse(data.data)
+
+                        row = '<tr>'
+                        $.each(jsonData[0], function(k, v) {
+                            row += '<th>' + k + '</th>';
+                        })
+                        row += '</tr>'
+                        head.append(row);
+
+                        alert(row)
+
+                        $.each(jsonData, function () {
+                            row = '<tr>'
+                            $.each(this, function (k, v) {
+                                row += '<td>' + v + '</td>';
+                            })
+                            row += '</tr>'
+                            body.append(row)
+                        })
+                    },
+                    error: function () {
+                        alert("error")
                     }
-                });
+                })
+            })
 
         })
     </script>
@@ -73,13 +83,13 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label>开始时间</label>
-                            <input type="text" id="beginTime" class="form-control" onclick="WdatePicker()" />
+                            <input type="text" id="beginDate" class="form-control" onclick="WdatePicker()" />
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label>结束时间</label>
-                            <input class="form-control" id="endTime" onclick="WdatePicker()" />
+                            <input class="form-control" id="endDate" onclick="WdatePicker()" />
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -98,7 +108,7 @@
             </div>
             <div class="box-body" style="height: 100%; min-height: 100%; max-height: 100%; overflow-x: scroll;">
                 <table id="tbReport" class="table table-bordered table-striped table-hover">
-                    <thead>
+                    <thead id="head">
                         <tr>
                             @foreach (System.Data.DataColumn col in Model.Columns)
                             {
@@ -106,7 +116,7 @@
                             }
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="body">
                         @foreach (System.Data.DataRow row in Model.Rows)
                         {
                             <tr>

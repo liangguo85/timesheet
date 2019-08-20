@@ -45,11 +45,24 @@ namespace ZNV.Timesheet.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetAllTimesheets(DateTime? startDate, DateTime? endDate)
+        public JsonResult GetAllTimesheets()
         {
             string user = Common.CommonHelper.CurrentUser;
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
+            DateTime? startDate = null, endDate=null;
+            if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
+            {
+                string[] paramList = Request["columns[0][search][value]"].Split(',');
+                if (!string.IsNullOrEmpty(paramList[0]))
+                {
+                    startDate = DateTime.Parse(paramList[0]);
+                }
+                if (!string.IsNullOrEmpty(paramList[1]))
+                {
+                    endDate = DateTime.Parse(paramList[1]);
+                }
+            }
             var list = _appService.GetAllTimesheetsByUser(user, startDate, endDate);
             int totalRow = list.Count;
             list = list.Skip(start).Take(length).ToList();

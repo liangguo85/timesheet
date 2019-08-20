@@ -69,8 +69,8 @@
                                         </select>
                                     </td>
                                     <td><input type="text" name="Workload" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].Workload" /></td>
-                                    <td><input type="text" name="WorkContent" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].WorkContent" /></td>
-                                    <td><input type="text" name="Remarks" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].Remarks" /></td>
+                                    <td><textarea rows="2" name="WorkContent" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].WorkContent" /></td>
+                                    <td><textarea rows="2" name="Remarks" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].Remarks" /></td>
                                     <td>
                                         @if (Model.TimesheetList[i].Status == ZNV.Timesheet.Timesheet.ApproveStatus.Draft)
                                         {

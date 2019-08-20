@@ -23,6 +23,7 @@
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/notify.min.js"></script>
     <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/js/config.js"></script>
 
     <script>
         var Popup, dataTable
@@ -63,7 +64,7 @@
                     {
                         "data": "WorkContent", "name": "WorkContent", "render": function (d) {
                             if (d)
-                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                                return "<label data-toggle='tooltip' data-html='true' title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
                             else
                                 return "";
                         }
@@ -71,7 +72,7 @@
                     {
                         "data": "Remarks", "name": "Remarks", "render": function (d) {
                             if (d)
-                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                                return "<label data-toggle='tooltip' data-html='true' title='" + d + "'>" + "审批日志" + "</label>";
                             else
                                 return "";
                         }
@@ -141,12 +142,20 @@
                             $(this).html('+').attr("title", "展开");
                         }
                     });
+                    $("[data-toggle='tooltip']").tooltip(); 
                 }
             });
 
+            $('#submitUser').select2(select2.employee);
+
+            $("#btnSearch").click(function () {
+                var submitUser = $("#submitUser").val();
+                dataTable.columns(1).search(submitUser);
+                dataTable.draw();
+            });
         }
         )
-        
+
         function PopupForm(url) {
             var formDiv = $('<div/>');
             $.get(url)
@@ -157,6 +166,7 @@
                         autoOpen: true,
                         resizable: false,
                         modal: true,
+                        width: 500,
                         title: "转办",
                         close: function () {
                             Popup.dialog('destroy').remove();
@@ -304,6 +314,20 @@
         <!-- /.box -->
         <div class="box">
             <div class="box box-header">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>提交人</label>
+                            <select id="submitUser" class="form-control select2" style="width: 100%;">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-toggle pull-right">
+                    <button type="button" name="search" id="btnSearch" class="btn btn-success">
+                        查询 <i class="fa fa-search"></i>
+                    </button>
+                </div>
                 <div class="btn-group-toggle">
                     <button type="button" class="btn btn-info" title="提交所有勾选的工时" onclick="batchApprove()">批量通过 <i class="fa fa-plus"></i></button>
                     <button type="button" class="btn btn-info" title="驳回所有勾选的工时" onclick="batchReject()">批量驳回 <i class="fa fa-trash"></i></button>
@@ -321,7 +345,7 @@
                             <th>项目名称</th>
                             <th>工时</th>
                             <th>工作内容</th>
-                            <th>备注</th>
+                            <th></th>
                             <th></th>
                         </tr>
                     </thead>

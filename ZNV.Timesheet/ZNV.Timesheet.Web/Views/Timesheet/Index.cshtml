@@ -35,10 +35,6 @@
                     "url": "/Timesheet/GetAllTimesheets",
                     "type": "POST",
                     "datatype": "json",
-                    "data": {
-                        "startDate": "2019-06-01",
-                        "endDate": "2019-12-01"
-                    },
                 },
                 "columns": [
                     {
@@ -133,6 +129,12 @@
                 }
             });
             InitWeekList();
+            $("#btnSearch").click(function () {
+                var fDate = $("#searchFromDate").val();
+                var tDate = $("#searchToDate").val();
+                dataTable.columns(0).search(fDate+","+tDate);
+                dataTable.draw();
+            });
         })
 
         //初始化周列表，只需初始化当前周以及前1周
@@ -206,7 +208,7 @@
                         modal: true,
                         title: "按周新增或编辑工时",
                         //height: 600,
-                        width: 800,
+                        width: 900,
                         close: function () {
                             Popup.dialog('destroy').remove();
                         },
@@ -356,11 +358,11 @@
                         ts.Workload = parseFloat(ts.Workload);
                     }
                 }
-                var tsWorkContent = $(trList[i]).find("input[name='WorkContent']");
+                var tsWorkContent = $(trList[i]).find("textarea[name='WorkContent']");
                 if (tsWorkContent.length > 0) {
                     ts.WorkContent = $(tsWorkContent).val();
                 }
-                var tsRemarks = $(trList[i]).find("input[name='Remarks']");
+                var tsRemarks = $(trList[i]).find("textarea[name='Remarks']");
                 if (tsRemarks.length > 0) {
                     ts.Remarks = $(tsRemarks).val();
                 }
@@ -488,6 +490,25 @@
         <!-- /.box -->
         <div class="box">
             <div class="box box-header">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>开始日期</label>
+                            <input type="text" class="form-control" id="searchFromDate" onclick="WdatePicker()" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>结束日期</label>
+                            <input type="text" class="form-control" id="searchToDate" onclick="WdatePicker()" />
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-toggle pull-right">
+                    <button type="button" name="search" id="btnSearch" class="btn btn-success">
+                        查询 <i class="fa fa-search"></i>
+                    </button>
+                </div>
                 <div class="btn-group-toggle">
                     <select id="selectWeek"></select>
                     <button type="button" class="btn btn-info" onclick="PopupFormForWeek('@Url.Action("AddOrEditForWeek","Timesheet")')">按周新增或编辑 <i class="fa fa-plus"></i></button>

@@ -7,6 +7,8 @@
     <link href="~/Content/themes/base/theme.css" rel="stylesheet" />
     <!-- bootstrap datepicker -->
     <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/css/select2.min.css">
 }
 @section scripts
 {
@@ -20,6 +22,8 @@
 
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/notify.min.js"></script>
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/js/config.js"></script>
 
     <script>
         var Popup, dataTable
@@ -32,20 +36,28 @@
                     "datatype": "json",
                 },
                 "columns": [
+                    { "data": "TimesheetUser" },
                     {
                         "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
                             if (d)
-                                return moment(d).format("YYYY-MM-DD");
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
                             else
                                 return "";
                         }
                     },
-                    { "data": "ProjectName" },
+                    {
+                        "data": "ProjectName", "name": "ProjectName", "render": function (d) {
+                            if (d)
+                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                            else
+                                return "";
+                        }
+                    },
                     { "data": "Workload" },
                     {
                         "data": "WorkContent", "name": "WorkContent", "render": function (d) {
                             if (d)
-                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                                return "<a href = '#' data-toggle='tooltip' data-html='true' title='" + d + "'>" + GetShortStringForCell(d) + "</a>";
                             else
                                 return "";
                         }
@@ -53,34 +65,32 @@
                     {
                         "data": "Remarks", "name": "Remarks", "render": function (d) {
                             if (d)
-                                return "<label title='" + d + "'>" + GetShortStringForCell(d) + "</label>";
+                                return "<a href = '#' data-toggle='tooltip' data-html='true' title='" + d + "'>审批日志</a>";
                             else
                                 return "";
                         }
-                    },
-                    {
-                        "data": "Status",
-                        "orderable": false,
-                        "searchable": false,
-                        "width": "80px",
-                        "render": function (data, type, full, meta) {
-                            if (data == "" || data == null || data == ApproveStatus.Draft) {
-                                return "草稿";
-                            }
-                            else if (data == ApproveStatus.Approving) {
-                                return "审核中";
-                            }
-                            else {
-                                return "审批完成";
-                            }
-                        }
                     }
                 ],
+                "fnCreatedRow": function (nRow, aData, iDataIndex) {
+                    $('td:eq(1)', nRow).html("<span class='row-details' title='展开' style = 'padding-left: 5px;padding - right: 5px;cursor: pointer;color: blue;'>+</span> " + aData.TimesheetUser);
+                    //再把工时清单加载到子表格中
+                    var tb = '';
+                    for (var i = 0; i < aData.TimesheetList.length; i++) {
+                        tb += '<tr name = "tr' + aData.IDList + '">';
+                        tb += '<td></td><td>' + aData.TimesheetList[i].TimesheetUser + '</td><td>' + ConvertStringToDatetimeEx(aData.TimesheetList[i].TimesheetDate) + '</td><td>' + aData.TimesheetList[i].ProjectName + '</td><td>' + aData.TimesheetList[i].Workload + '</td>';
+                        tb += '<td><label title="' + aData.TimesheetList[i].WorkContent + '">' + GetShortStringForCell(aData.TimesheetList[i].WorkContent) + '</label></td>';
+                        tb += '<td><label title="' + aData.TimesheetList[i].Remarks + '">' + GetShortStringForCell(aData.TimesheetList[i].Remarks) + '</label></td>';
+                        tb += '<td></td>';
+                        tb += '</tr>'
+                    }
+                    $(nRow).attr("detailDatas", tb);
+                },
                 "serverSide": true,
                 "processing": true,
                 //"order": [1, "asc"],
-                "aaSorting": [[0, "desc"]],
+                "aaSorting": [[1, "desc"]],
                 "bSort": true,
+                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0] }],
                 "language": {
                     "emptyTable": "没有记录",
                     "processing": "处理中... 请等待!",
@@ -102,10 +112,33 @@
                 },
                 "dom": '<"top"l>rt<"bottom"ip><"clear">',
                 "fnInitComplete": function (oSettings, json) {
-
+                    $('#dtTimesheet').on('click', ' tbody td .row-details', function () {
+                        var nTr = $(this).parents('tr')[0];
+                        var detailDatas = $(nTr).attr("detailDatas");
+                        var idlist = $(nTr).find("input[name='ckboxTS']").val();
+                        var childTR = $("tr[name='tr" + idlist + "']");
+                        if (childTR.length == 0) {//没有找到则加上
+                            $(detailDatas).insertAfter($(nTr));
+                            $(this).html('-').attr("title", "折叠");
+                        }
+                        else {//找到了则移除
+                            $(childTR).remove();
+                            $(this).html('+').attr("title", "展开");
+                        }
+                    });
+                    $("[data-toggle='tooltip']").tooltip();
                 }
             });
-        })
+
+            $('#submitUser').select2(select2.employee);
+
+            $("#btnSearch").click(function () {
+                var submitUser = $("#submitUser").val();
+                dataTable.columns(1).search(submitUser);
+                dataTable.draw();
+            });
+        }
+        )
         
     </script>
 }
@@ -114,8 +147,18 @@
         <!-- /.box -->
         <div class="box">
             <div class="box box-header">
-                <div class="btn-group-toggle">
-                    
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>提交人</label>
+                            <select id="submitUser" class="form-control select2" style="width: 100%;"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-toggle pull-right">
+                    <button type="button" name="search" id="btnSearch" class="btn btn-success">
+                        查询 <i class="fa fa-search"></i>
+                    </button>
                 </div>
             </div>
             <!-- /.box-header -->
@@ -123,12 +166,11 @@
                 <table id="dtTimesheet" class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
+                            <th>提交人</th>
                             <th>日期</th>
                             <th>项目名称</th>
                             <th>工时</th>
                             <th>工作内容</th>
-                            <th>备注</th>
-                            <th>状态</th>
                         </tr>
                     </thead>
                 </table>

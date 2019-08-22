@@ -1,3 +1,4 @@
+using Abp.Net.Mail;
 using System;
 using System.Data.Entity.Migrations;
 using ZNV.Timesheet.EntityFramework;
@@ -16,6 +17,7 @@ namespace ZNV.Timesheet.Migrations
         {
             // This method will be called every time after migrating to the latest version.
             // You can add any seed data here...
+            
         }
     }
 }

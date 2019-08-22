@@ -130,5 +130,38 @@ namespace ZNV.Timesheet.Web.Common
             return book;
         }
         
+        /// <summary>
+        /// 把列表转换成英文逗号隔开的字符串
+        /// </summary>
+        /// <param name="charList"></param>
+        /// <returns></returns>
+        public static string List2String(List<string> charList)
+        {
+            string list = string.Empty;
+            if (charList != null && charList.Count > 0)
+            {
+                for (int i = 0; i < charList.Count; i++)
+                {
+                    list += string.Format("{0}{1}", (list == "" ? "" : ","), charList[i]);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取审批日志的tree的html代码
+        /// </summary>
+        /// <param name="alList"></param>
+        /// <returns></returns>
+        public static string GetApproveLogTreeHtml(List<ApproveLog.ApproveLog> alList)
+        {
+            string al = "<p style = 'align:left'>";
+            for (int i = 0; i < alList.Count; i++)
+            {
+                al += string.Format(@"<div>{0}|{1}:{2}</div>", alList[i].OperateTime.ToString("yyyy-MM-dd"), alList[i].CurrentOperator, alList[i].OperateType);
+            }
+            al += "</p>";
+            return al;
+        }
     }
 }

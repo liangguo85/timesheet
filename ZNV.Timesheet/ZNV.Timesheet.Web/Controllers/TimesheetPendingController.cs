@@ -55,12 +55,12 @@ namespace ZNV.Timesheet.Web.Controllers
                 {
                     TimesheetUser = g.Key.TimesheetUser,
                     WorkflowInstanceID = g.Key.WorkflowInstanceID,
-                    ProjectName = List2String(g.Select(ts => ts.ProjectName).Distinct().ToList()),
-                    TimesheetDate = List2String(g.Select(ts => ts.TimesheetDate.Value.ToString("yyyy-MM-dd")).Distinct().ToList()),
-                    WorkContent = List2String(g.Select(ts => ts.WorkContent).Distinct().ToList()),
+                    ProjectName = Common.CommonHelper.List2String(g.Select(ts => ts.ProjectName).Distinct().ToList()),
+                    TimesheetDate = Common.CommonHelper.List2String(g.Select(ts => ts.TimesheetDate.Value.ToString("yyyy-MM-dd")).Distinct().ToList()),
+                    WorkContent = Common.CommonHelper.List2String(g.Select(ts => ts.WorkContent).Distinct().ToList()),
                     Workload = g.Sum(ts => ts.Workload),
                     Remarks = GetApproveLog(g.Key.WorkflowInstanceID),
-                    IDList = List2String(g.Select(ts => ts.Id.ToString()).Distinct().ToList()),
+                    IDList = Common.CommonHelper.List2String(g.Select(ts => ts.Id.ToString()).Distinct().ToList()),
                     TimesheetList = g.ToList()
                 }).ToList();
 
@@ -76,34 +76,15 @@ namespace ZNV.Timesheet.Web.Controllers
 
         private string GetApproveLog(string workflowInstanceID)
         {
-            string al = "<p align=\"left\">";
             var alList = _alService.GetApproveLogByWorkflowInstanceID(workflowInstanceID);
             //alList.ForEach(item =>
             //{
             //    var tsUser = _employeeAppService.GetEmployeeByCode(item.CurrentOperator);
             //    item.CurrentOperator = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
             //});
-            for (int i = 0; i < alList.Count; i++)
-            {
-                al += string.Format("{0}|{1}:{2}<br/>", alList[i].OperateTime.ToString("yyyy-MM-dd"), alList[i].CurrentOperator, alList[i].OperateType);
-            }
-            al += "</p>";
-            return al;
+            return Common.CommonHelper.GetApproveLogTreeHtml(alList);
         }
-
-        private string List2String(List<string> charList)
-        {
-            string list = string.Empty;
-            if (charList != null && charList.Count > 0)
-            {
-                for (int i = 0; i < charList.Count; i++)
-                {
-                    list += string.Format("{0}{1}", (list == "" ? "" : ","), charList[i]);
-                }
-            }
-            return list;
-        }
-
+        
         [HttpPost]
         public ActionResult AddOrEdit(Timesheet.Timesheet ts)
         {

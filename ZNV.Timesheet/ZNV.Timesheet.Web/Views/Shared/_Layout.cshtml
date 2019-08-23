@@ -253,7 +253,7 @@ desired effect
                 <!-- Sidebar Menu -->
                 <ul class="sidebar-menu" data-widget="tree">
                     <li class="header">菜单导航</li>
-                    <li class="treeview active">
+                    <li class="treeview active menu-open">
                         <a href="#">
                             <i class="fa fa-edit"></i> <span>个人中心</span>
                             <span class="pull-right-container">
@@ -417,7 +417,9 @@ desired effect
     <script>
         abp.localization.defaultSourceName = '@LocalizationSourceName';
         moment.locale('@Thread.CurrentThread.CurrentUICulture.Name.ToLower()'); //Localizing momentjs
-        var currentUrl = window.location.href.substring(window.location.href.lastIndexOf('/'));//例如：/timesheet
+        var currentUrl = window.location.href.substring(window.location.href.lastIndexOf('/')) //例如：/timesheet
+        if (currentUrl == "/")
+            currentUrl = "/timesheet"
         $("ul.treeview-menu li.active").removeClass("active");
         $("ul.sidebar-menu li.active").removeClass("active").removeClass("menu-open");
         $("ul.treeview-menu a").each(function () {

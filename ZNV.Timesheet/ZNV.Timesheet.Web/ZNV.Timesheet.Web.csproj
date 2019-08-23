@@ -7837,6 +7837,7 @@
     <Content Include="Views\DepartmentReport\Index.cshtml" />
     <Content Include="Views\RoleManagement\DepartmentPermission.cshtml" />
     <Content Include="Views\Layout\_EmployeeInfo.cshtml" />
+    <Content Include="Views\Layout\_Menu.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,87 @@
+﻿@model IEnumerable<ZNV.Timesheet.PermissionModule.PermissionModule>
+
+<!-- Sidebar Menu -->
+<ul class="sidebar-menu" data-widget="tree">
+    <li class="header">菜单导航</li>
+    <li class="treeview active menu-open">
+        <a href="#">
+            <i class="fa fa-edit"></i> <span>个人中心</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li class="active"><a href="/timesheet"><i class="fa fa-circle-o"></i>我的周报</a></li>
+            <li><a href="/TimesheetPending"><i class="fa fa-circle-o"></i>待审周报</a></li>
+            <li><a href="/TimesheetApproved"><i class="fa fa-circle-o"></i>已审周报</a></li>
+            <li><a href="/UserSetting"><i class="fa fa-circle-o"></i>个人设置</a></li>
+        </ul>
+    </li>
+    @if (Model.Any(item => item.ModuleCode.StartsWith("0002")))
+    {
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-pie-chart"></i> <span>统计分析</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00020001")))
+                {
+                    <li><a href="/DepartmentReport"><i class="fa fa-circle-o"></i>部门工时报表</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00020002")))
+                {
+                    <li><a href="#"><i class="fa fa-circle-o"></i>项目工时报表</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00020003")))
+                {
+                    <li><a href="#"><i class="fa fa-circle-o"></i>项目管理报表</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00020004")))
+                {
+                    <li><a href="#"><i class="fa fa-circle-o"></i>产线项目报表</a></li>
+                }
+            </ul>
+        </li>
+    }
+    @if (Model.Any(item => item.ModuleCode.StartsWith("0001")))
+    {
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-laptop"></i> <span>后台管理</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00010001")))
+                {
+                    <li><a href="/Team"><i class="fa fa-circle-o"></i>科室信息</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00010002")))
+                {
+                    <li><a href="/ProjectManagement"><i class="fa fa-circle-o"></i>项目信息</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00010003")))
+                {
+                    <li><a href="/Holiday"><i class="fa fa-circle-o"></i>节假日管理</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00010004")))
+                {
+                    <li><a href="/RoleManagement"><i class="fa fa-circle-o"></i>角色管理</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00010005")))
+                {
+                    <li><a href="/PermissionModule"><i class="fa fa-circle-o"></i>权限模块管理</a></li>
+                }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00010006")))
+                {
+                    <li><a href="/EmailTemplate"><i class="fa fa-circle-o"></i>邮件模板</a></li>
+                }
+            </ul>
+        </li>
+    }
+    </ul>
+<!-- /.sidebar-menu -->

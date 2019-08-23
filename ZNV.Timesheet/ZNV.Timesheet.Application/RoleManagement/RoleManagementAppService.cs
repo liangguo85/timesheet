@@ -188,5 +188,15 @@ namespace ZNV.Timesheet.RoleManagement
                 _roleDepartmentRepository.Insert(roleDepartment);
             });
         }
+
+        public List<PermissionModule.PermissionModule> GetEmployeeModules(string employeeId)
+        {
+            var modules = (from userRole in _userRoleRepository.GetAll()
+                           join roleModule in _roleModuleRepository.GetAll() on userRole.RoleId equals roleModule.RoleId
+                           join module in _permissionModuleRepository.GetAll() on roleModule.ModuleId equals module.Id
+                           where userRole.UserId == employeeId
+                           select module).Distinct().ToList();
+            return modules;
+        }
     }
 }

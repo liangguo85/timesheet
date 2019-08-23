@@ -251,7 +251,7 @@ desired effect
                 </form>-->
                 <!-- /.search form -->
                 <!-- Sidebar Menu -->
-                <ul class="sidebar-menu" data-widget="tree">
+                @*<ul class="sidebar-menu" data-widget="tree">
                     <li class="header">菜单导航</li>
                     <li class="treeview active menu-open">
                         <a href="#">
@@ -297,7 +297,8 @@ desired effect
                             <li><a href="/EmailTemplate"><i class="fa fa-circle-o"></i>邮件模板</a></li>
                         </ul>
                     </li>
-                </ul>
+                </ul>*@
+                @Html.Action("Menu", "Layout")
                 <!-- /.sidebar-menu -->
             </section>
             <!-- /.sidebar -->

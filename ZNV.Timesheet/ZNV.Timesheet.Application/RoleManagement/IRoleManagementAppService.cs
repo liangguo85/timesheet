@@ -15,5 +15,6 @@ namespace ZNV.Timesheet.RoleManagement
         void AddRoleModules(int roleId, List<int> moduleIds, string creator);
         List<HRDepartment> GetRoleDepartments(int roleId);
         void AddRoleDepartments(int roleId, List<string> departmentIds, string creator);
+        List<PermissionModule.PermissionModule> GetEmployeeModules(string employeeId);
     }
 }

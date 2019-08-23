@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using ZNV.Timesheet.Employee;
+using ZNV.Timesheet.RoleManagement;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
     public class LayoutController : Controller
     {
         private readonly IEmployeeAppService _empService;
+        private readonly IRoleManagementAppService _roleManagementAppService;
 
-        public LayoutController(IEmployeeAppService empService)
+        public LayoutController(IEmployeeAppService empService, IRoleManagementAppService roleManagementAppService)
         {
             _empService = empService;
+            _roleManagementAppService = roleManagementAppService;
         }
 
         [ChildActionOnly]
@@ -22,6 +21,14 @@ namespace ZNV.Timesheet.Web.Controllers
             var model = _empService.GetEmployeeByCode(Common.CommonHelper.CurrentUser);
 
             return PartialView("_EmployeeInfo", model);
+        }
+
+        [ChildActionOnly]
+        public PartialViewResult Menu()
+        {
+            var model = _roleManagementAppService.GetEmployeeModules(Common.CommonHelper.CurrentUser);
+
+            return PartialView("_Menu", model);
         }
     }
 }

@@ -227,6 +227,7 @@
     <Compile Include="Report\ReportAppService.cs" />
     <Compile Include="RoleManagement\IRoleManagementAppService.cs" />
     <Compile Include="RoleManagement\RoleManagementAppService.cs" />
+    <Compile Include="Smtp\EmailSender.cs" />
     <Compile Include="Team\ITeamAppService.cs" />
     <Compile Include="Team\TeamAppService.cs" />
     <Compile Include="TimesheetApplicationModule.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="Timesheet\TimesheetAppService.cs" />
     <Compile Include="UserSetting\IUserSettingAppService.cs" />
     <Compile Include="UserSetting\UserSettingAppService.cs" />
+    <Compile Include="Workers\MakeInactiveUsersPassiveWorker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

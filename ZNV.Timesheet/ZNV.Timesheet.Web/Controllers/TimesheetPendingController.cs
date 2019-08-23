@@ -38,7 +38,13 @@ namespace ZNV.Timesheet.Web.Controllers
             string user = Common.CommonHelper.CurrentUser;
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
+            string submitUser = string.Empty;
             var list = _appService.GetAllTimesheets().Where(ts => ts.Status == ApproveStatus.Approving && ts.Approver == user).ToList();
+            if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]) && Request["columns[1][search][value]"] != "null")
+            {
+                submitUser = Request["columns[1][search][value]"];
+                list = list.Where(ts => ts.TimesheetUser == submitUser).ToList();
+            }
             List<Project.Project> projects = _projectService.GetAllProjectList();
             foreach (var ts in list)
             {
@@ -49,33 +55,36 @@ namespace ZNV.Timesheet.Web.Controllers
                 {
                     TimesheetUser = g.Key.TimesheetUser,
                     WorkflowInstanceID = g.Key.WorkflowInstanceID,
-                    ProjectName = List2String(g.Select(ts => ts.ProjectName).Distinct().ToList()),
-                    TimesheetDate = List2String(g.Select(ts => ts.TimesheetDate.Value.ToString("yyyy-MM-dd")).Distinct().ToList()),
-                    WorkContent = List2String(g.Select(ts => ts.WorkContent).Distinct().ToList()),
+                    ProjectName = Common.CommonHelper.List2String(g.Select(ts => ts.ProjectName).Distinct().ToList()),
+                    TimesheetDate = Common.CommonHelper.List2String(g.Select(ts => ts.TimesheetDate.Value.ToString("yyyy-MM-dd")).Distinct().ToList()),
+                    WorkContent = Common.CommonHelper.List2String(g.Select(ts => ts.WorkContent).Distinct().ToList()),
                     Workload = g.Sum(ts => ts.Workload),
-                    Remarks = List2String(g.Select(ts => ts.Remarks).Distinct().ToList()),
-                    IDList = List2String(g.Select(ts => ts.Id.ToString()).Distinct().ToList()),
+                    Remarks = GetApproveLog(g.Key.WorkflowInstanceID),
+                    IDList = Common.CommonHelper.List2String(g.Select(ts => ts.Id.ToString()).Distinct().ToList()),
                     TimesheetList = g.ToList()
                 }).ToList();
 
             int totalRow = listGroup.Count;
             listGroup = listGroup.Skip(start).Take(length).ToList();
+            //listGroup.ForEach(item =>
+            //{
+            //    var tsUser = _employeeAppService.GetEmployeeByCode(item.TimesheetUser);
+            //    item.TimesheetUser = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
+            //});
             return Json(new { data = listGroup, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 
-        private string List2String(List<string> charList)
+        private string GetApproveLog(string workflowInstanceID)
         {
-            string list = string.Empty;
-            if (charList != null && charList.Count > 0)
-            {
-                for (int i = 0; i < charList.Count; i++)
-                {
-                    list += string.Format("{0}{1}", (list == "" ? "" : ","), charList[i]);
-                }
-            }
-            return list;
+            var alList = _alService.GetApproveLogByWorkflowInstanceID(workflowInstanceID);
+            //alList.ForEach(item =>
+            //{
+            //    var tsUser = _employeeAppService.GetEmployeeByCode(item.CurrentOperator);
+            //    item.CurrentOperator = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
+            //});
+            return Common.CommonHelper.GetApproveLogTreeHtml(alList);
         }
-
+        
         [HttpPost]
         public ActionResult AddOrEdit(Timesheet.Timesheet ts)
         {

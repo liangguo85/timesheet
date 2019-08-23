@@ -18,7 +18,7 @@ namespace ZNV.Timesheet.ApproveLog
         }
         public List<ApproveLog> GetApproveLogByWorkflowInstanceID(string workflowInstanceID)
         {
-            return _alRepository.GetAllList().Where(al => al.WorkflowInstanceID == workflowInstanceID).ToList();
+            return _alRepository.GetAllList().Where(al => al.WorkflowInstanceID == workflowInstanceID).OrderBy(al => al.OperateTime).ToList();
         }
         /// <summary>
         /// 添加时，如果对应的WorkflowInstanceID+OperateTime已经存在则跳过

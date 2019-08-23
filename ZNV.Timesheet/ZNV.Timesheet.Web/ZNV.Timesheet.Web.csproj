@@ -7816,9 +7816,6 @@
     <Content Include="Views\ProjectManagement\AddOrEdit.cshtml" />
     <Content Include="Views\Holiday\Index.cshtml" />
     <Content Include="Views\Holiday\AddOrEdit.cshtml" />
-    <Content Include="Views\Timesheet\Index备份.cshtml" />
-    <Content Include="Views\Timesheet\Create.cshtml" />
-    <Content Include="Views\Timesheet\NewIndex.cshtml" />
     <Content Include="Views\Timesheet\AddOrEdit.cshtml" />
     <Content Include="Views\Timesheet\AddOrEditForWeek.cshtml" />
     <Content Include="Views\Team\Index.cshtml" />

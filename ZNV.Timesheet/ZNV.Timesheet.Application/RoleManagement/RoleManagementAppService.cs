@@ -140,6 +140,8 @@ namespace ZNV.Timesheet.RoleManagement
         {
             _roleRepository.Delete(id);
             _userRoleRepository.Delete(userRole => userRole.RoleId == id);
+            _roleModuleRepository.Delete(roleModule => roleModule.RoleId == id);
+            _roleDepartmentRepository.Delete(roleDept => roleDept.RoleId == id);
         }
 
         public List<PermissionModule.PermissionModule> GetRoleModules(int roleId)

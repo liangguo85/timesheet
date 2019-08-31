@@ -35,19 +35,19 @@ namespace ZNV.Timesheet.Web.Controllers
             List<Project.Project> projectList = _projectAppService.GetAllProjectList();
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
             {
-                projectList = projectList.Where(x => x.ProjectCode.Equals(Request["columns[0][search][value]"])).ToList();
+                projectList = projectList.Where(x => x.ProjectCode == Request["columns[0][search][value]"]).ToList();
             }
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
             {
-                projectList = projectList.Where(x => x.ProjectManagerID.Equals(Request["columns[1][search][value]"])).ToList();
+                projectList = projectList.Where(x => x.ProjectManagerID == Request["columns[1][search][value]"]).ToList();
             }
             if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
             {
-                projectList = projectList.Where(x => x.ProductManagerID.Equals(Request["columns[2][search][value]"])).ToList();
+                projectList = projectList.Where(x => x.ProductManagerID == Request["columns[2][search][value]"]).ToList();
             }
             if (!string.IsNullOrEmpty(Request["columns[3][search][value]"]))
             {
-                projectList = projectList.Where(x => x.ProductLeaderID.Equals(Request["columns[2][search][value]"])).ToList();
+                projectList = projectList.Where(x => x.ProductLeaderID == Request["columns[3][search][value]"]).ToList();
             }
             int totalRow = projectList.Count;
             projectList = projectList.Skip(start).Take(length).ToList();

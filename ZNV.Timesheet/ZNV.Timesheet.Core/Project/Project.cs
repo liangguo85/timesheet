@@ -56,5 +56,8 @@ namespace ZNV.Timesheet.Project
 
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public virtual DateTime? ExpirationDate { get; set; }
+
+        [NotMapped]
+        public virtual int NextID { get; set; }
     }
 }

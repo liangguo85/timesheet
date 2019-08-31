@@ -34,5 +34,10 @@ namespace ZNV.Timesheet.Project
         {
             _projectRepository.Delete(id);
         }
+
+        public int GetProjectCount()
+        {
+            return _projectRepository.Count();
+        }
     }
 }

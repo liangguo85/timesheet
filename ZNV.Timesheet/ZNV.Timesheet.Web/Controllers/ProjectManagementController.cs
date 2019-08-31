@@ -6,6 +6,7 @@ using ZNV.Timesheet.Project;
 using ZNV.Timesheet.Employee;
 using System.Linq.Dynamic;
 using ZNV.Timesheet.Web.App_Start;
+using ZNV.Timesheet.Utility;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
@@ -67,7 +68,7 @@ namespace ZNV.Timesheet.Web.Controllers
             if (id == 0)
             {
                 ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Take(10), "EmployeeCode", "EmployeeName");
-                return View(new Project.Project());
+                return View(new Project.Project { NextID = UniqueIDGenerator.GetNextID() });
             }
             else
             {

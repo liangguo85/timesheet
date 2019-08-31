@@ -9,5 +9,7 @@ namespace ZNV.Timesheet.Project
         List<Project> GetAllProjectList();
         void UpdateProject(Project project);
         void DeleteProject(int id);
+
+        int GetProjectCount();
     }
 }

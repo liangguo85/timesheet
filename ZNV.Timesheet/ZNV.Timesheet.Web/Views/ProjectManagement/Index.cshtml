@@ -21,6 +21,9 @@
 
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/notify.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/expressive.annotations.validate.min.js"></script>
     <!-- Select2 -->
     <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
     <script src="~/js/config.js"></script>
@@ -40,6 +43,7 @@
                 "columns": [
                     { "data": "ProjectCode", "name": "ProjectCode" },
                     { "data": "ProjectName", "name": "ProjectName" },
+                    { "data": "Category", "name": "Category" },
                     { "data": "ProjectManagerName", "name": "ProjectManagerName" },
                     { "data": "ProductManagerName", "name": "ProductManagerName" },
                     { "data": "ProjectType", "name": "ProjectType" },
@@ -47,11 +51,6 @@
                     { "data": "ProjectKind", "name": "ProjectKind" },
                     { "data": "ProductionLineAttribute", "name": "ProductionLineAttribute" },
                     { "data": "ProjectStatus", "name": "ProjectStatus" },
-                    {
-                        "data": "IsApproval", "name": "IsApproval", "render": function (d) {
-                            return d == true ? "是" : "否";
-                        }
-                    },
                     {
                         "data": "IsEnabled", "name": "IsEnabled", "render": function (d) {
                             return d == true ? "是" : "否";
@@ -102,7 +101,48 @@
                 //"fnInitComplete": function (oSettings, json) {
                 //    addSearchControl(json)
                 //}
-            })
+            });
+
+            $('#searchProjectManager, #searchProductionManager, #searchProductionLeader').select2(select2.employee);
+
+            $("#searchProject").select2({
+                placeholder: '输入项目编号或名称',
+                minimumInputLength: 0,
+                allowClear: true,
+                ajax: {
+                    delay: 150,
+                    url: 'Timesheet/GetProjectList',
+                    dataType: 'json',
+                    async: true,
+                    data: function (params) {
+                        return {
+                            pageSize: 100,
+                            pageNum: params.page || 1,
+                            searchTerm: params.term,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.Results, function (obj) {
+                                return { id: obj.ProjectCode, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
+                            }),
+                            pagination: {
+                                more: (params.page * 100) <= data.Total
+                            }
+                        };
+                    }
+                }
+            });
+
+            $("#btnSearch").click(function () {
+                dataTable.columns(0).search($("#searchProject").val() == null ? "" : $("#searchProject").val());
+                dataTable.columns(1).search($("#searchProjectManager").val() == null ? "" : $("#searchProjectManager").val());
+                dataTable.columns(2).search($("#searchProductionManager").val() == null ? "" : $("#searchProductionManager").val());
+                dataTable.columns(3).search($("#searchProductionLeader").val() == null ? "" : $("#searchProductionLeader").val());
+                dataTable.draw();
+            });
+
         })
 
         function addSearchControl(json) {
@@ -150,31 +190,49 @@
                         width: 900,
                         close: function () {
                             Popup.dialog('destroy').remove();
+                        },
+                        // fixed select2 search input not working issue
+                        open: function () {
+                            if ($.ui && $.ui.dialog && !$.ui.dialog.prototype._allowInteractionRemapped && $(this).closest(".ui-dialog").length) {
+                                if ($.ui.dialog.prototype._allowInteraction) {
+                                    $.ui.dialog.prototype._allowInteraction = function (e) {
+                                        if ($(e.target).closest('.select2-drop').length) return true;
+                                        return ui_dialog_interaction.apply(this, arguments);
+                                    };
+                                    $.ui.dialog.prototype._allowInteractionRemapped = true;
+                                }
+                                else {
+                                    $.error("You must upgrade jQuery UI or else.");
+                                }
+                            }
+                        },
+                        _allowInteraction: function (event) {
+                            return !!$(event.target).is(".select2-input") || this._super(event);
                         }
                     });
                 });
         }
 
         function SubmitForm(form) {
-            //$.validator.unobtrusive.parse(form);
-            //if ($(form).valid()) {
-            $.ajax({
-                type: "POST",
-                url: form.action,
-                data: $(form).serialize(),
-                success: function (data) {
-                    if (data.success) {
-                        Popup.dialog('close');
-                        dataTable.ajax.reload();
+            $.validator.unobtrusive.parse(form);
+            if ($(form).valid()) {
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            Popup.dialog('close');
+                            dataTable.ajax.reload();
 
-                        $.notify(data.message, {
-                            globalPosition: "top center",
-                            className: "success"
-                        })
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+                        }
                     }
-                }
-            });
-            //}
+                });
+            }
             return false;
         }
 
@@ -204,65 +262,33 @@
         <div class="box">
             <div class="box box-header">
                 <div class="row">
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>项目名称</label>
-                            <select class="form-control select2" style="width: 100%;">
-                                <option selected="selected">Alabama</option>
-                                <option>Alaska</option>
-                                <option>California</option>
-                                <option>Delaware</option>
-                                <option>Tennessee</option>
-                                <option>Texas</option>
-                                <option>Washington</option>
-                            </select>
+                            <select class="form-control select2" id="searchProject"></select>
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-3">
                         <div class="form-group">
-                            <label>项目类别</label>
-                            <select class="form-control select2" style="width: 100%;">
-                                <option selected="selected">Alabama</option>
-                                <option>Alaska</option>
-                                <option>California</option>
-                                <option>Delaware</option>
-                                <option>Tennessee</option>
-                                <option>Texas</option>
-                                <option>Washington</option>
-                            </select>
+                            <label>项目经理</label>
+                            <select class="form-control select2" id="searchProjectManager"></select>
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-3">
                         <div class="search-column">
-                            <label>项目级别</label>
-                            <select class="form-control select2" style="width: 100%;">
-                                <option selected="selected">Alabama</option>
-                                <option>Alaska</option>
-                                <option>California</option>
-                                <option>Delaware</option>
-                                <option>Tennessee</option>
-                                <option>Texas</option>
-                                <option>Washington</option>
-                            </select>
+                            <label>产品经理</label>
+                            <select class="form-control select2" id="searchProductionManager"></select>
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-3">
                         <div class="form-group">
-                            <label>项目性质</label>
-                            <select class="form-control select2" style="width: 100%;">
-                                <option selected="selected">Alabama</option>
-                                <option>Alaska</option>
-                                <option>California</option>
-                                <option>Delaware</option>
-                                <option>Tennessee</option>
-                                <option>Texas</option>
-                                <option>Washington</option>
-                            </select>
+                            <label>产品管理</label>
+                            <select class="form-control select2" id="searchProductionLeader"></select>
                         </div>
                     </div>
                 </div>
                 <div class="btn-group-toggle pull-right">
-                    <button type="button" name="search" id="search-btn" class="btn btn-success">
+                    <button id="btnSearch" type="button" name="search" class="btn btn-success">
                         查询 <i class="fa fa-search"></i>
                     </button>
                 </div>
@@ -277,6 +303,7 @@
                         <tr>
                             <th>项目编码</th>
                             <th>项目名称</th>
+                            <th>类别</th>
                             <th>项目经理</th>
                             <th>产品经理</th>
                             <th>项目类别</th>
@@ -284,7 +311,6 @@
                             <th>项目性质</th>
                             <th>产线属性</th>
                             <th>项目状态</th>
-                            <th>是否立项</th>
                             <th>是否投入</th>
                             <th>生效日期</th>
                             <th>失效日期</th>

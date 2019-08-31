@@ -35,56 +35,19 @@ namespace ZNV.Timesheet.Web.Controllers
             List<Project.Project> projectList = _projectAppService.GetAllProjectList();
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
             {
-                projectList = projectList.Where(x => x.ProjectCode.ToLower().Contains(Request["columns[0][search][value]"].ToLower())).ToList();
+                projectList = projectList.Where(x => x.ProjectCode.Equals(Request["columns[0][search][value]"])).ToList();
             }
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
             {
-                projectList = projectList.Where(x => x.ProjectName.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList();
+                projectList = projectList.Where(x => x.ProjectManagerID.Equals(Request["columns[1][search][value]"])).ToList();
             }
             if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
             {
-                projectList = projectList.Where(x => x.Category.ToLower().Contains(Request["columns[2][search][value]"].ToLower())).ToList();
+                projectList = projectList.Where(x => x.ProductManagerID.Equals(Request["columns[2][search][value]"])).ToList();
             }
-
             if (!string.IsNullOrEmpty(Request["columns[3][search][value]"]))
             {
-                projectList = projectList.Where(x => x.ProjectManagerID.ToLower().Contains(Request["columns[2][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[4][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.ProductManagerID.ToLower().Contains(Request["columns[3][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[5][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.ProjectType.ToLower().Contains(Request["columns[4][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[6][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.ProjectLevel.ToLower().Contains(Request["columns[5][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[7][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.ProjectKind.ToLower().Contains(Request["columns[6][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[8][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.ProductionLineAttribute.ToLower().Contains(Request["columns[7][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[9][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.ProjectStatus.ToLower().Contains(Request["columns[8][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[10][search][value]"]))
-            {
-                projectList = projectList.Where(x => (x.IsEnabled ? "是" : "否") == Request["columns[10][search][value]"]).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[11][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.EffectiveDate.ToString().Contains(Request["columns[11][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[12][search][value]"]))
-            {
-                projectList = projectList.Where(x => x.ExpirationDate.ToString().Contains(Request["columns[12][search][value]"].ToLower())).ToList();
+                projectList = projectList.Where(x => x.ProductLeaderID.Equals(Request["columns[2][search][value]"])).ToList();
             }
             int totalRow = projectList.Count;
             projectList = projectList.Skip(start).Take(length).ToList();
@@ -109,7 +72,10 @@ namespace ZNV.Timesheet.Web.Controllers
             else
             {
                 var project = _projectAppService.GetAllProjectList().Where(x => x.Id == id).FirstOrDefault();
-                ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Where(x => x.EmployeeCode == project.ProductManagerID || x.EmployeeCode == project.ProjectManagerID).ToList(), "EmployeeCode", "EmployeeName");
+                ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Where(x => x.EmployeeCode == project.ProductManagerID 
+                    || x.EmployeeCode == project.ProjectManagerID 
+                    || x.EmployeeCode == project.ProductLeaderID
+                ).ToList(), "EmployeeCode", "EmployeeName");
                 return View(project);
             }
         }

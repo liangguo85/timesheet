@@ -13,6 +13,7 @@ namespace ZNV.Timesheet
         public override void PreInitialize()
         {
             AutoMappperExtension.InitializeAutomapper();
+            //Configuration.Authorization.Providers.Add<TimesheetAuthorizationProvider>();
             base.PreInitialize();
         }
         public override void Initialize()

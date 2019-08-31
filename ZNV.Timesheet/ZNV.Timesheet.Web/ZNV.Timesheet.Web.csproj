@@ -7762,12 +7762,14 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\TimeSheetAuthorizationFilter.cs" />
+    <Compile Include="App_Start\TimesheetAuthorizeAttribute.cs" />
     <Compile Include="App_Start\TimesheetNavigationProvider.cs" />
     <Compile Include="App_Start\TimesheetWebModule.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\CommonHelper.cs" />
     <Compile Include="Controllers\DepartmentReportController.cs" />
     <Compile Include="Controllers\EmailTemplateController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HolidayController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LayoutController.cs" />
@@ -7837,6 +7839,7 @@
     <Content Include="Views\RoleManagement\DepartmentPermission.cshtml" />
     <Content Include="Views\Layout\_EmployeeInfo.cshtml" />
     <Content Include="Views\Layout\_Menu.cshtml" />
+    <Content Include="Views\Error\AccessDenied.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

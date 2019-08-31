@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ZNV.Timesheet.RoleManagement;
 using System.Linq.Dynamic;
 using ZNV.Timesheet.Employee;
 using ZNV.Timesheet.Web.Models;
 using ZNV.Timesheet.PermissionModule;
+using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
+    [TimesheetAuthorize(ModuleCode = "00010004")]
     public class RoleManagementController : Controller
     {
         private readonly IRoleManagementAppService _roleManagementAppService;

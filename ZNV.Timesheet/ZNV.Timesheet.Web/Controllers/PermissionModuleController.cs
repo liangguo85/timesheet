@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using ZNV.Timesheet.PermissionModule;
+using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
+    [TimesheetAuthorize(ModuleCode = "00010005")]
     public class PermissionModuleController : Controller
     {
         private readonly IPermissionModuleAppService _permissionModuleAppService;

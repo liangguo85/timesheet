@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ZNV.Timesheet.EmailTemplate;
+using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
+    [TimesheetAuthorize(ModuleCode = "00010006")]
     public class EmailTemplateController : Controller
     {
         private readonly IEmailTemplateAppService _emailTemplateAppService;

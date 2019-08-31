@@ -233,6 +233,7 @@
     <Compile Include="TimesheetApplicationModule.cs" />
     <Compile Include="TimesheetAppServiceBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimesheetAuthorizationProvider.cs" />
     <Compile Include="Timesheet\ITimesheetAppService.cs" />
     <Compile Include="Timesheet\TimesheetAppService.cs" />
     <Compile Include="UserSetting\IUserSettingAppService.cs" />

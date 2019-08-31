@@ -4,9 +4,11 @@ using System.Linq;
 using System.Web.Mvc;
 using ZNV.Timesheet.Holiday;
 using System.Linq.Dynamic;
+using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
+    [TimesheetAuthorize(ModuleCode = "00010003")]
     public class HolidayController : Controller
     {
         private readonly IHolidayAppService _holidayAppService;

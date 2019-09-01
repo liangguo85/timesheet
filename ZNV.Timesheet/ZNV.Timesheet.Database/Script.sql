@@ -420,7 +420,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER Proc [dbo].[Proc_DepartmentReport]
+CREATE Proc [dbo].[Proc_DepartmentReport]
 (
 	@startDate datetime,
 	@endDate datetime,
@@ -429,19 +429,9 @@ ALTER Proc [dbo].[Proc_DepartmentReport]
 )
 as
 begin
-	with cte as
-	(
-		SELECT    B.departmentID
-		  FROM      ( SELECT    [value] = CONVERT(XML , '<v>' + REPLACE(@departmentIDs , ',' , '</v><v>')
-								+ '</v>')
-					) A
-		  OUTER APPLY ( SELECT  departmentID = N.v.value('.' , 'nvarchar(50)')
-						FROM    A.[value].nodes('/v') N ( v )
-					  ) B
-    )
-	select departmentID into #AllowSearchDepartment from cte
+	CREATE TABLE #AllowSearchDepartment(departmentID nvarchar(50));
 
-	declare @searchAllDepartment bit
+	declare @searchAllDepartment bit;
 	set @searchAllDepartment = 0
 	-- 是否有查询所有部门的部门报表的权限
 	if exists(
@@ -457,10 +447,10 @@ begin
 	if @searchAllDepartment = 0
 	begin
 		-- 获取人员部门权限
-		select DEPT_CODE INTO #DEPT_CODE from [MAPSysDB].[dbo].[HREhrDeptManager] where MANAGER_CODE = @currentUserID
-		delete A from #AllowSearchDepartment A where not exists(select 1 from #DEPT_CODE where DEPT_CODE = A.departmentID) 
-		insert into #AllowSearchDepartment(departmentID) select A.DEPT_CODE from #DEPT_CODE A where not exists(select 1 from #AllowSearchDepartment where A.DEPT_CODE = departmentID)
-		drop table #DEPT_CODE
+		insert into #AllowSearchDepartment(departmentID) select DEPT_CODE from [MAPSysDB].[dbo].[HREhrDeptManager] where MANAGER_CODE = @currentUserID
+		--delete A from #AllowSearchDepartment A where not exists(select 1 from #DEPT_CODE where DEPT_CODE = A.departmentID) 
+		--insert into #AllowSearchDepartment(departmentID) select A.DEPT_CODE from #DEPT_CODE A where not exists(select 1 from #AllowSearchDepartment where A.DEPT_CODE = departmentID)
+		--drop table #DEPT_CODE
 
 		-- 角色是有查询本部门报表的权限
 		if exists(
@@ -476,8 +466,18 @@ begin
 		insert into #AllowSearchDepartment(departmentID) select A.DepartmentId from RoleDepartment A, UserRole B where A.RoleId = B.RoleId and B.UserId = @currentUserID
 	end
 
-	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX) 
+	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX);
 
+	WITH CTE AS
+	(
+		SELECT    B.departmentID
+		  FROM      ( SELECT    [value] = CONVERT(XML , '<v>' + REPLACE(@departmentIDs , ',' , '</v><v>')
+								+ '</v>')
+					) A
+		  OUTER APPLY ( SELECT  departmentID = N.v.value('.' , 'nvarchar(50)')
+						FROM    A.[value].nodes('/v') N ( v )
+					  ) B
+    )
 	SELECT  D.DeptName1+ '('+D.DeptCode1+')' as '部门名称'
 	  , C.EmployeeName+'('+[TimesheetUser]+')' as '人员姓名'
 	  ,SUM([Workload]) AS Workload
@@ -500,6 +500,8 @@ begin
 			-- 查询本人
 			OR A.TimesheetUser = @currentUserID
 		)
+		AND EXISTS(SELECT 1 FROM CTE WHERE CHARINDEX('.'+ departmentID + '.', '.'+ D.FullDeptCode + '.') > 0)
+		--AND CHARINDEX(','+ C.DeptCode + ',', ','+ case when isnull(@departmentIDs,'') = '' then C.DeptCode else @departmentIDs end + ',') > 0
 	GROUP BY [TimesheetUser]
       ,[ProjectID]
 	  , B.ProjectName

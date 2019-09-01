@@ -30,8 +30,22 @@
             $('#searchDepartment').select2(config);
 
             $("#btnSearch").click(function () {
+                if ($("#beginDate").val() == "") {
+                    alert("请选择查询开始日期!")
+                    return;
+                }
 
-                alert($("#searchDepartment").val())
+                if ($("#endDate").val() == "") {
+                    alert("请选择查询结束日期!")
+                    return;
+                }
+
+                if (Date.parse($("#beginDate").val()) > Date.parse($("#endDate").val())) {
+                    alert("查询开始日期不能大于结束日期!")
+                    return;
+                }
+
+                $("#head, #body").empty();
                 $.ajax({
                     url: '@Url.Action("GetDepartmentReport", "DepartmentReport")',
                     type: 'POST',
@@ -41,7 +55,6 @@
                         departmentIds: $("#searchDepartment").val()
                     },
                     success: function (data) {
-
                         var head = $("#head")
                         var body = $("#body")
                         
@@ -54,8 +67,6 @@
                         row += '</tr>'
                         head.append(row);
 
-                        alert(row)
-
                         $.each(jsonData, function () {
                             row = '<tr>'
                             $.each(this, function (k, v) {
@@ -66,7 +77,7 @@
                         })
                     },
                     error: function () {
-                        alert("error")
+                        alert("查询发生错误！")
                     }
                 })
             })
@@ -82,13 +93,13 @@
                 <div class="row">
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label>开始时间</label>
+                            <label>开始日期</label>
                             <input type="text" id="beginDate" class="form-control" onclick="WdatePicker()" />
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label>结束时间</label>
+                            <label>结束日期</label>
                             <input class="form-control" id="endDate" onclick="WdatePicker()" />
                         </div>
                     </div>
@@ -109,15 +120,15 @@
             <div class="box-body" style="height: 100%; min-height: 100%; max-height: 100%; overflow-x: scroll;">
                 <table id="tbReport" class="table table-bordered table-striped table-hover">
                     <thead id="head">
-                        <tr>
+                        @*<tr>
                             @foreach (System.Data.DataColumn col in Model.Columns)
                             {
                                 <th>@col.Caption</th>
                             }
-                        </tr>
+                        </tr>*@
                     </thead>
                     <tbody id="body">
-                        @foreach (System.Data.DataRow row in Model.Rows)
+                        @*@foreach (System.Data.DataRow row in Model.Rows)
                         {
                             <tr>
                                 @foreach (var cell in row.ItemArray)
@@ -125,7 +136,7 @@
                                     <td>@cell.ToString()</td>
                                 }
                             </tr>
-                        }
+                        }*@
                     </tbody>
                 </table>
             </div>

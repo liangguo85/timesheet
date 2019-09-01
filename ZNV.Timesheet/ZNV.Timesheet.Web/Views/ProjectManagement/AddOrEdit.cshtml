@@ -17,10 +17,12 @@
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.Category, "类别", new { @class = "control-label" })
             @Html.DropDownListFor(model=>model.Category, new List<SelectListItem> {
+                new SelectListItem { Value="", Text="请选择类别"},
                 new SelectListItem { Value="立项项目", Text="立项项目"},
                 new SelectListItem { Value="非立项项目", Text="非立项项目"},
                 new SelectListItem { Value="售前售后", Text="售前售后"}
             }, new { @class="form-control"})
+            @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-row">
@@ -32,7 +34,7 @@
                 new SelectListItem { Value="产品", Text="产品"},
                 new SelectListItem { Value="预研", Text="预研"},
                 new SelectListItem { Value="合同", Text="合同"},
-                new SelectListItem { Value="非项目", Text="非项目"}
+                new SelectListItem { Value="技术", Text="技术"}
             }, new { @class="form-control"})
             @Html.ValidationMessageFor(model => model.ProjectType, "", new { @class = "text-danger" })
         </div>
@@ -47,10 +49,9 @@
             @Html.ValidationMessageFor(model => model.ProjectKind, "", new { @class = "text-danger" })
         </div>
     </div>
-
     <div class="form-row">
         <div class="form-group col-md-6">
-            @Html.LabelFor(model => model.ProjectCode, "项目代码", new { @class = "control-label" })
+            @Html.LabelFor(model => model.ProjectCode, "项目编码", new { @class = "control-label" })
             @Html.EditorFor(model => model.ProjectCode, new { htmlAttributes = new { @class = "form-control" } })
             @Html.ValidationMessageFor(model => model.ProjectCode, "", new { @class = "text-danger" })
         </div>
@@ -139,5 +140,45 @@
             autoclose: true
         });
         $('#projectManager, #productionManager, #productLeader').select2(select2.employee);
+
+        $("#Category, #ProjectType, #ProjectKind").change(function () {
+            // 只有新增项目才会自动生成项目编码，编辑需要手工修改项目编码
+            if ($("#Id").val() == "0") {
+                var category = $("#Category").val();
+                var projectType = $("#ProjectType").val();
+                var productKind = $("#ProjectKind").val();
+                var projectCode = ""
+                if (category == "立项项目" || category == "非立项项目") {
+                    var projectTypeCodeMapping = {
+                        "平台": "A",
+                        "产品": "B",
+                        "预研": "C",
+                        "合同": "D",
+                        "技术": "E"
+                    }
+                    var projectKindCodeMapping = {
+                        "自研": "Z",
+                        "ODM": "D",
+                        "OEM": "E"
+                    }
+                    if (projectType != "" && productKind != "") {
+                        projectCode = "ZN" + projectTypeCodeMapping[projectType] + projectKindCodeMapping[productKind] + $("#NextID").val()
+                    }
+                }
+                if (category == "售前售后") {
+                    projectCode = pad($("#NextID").val(), 7)
+                }
+                $("#ProjectCode").val(projectCode);
+            }
+        });
     })
+
+    function pad(num, n) {
+        var len = num.length;
+        while (len < n) {
+            num = "0" + num;
+            len++;
+        }
+        return num;
+    } 
 </script>

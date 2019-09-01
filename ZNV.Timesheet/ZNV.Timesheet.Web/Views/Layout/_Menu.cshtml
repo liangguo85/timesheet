@@ -17,35 +17,20 @@
             <li><a href="/UserSetting"><i class="fa fa-circle-o"></i>个人设置</a></li>
         </ul>
     </li>
-    @if (Model.Any(item => item.ModuleCode.StartsWith("0002")))
-    {
-        <li class="treeview">
-            <a href="#">
-                <i class="fa fa-pie-chart"></i> <span>统计分析</span>
-                <span class="pull-right-container">
-                    <i class="fa fa-angle-left pull-right"></i>
-                </span>
-            </a>
-            <ul class="treeview-menu">
-                @if (Model.Any(item => item.ModuleCode.StartsWith("00020001")))
-                {
-                    <li><a href="/DepartmentReport"><i class="fa fa-circle-o"></i>部门工时报表</a></li>
-                }
-                @if (Model.Any(item => item.ModuleCode.StartsWith("00020002")))
-                {
-                    <li><a href="#"><i class="fa fa-circle-o"></i>项目工时报表</a></li>
-                }
-                @if (Model.Any(item => item.ModuleCode.StartsWith("00020003")))
-                {
-                    <li><a href="#"><i class="fa fa-circle-o"></i>项目管理报表</a></li>
-                }
-                @if (Model.Any(item => item.ModuleCode.StartsWith("00020004")))
-                {
-                    <li><a href="#"><i class="fa fa-circle-o"></i>产线项目报表</a></li>
-                }
-            </ul>
-        </li>
-    }
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-pie-chart"></i> <span>统计分析</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li><a href="/DepartmentReport"><i class="fa fa-circle-o"></i>部门工时报表</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>项目工时报表</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>项目管理报表</a></li>
+            <li><a href="#"><i class="fa fa-circle-o"></i>产线项目报表</a></li>
+        </ul>
+    </li>
     @if (Model.Any(item => item.ModuleCode.StartsWith("0001")))
     {
         <li class="treeview">

@@ -15,10 +15,21 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
 
         public DataTable GetDepartmentReport(DepartmentReportSearch search)
         {
+            var deptIDs = "";
+            if(search.departmentIds != null)
+            {
+                search.departmentIds.ForEach(item=> {
+                    deptIDs += "," + item;
+                });
+                deptIDs = deptIDs.TrimStart(',');
+            }
+
             DataTable dt = new DataTable();
             EnsureConnectionOpen();
 
-            using (var command = CreateCommand("Proc_DepartmentReport", CommandType.StoredProcedure, new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate)))
+            using (var command = CreateCommand("Proc_DepartmentReport", CommandType.StoredProcedure, 
+                new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate), 
+                new SqlParameter("departmentIDs", deptIDs), new SqlParameter("currentUserID", search.currentUserID)))
             {
                 using (var da = new SqlDataAdapter(command)) {
                     da.Fill(dt);

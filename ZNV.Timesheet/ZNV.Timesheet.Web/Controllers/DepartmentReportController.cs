@@ -20,7 +20,8 @@ namespace ZNV.Timesheet.Web.Controllers
         // GET: DepartmentReport
         public ActionResult Index()
         {
-            DepartmentReportSearch search = new DepartmentReportSearch { startDate = DateTime.Now.AddYears(-1), endDate = DateTime.Now.AddYears(1), departmentIds = null };
+            DepartmentReportSearch search = new DepartmentReportSearch { startDate = DateTime.Now.AddYears(-1), endDate = DateTime.Now.AddYears(1), departmentIds = null,
+                currentUserID = Common.CommonHelper.CurrentUser };
             DataTable dt = _reportAppService.GetDepartmentReport(search);
             return View(dt);
         }
@@ -28,7 +29,7 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult GetDepartmentReport(DepartmentReportSearch search)
         {
-
+            search.currentUserID = Common.CommonHelper.CurrentUser;
             DataTable dt = _reportAppService.GetDepartmentReport(search);
             string JSONresult;
             JSONresult = JsonConvert.SerializeObject(dt);

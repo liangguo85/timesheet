@@ -448,9 +448,6 @@ begin
 	begin
 		-- 获取人员部门权限
 		insert into #AllowSearchDepartment(departmentID) select DEPT_CODE from [MAPSysDB].[dbo].[HREhrDeptManager] where MANAGER_CODE = @currentUserID
-		--delete A from #AllowSearchDepartment A where not exists(select 1 from #DEPT_CODE where DEPT_CODE = A.departmentID) 
-		--insert into #AllowSearchDepartment(departmentID) select A.DEPT_CODE from #DEPT_CODE A where not exists(select 1 from #AllowSearchDepartment where A.DEPT_CODE = departmentID)
-		--drop table #DEPT_CODE
 
 		-- 角色是有查询本部门报表的权限
 		if exists(
@@ -500,7 +497,7 @@ begin
 			-- 查询本人
 			OR A.TimesheetUser = @currentUserID
 		)
-		AND EXISTS(SELECT 1 FROM CTE WHERE CHARINDEX('.'+ departmentID + '.', '.'+ D.FullDeptCode + '.') > 0)
+		AND EXISTS(SELECT 1 FROM CTE WHERE CHARINDEX('.'+ case when isnull(@departmentIDs,'') = '' then C.DeptCode else departmentID end + '.', '.'+ D.FullDeptCode + '.') > 0)
 		--AND CHARINDEX(','+ C.DeptCode + ',', ','+ case when isnull(@departmentIDs,'') = '' then C.DeptCode else @departmentIDs end + ',') > 0
 	GROUP BY [TimesheetUser]
       ,[ProjectID]

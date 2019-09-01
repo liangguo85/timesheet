@@ -28,14 +28,13 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             search.currentUserID = Common.CommonHelper.CurrentUser;
             DataTable dt = _reportAppService.GetDepartmentReport(search);
-            string JSONresult;
-            JSONresult = JsonConvert.SerializeObject(dt);
+            string JSONresult = JsonConvert.SerializeObject(dt);
             return Json(new { data = JSONresult }, JsonRequestBehavior.AllowGet);
         }
 
-        public FileResult GetExcelForReport()
+        public FileResult GetExcelForReport(DepartmentReportSearch search)
         {
-            DepartmentReportSearch search = new DepartmentReportSearch { startDate = DateTime.Now.AddYears(-1), endDate = DateTime.Now.AddYears(1), departmentIds = null };
+            search.currentUserID = Common.CommonHelper.CurrentUser;
             DataTable dt = _reportAppService.GetDepartmentReport(search);
             string sheetName = "部门工时统计报表";
             var book = Common.CommonHelper.CreateHSSFromDataTable(sheetName, dt, new List<int>() { 0 });

@@ -18,9 +18,6 @@
     <script src="~/js/config.js"></script>
     <script>
         $(document).ready(function () {
-            MergeCommonRows($('#tbReport'), [1, 2]);
-            mergeCommonColumns($('#tbReport'));
-
             //$("#tbReport").freezeTable({
             //    'columnNum': 2,
             //});
@@ -57,11 +54,11 @@
                     success: function (data) {
                         var head = $("#head")
                         var body = $("#body")
-                        
+
                         jsonData = JSON.parse(data.data)
 
                         row = '<tr>'
-                        $.each(jsonData[0], function(k, v) {
+                        $.each(jsonData[0], function (k, v) {
                             row += '<th>' + k + '</th>';
                         })
                         row += '</tr>'
@@ -75,12 +72,34 @@
                             row += '</tr>'
                             body.append(row)
                         })
+
+                        MergeCommonRows($('#tbReport'), [1, 2]);
+                        mergeCommonColumns($('#tbReport'));
                     },
                     error: function () {
                         alert("查询发生错误！")
                     }
                 })
-            })
+            });
+
+            $("#btnExportExcel").click(function () {
+                if ($("#beginDate").val() == "") {
+                    alert("请选择查询开始日期!")
+                    return;
+                }
+
+                if ($("#endDate").val() == "") {
+                    alert("请选择查询结束日期!")
+                    return;
+                }
+
+                if (Date.parse($("#beginDate").val()) > Date.parse($("#endDate").val())) {
+                    alert("查询开始日期不能大于结束日期!")
+                    return;
+                }
+
+                window.location.href = "@Url.RouteUrl(new { Controller = "DepartmentReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&departmentIds=" + $("#searchDepartment").val()
+            });
 
         })
     </script>
@@ -114,29 +133,16 @@
                     <button type="button" name="search" id="btnSearch" class="btn btn-success">
                         查询 <i class="fa fa-search"></i>
                     </button>
-                    <a href="/DepartmentReport/GetExcelForReport" class="btn btn-danger">下载Excel</a>
+                    <button type="button" name="search" id="btnExportExcel" class="btn btn-danger">
+                        下载Excel <i class="fa fa-search"></i>
+                    </button>
                 </div>
             </div>
             <div class="box-body" style="height: 100%; min-height: 100%; max-height: 100%; overflow-x: scroll;">
                 <table id="tbReport" class="table table-bordered table-striped table-hover">
                     <thead id="head">
-                        @*<tr>
-                            @foreach (System.Data.DataColumn col in Model.Columns)
-                            {
-                                <th>@col.Caption</th>
-                            }
-                        </tr>*@
                     </thead>
                     <tbody id="body">
-                        @*@foreach (System.Data.DataRow row in Model.Rows)
-                        {
-                            <tr>
-                                @foreach (var cell in row.ItemArray)
-                                {
-                                    <td>@cell.ToString()</td>
-                                }
-                            </tr>
-                        }*@
                     </tbody>
                 </table>
             </div>

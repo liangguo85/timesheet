@@ -55,7 +55,24 @@
 
                         row = '<tr>'
                         $.each(jsonData[0], function (k, v) {
-                            row += '<th>' + k + '</th>';
+                            if (k.indexOf('-') > 0) {
+                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(0, k.indexOf('-')) + '</th>';
+                            }
+                            else {
+                                row += "<th rowspan='2' style='text-align: center; vertical-align: middle;'>" + k + "</th>";
+                            }
+                        })
+                        row += '</tr>'
+                        head.append(row);
+
+                        row = '<tr>'
+                        $.each(jsonData[0], function (k, v) {
+                            if (k.indexOf('-') > 0) {
+                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(k.indexOf('-')+1, k.length) + '</th>';
+                            }
+                            //else {
+                            //    row += '<th>' + k + '</th>';
+                            //}
                         })
                         row += '</tr>'
                         head.append(row);
@@ -70,9 +87,9 @@
                         })
 
                         MergeCommonRows($('#tbReport'), [1, 2]);
-                        //mergeCommonColumns($('#tbReport'));
+                        mergeCommonColumns($('#tbReport'));
                         $("#tbReport").freezeTable({
-                            'columnNum': 2,
+                            'columnNum': 2
                         });
                     },
                     error: function () {

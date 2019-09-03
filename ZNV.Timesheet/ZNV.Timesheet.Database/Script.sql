@@ -415,7 +415,7 @@ GO
 
 USE [ZNVTimesheet]
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/9/1 10:12:31 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/9/3 20:48:08 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -478,7 +478,7 @@ begin
 	SELECT  D.DeptName1+ '('+D.DeptCode1+')' as '部门名称'
 	  , C.EmployeeName+'('+[TimesheetUser]+')' as '人员姓名'
 	  ,SUM([Workload]) AS Workload
-	  , B.ProjectName
+	  ,CONCAT(B.ProductionLineAttribute, '-', B.ProjectName) AS ProjectName
 	INTO #TempTimesheet
 	FROM [Timesheet] A
 		INNER JOIN [Project] B ON A.ProjectID = B.Id
@@ -502,6 +502,7 @@ begin
 	GROUP BY [TimesheetUser]
       ,[ProjectID]
 	  , B.ProjectName
+	  , B.ProductionLineAttribute
 	  , D.DeptCode1
 	  , D.DeptName1
 	  , C.EmployeeName

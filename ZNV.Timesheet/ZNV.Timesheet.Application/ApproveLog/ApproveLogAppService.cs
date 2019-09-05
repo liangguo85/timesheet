@@ -1,16 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ZNV.Timesheet;
+using ZNV.Timesheet.Smtp;
+using ZNV.Timesheet.Employee;
+using ZNV.Timesheet.Team;
+using ZNV.Timesheet.UserSetting;
 
 namespace ZNV.Timesheet.ApproveLog
 {
     public class ApproveLogAppService : TimesheetAppServiceBase, IApproveLogAppService
     {
         private readonly IApproveLogRepository _alRepository;
+        private readonly IHREmployeeRepository _userRepository;
+        private readonly ITeamRepository _teamRepository;
+        private readonly IUserSettingRepository _settingRepository;
 
-        public ApproveLogAppService(IApproveLogRepository alRepository)
+        public ApproveLogAppService(IApproveLogRepository alRepository, 
+            IHREmployeeRepository userRepository, 
+            ITeamRepository teamRepository,
+            IUserSettingRepository settingRepository)
         {
             _alRepository = alRepository;
+            _userRepository = userRepository;
+            _teamRepository = teamRepository;
+            _settingRepository = settingRepository;
         }
         public List<ApproveLog> GetApproveLogList()
         {
@@ -30,6 +43,34 @@ namespace ZNV.Timesheet.ApproveLog
             var isExists = _alRepository.GetAllList().Where(w => w.WorkflowInstanceID == al.WorkflowInstanceID && w.OperateTime == al.OperateTime).ToList();
             if (isExists.Count == 0)
             {
+                if (al.OperateType == "提交" || al.OperateType == "提交" || al.OperateType == "提交" || al.OperateType == "提交")
+                {
+                    string departmentName = string.Empty;
+                    string submitterName = string.Empty;
+                    string approverName = string.Empty;
+                    string approverEmail = string.Empty;
+                    var submitter = _userRepository.GetAll().Where(u => u.EmployeeCode == al.Creator).FirstOrDefault();
+                    var setting = _settingRepository.GetAll().Where(s => s.UserId == submitter.EmployeeCode).FirstOrDefault();
+                    var team = _teamRepository.Get(setting.TeamId);
+                    var approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.NextOperator).FirstOrDefault();
+
+                    if (al.OperateType == "提交")
+                    {
+                        EmailSender.SendEmailForSubmitToApprover(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
+                    }
+                    else if (al.OperateType == "审批通过")
+                    {
+                        EmailSender.SendEmailForApproverCompleteApprove(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
+                    }
+                    else if (al.OperateType == "驳回")
+                    {
+                        EmailSender.SendEmailForRollbackToSubmitter(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
+                    }
+                    else if (al.OperateType == "转办")
+                    {
+                        EmailSender.SendEmailForApproverTransferToOther(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
+                    }
+                }
                 return _alRepository.InsertAndGetId(al);
             }
             else

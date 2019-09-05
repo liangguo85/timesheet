@@ -63,5 +63,25 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
                 connection.Open();
             }
         }
+
+        /// <summary>
+        /// 通过日期列表获取这些日期里面存着未填写周报的员工（返回的表包含EmployeeCode，EmployeeName，[Email]这3个字段）
+        /// </summary>
+        /// <param name="dateList">日期字符串，多个以英文逗号隔开</param>
+        /// <returns>返回的表包含EmployeeCode，EmployeeName，[Email]这3个字段</returns>
+        public DataTable GetNotSubmitTimesheetUserList(string dateList)
+        {
+            DataTable dt = new DataTable();
+            EnsureConnectionOpen();
+            using (var command = CreateCommand("Proc_GetNotSubmitTimesheetUserList", CommandType.StoredProcedure,
+                new SqlParameter("dateList", dateList)))
+            {
+                using (var da = new SqlDataAdapter(command))
+                {
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
     }
 }

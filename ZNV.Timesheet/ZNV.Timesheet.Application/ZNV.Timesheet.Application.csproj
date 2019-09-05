@@ -238,6 +238,7 @@
     <Compile Include="Timesheet\TimesheetAppService.cs" />
     <Compile Include="UserSetting\IUserSettingAppService.cs" />
     <Compile Include="UserSetting\UserSettingAppService.cs" />
+    <Compile Include="Utility\Comm.cs" />
     <Compile Include="Utility\UniqueIDGenerator.cs" />
     <Compile Include="Workers\MakeInactiveUsersPassiveWorker.cs" />
   </ItemGroup>

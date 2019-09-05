@@ -11,7 +11,7 @@ using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
-    [TimesheetAuthorize(ModuleCode = "00010004")]
+    //[TimesheetAuthorize(ModuleCode = "00010004")]
     public class RoleManagementController : Controller
     {
         private readonly IRoleManagementAppService _roleManagementAppService;

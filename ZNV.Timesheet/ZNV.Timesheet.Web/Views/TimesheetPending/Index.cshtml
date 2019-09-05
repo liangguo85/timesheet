@@ -142,7 +142,7 @@
                             $(this).html('+').attr("title", "展开");
                         }
                     });
-                    $("[data-toggle='tooltip']").tooltip(); 
+                    $("[data-toggle='tooltip']").tooltip({ content: function () { return $(this).attr("title"); } }); 
                 }
             });
 
@@ -345,7 +345,7 @@
                             <th>项目名称</th>
                             <th>工时</th>
                             <th>工作内容</th>
-                            <th></th>
+                            <th>备注</th>
                             <th></th>
                         </tr>
                     </thead>

@@ -66,22 +66,22 @@ namespace ZNV.Timesheet.Web.Controllers
 
             int totalRow = listGroup.Count;
             listGroup = listGroup.Skip(start).Take(length).ToList();
-            //listGroup.ForEach(item =>
-            //{
-            //    var tsUser = _employeeAppService.GetEmployeeByCode(item.TimesheetUser);
-            //    item.TimesheetUser = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
-            //});
+            listGroup.ForEach(item =>
+            {
+                var tsUser = _employeeAppService.GetEmployeeByCode(item.TimesheetUser);
+                item.TimesheetUser = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
+            });
             return Json(new { data = listGroup, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 
         private string GetApproveLog(string workflowInstanceID)
         {
             var alList = _alService.GetApproveLogByWorkflowInstanceID(workflowInstanceID);
-            //alList.ForEach(item =>
-            //{
-            //    var tsUser = _employeeAppService.GetEmployeeByCode(item.CurrentOperator);
-            //    item.CurrentOperator = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
-            //});
+            alList.ForEach(item =>
+            {
+                var tsUser = _employeeAppService.GetEmployeeByCode(item.CurrentOperator);
+                item.CurrentOperator = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
+            });
             return Common.CommonHelper.GetApproveLogTreeHtml(alList);
         }
         

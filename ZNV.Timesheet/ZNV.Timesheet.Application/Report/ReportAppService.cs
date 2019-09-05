@@ -15,5 +15,9 @@ namespace ZNV.Timesheet.Report
         {
             return _reportRepository.GetDepartmentReport(search);
         }
+        public DataTable GetNotSubmitTimesheetUserList(string dateList)
+        {
+            return _reportRepository.GetNotSubmitTimesheetUserList(dateList);
+        }
     }
 }

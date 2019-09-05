@@ -5,7 +5,10 @@ using System.Web;
 using System.Web.Mvc;
 using ZNV.Timesheet.ApproveLog;
 using ZNV.Timesheet.Project;
+using ZNV.Timesheet.Team;
 using ZNV.Timesheet.Timesheet;
+using ZNV.Timesheet.UserSetting;
+using ZNV.Timesheet.Web.Common;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
@@ -15,16 +18,22 @@ namespace ZNV.Timesheet.Web.Controllers
         private readonly IProjectAppService _projectService;
         private readonly IApproveLogAppService _alService;
         private readonly Holiday.IHolidayAppService _holidayService;
+        private readonly IUserSettingAppService _usService;
+        private readonly ITeamAppService _teamService;
 
-        public TimesheetController(ITimesheetAppService appService, 
-            IProjectAppService projectService, 
+        public TimesheetController(ITimesheetAppService appService,
+            IProjectAppService projectService,
             IApproveLogAppService alService,
-            Holiday.IHolidayAppService holidayService)
+            Holiday.IHolidayAppService holidayService,
+            IUserSettingAppService usService,
+            ITeamAppService teamService)
         {
             _appService = appService;
             _projectService = projectService;
             _alService = alService;
             _holidayService = holidayService;
+            _usService = usService;
+            _teamService = teamService;
         }
 
         // GET: Timesheet
@@ -40,8 +49,24 @@ namespace ZNV.Timesheet.Web.Controllers
         /// <returns></returns>
         private string GetNextOperator(Timesheet.Timesheet ts)
         {
-            //为了测试方便，先默认成当前登陆者
-            return Common.CommonHelper.CurrentUser;
+            //根据项目对应的类型Category判断
+            var projectInfo = _projectService.GetAllProjectList().Where(p => p.Id == ts.ProjectID).FirstOrDefault();
+            if (projectInfo != null)
+            {
+                if (projectInfo.Category == "售前售后")
+                {//Category是售前售后则走科室审批（先找user对应的team，然后再找team的teamleader）
+                    var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
+                    if (us != null && us.TeamId != 0)
+                    {
+                        return _teamService.GetTeam(us.TeamId).TeamLeader;
+                    }
+                }
+                else
+                {//Category是其他则走项目的经理，（先找项目，然后找项目的projectmanager）
+                    return projectInfo.ProjectManagerID;
+                }
+            }
+            return "";
         }
 
         [HttpPost]
@@ -50,7 +75,7 @@ namespace ZNV.Timesheet.Web.Controllers
             string user = Common.CommonHelper.CurrentUser;
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
-            DateTime? startDate = null, endDate=null;
+            DateTime? startDate = null, endDate = null;
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
             {
                 string[] paramList = Request["columns[0][search][value]"].Split(',');
@@ -196,6 +221,11 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult SaveDraftForWeek(Timesheet.TimesheetForWeek tsfw)
         {
+            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
+            if (!(us != null && us.TeamId != 0))
+            {
+                return Json(new { success = false, message = "请先在个人设置中设置科室!" }, JsonRequestBehavior.AllowGet);
+            }
             if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
             {
                 foreach (var ts in tsfw.TimesheetList)

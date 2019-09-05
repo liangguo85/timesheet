@@ -83,7 +83,7 @@
                         tb += '<td></td>';
                         tb += '</tr>'
                     }
-                    $(nRow).attr("detailDatas", tb);
+                    $("[data-toggle='tooltip']").tooltip({ content: function () { return $(this).attr("title"); } }); 
                 },
                 "serverSide": true,
                 "processing": true,

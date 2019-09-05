@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Abp.Dependency;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,15 +13,21 @@ using ZNV.Timesheet.Web.Common;
 
 namespace ZNV.Timesheet
 {
-    public class TimeSheetAuthorizationFilter: IAuthorizationFilter
+    public class TimeSheetAuthorizationFilter : IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationContext filterContext)
         {
             var request = filterContext.HttpContext.Request;
             var response = filterContext.HttpContext.Response;
-            
+
             if (!isLogin(filterContext))
             {
+                if (Debugger.IsAttached)
+                {//如果是调试阶段，则跳过sso登录，节省时间
+                    filterContext.HttpContext.Session["OAUserName"] = "0049002415";
+                    CommonHelper.CurrentUser = "0049002415";
+                    return;
+                }
                 string casServerUrlPrefix = ConfigurationManager.AppSettings["casServerUrlPrefix"];
 
                 //SSO的业务逻辑
@@ -64,17 +72,8 @@ namespace ZNV.Timesheet
                     }
                 }
             }
-            else
-            {
-                ////登陆成功之后，判断该用户是否已经设置了科室，如果没有设置则需要跳转到个人设置界面
-                //if (!CommonHelper.IsUserSettingOk())
-                //{
-                //    response.Redirect("/UserSetting");
-                //    response.End();
-                //    return;
-                //}
-            }
         }
+
         private bool isLogin(AuthorizationContext filterContext)
         {
             //根据业务系统的验证逻辑，判断用户是否已经登录，已经登录则直接跳转到相应的页面

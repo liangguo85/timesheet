@@ -1,4 +1,5 @@
-﻿using NPOI.HSSF.UserModel;
+﻿using Abp.Dependency;
+using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
@@ -129,7 +130,7 @@ namespace ZNV.Timesheet.Web.Common
             }
             return book;
         }
-        
+
         /// <summary>
         /// 把列表转换成英文逗号隔开的字符串
         /// </summary>
@@ -155,10 +156,10 @@ namespace ZNV.Timesheet.Web.Common
         /// <returns></returns>
         public static string GetApproveLogTreeHtml(List<ApproveLog.ApproveLog> alList)
         {
-            string al = "<p style = 'align:left'>";
+            string al = "<p style = \"align:left\">";
             for (int i = 0; i < alList.Count; i++)
             {
-                al += string.Format(@"<div>{0}|{1}:{2}</div>", alList[i].OperateTime.ToString("yyyy-MM-dd"), alList[i].CurrentOperator, alList[i].OperateType);
+                al += string.Format(@"<div>{0} | {1} : {2}</div>", alList[i].OperateTime.ToString("yyyy-MM-dd"), alList[i].CurrentOperator, alList[i].OperateType);
             }
             al += "</p>";
             return al;

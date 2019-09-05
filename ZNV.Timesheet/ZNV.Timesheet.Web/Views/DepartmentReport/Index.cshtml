@@ -55,8 +55,8 @@
 
                         row = '<tr>'
                         $.each(jsonData[0], function (k, v) {
-                            if (k.indexOf('-') > 0) {
-                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(0, k.indexOf('-')) + '</th>';
+                            if (k.indexOf('--') > 0) {
+                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(0, k.indexOf('--')) + '</th>';
                             }
                             else {
                                 row += "<th rowspan='2' style='text-align: center; vertical-align: middle;'>" + k + "</th>";
@@ -67,8 +67,8 @@
 
                         row = '<tr>'
                         $.each(jsonData[0], function (k, v) {
-                            if (k.indexOf('-') > 0) {
-                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(k.indexOf('-')+1, k.length) + '</th>';
+                            if (k.indexOf('--') > 0) {
+                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(k.indexOf('--') + 2, k.length) + '</th>';
                             }
                             //else {
                             //    row += '<th>' + k + '</th>';

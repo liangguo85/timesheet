@@ -19,6 +19,10 @@ namespace ZNV.Timesheet.Report
         {
             return _reportRepository.GetProjectReport(search);
         }
+        public DataTable GetProjectManpowerReport(ProjectReportSearch search)
+        {
+            return _reportRepository.GetProjectManpowerReport(search);
+        }
         public DataTable GetNotSubmitTimesheetUserList(string dateList)
         {
             return _reportRepository.GetNotSubmitTimesheetUserList(dateList);

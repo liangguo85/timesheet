@@ -1,0 +1,193 @@
+﻿@{
+
+    ViewBag.Title = "项目人力统计表";
+}
+@section styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-simple-tree-table.css" rel="stylesheet" />
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/css/select2.min.css">
+}
+@section scripts
+{
+    <script src="~/js/mergeCell.js"></script>
+    <script src="~/Scripts/freeze-table.min.js"></script>
+    <script src="~/lib/My97DatePicker/WdatePicker.js"></script>
+    <!-- Select2 -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#searchProject").select2({
+                placeholder: '输入项目编号或名称',
+                minimumInputLength: 0,
+                allowClear: true,
+                multiple: true,
+                ajax: {
+                    delay: 150,
+                    url: 'Timesheet/GetProjectList',
+                    dataType: 'json',
+                    async: true,
+                    data: function (params) {
+                        return {
+                            pageSize: 100,
+                            pageNum: params.page || 1,
+                            searchTerm: params.term,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.Results, function (obj) {
+                                return { id: obj.ProjectCode, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
+                            }),
+                            pagination: {
+                                more: (params.page * 100) <= data.Total
+                            }
+                        };
+                    }
+                }
+            });
+
+            $("#btnSearch").click(function () {
+                if ($("#beginDate").val() == "") {
+                    alert("请选择查询开始日期!")
+                    return;
+                }
+
+                if ($("#endDate").val() == "") {
+                    alert("请选择查询结束日期!")
+                    return;
+                }
+
+                if (Date.parse($("#beginDate").val()) > Date.parse($("#endDate").val())) {
+                    alert("查询开始日期不能大于结束日期!")
+                    return;
+                }
+
+                $("#head, #body").empty();
+                $.ajax({
+                    url: '@Url.Action("GetReport", "ProjectManpowerReport")',
+                    type: 'POST',
+                    data: {
+                        startDate: $("#beginDate").val(),
+                        endDate: $("#endDate").val(),
+                        projectIds: $("#searchProject").val()
+                    },
+                    success: function (data) {
+                        var head = $("#head")
+                        var body = $("#body")
+
+                        jsonData = JSON.parse(data.data)
+
+                        row = '<tr>'
+                        $.each(jsonData[0], function (k, v) {
+                            if (k.indexOf('--') > 0) {
+                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(0, k.indexOf('--')) + '</th>';
+                            }
+                            else {
+                                row += "<th rowspan='2' style='text-align: center; vertical-align: middle;'>" + k + "</th>";
+                            }
+                        })
+                        row += '</tr>'
+                        head.append(row);
+
+                        row = '<tr>'
+                        $.each(jsonData[0], function (k, v) {
+                            if (k.indexOf('--') > 0) {
+                                row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(k.indexOf('--') + 2, k.length) + '</th>';
+                            }
+                            //else {
+                            //    row += '<th>' + k + '</th>';
+                            //}
+                        })
+                        row += '</tr>'
+                        head.append(row);
+
+                        $.each(jsonData, function () {
+                            row = '<tr>'
+                            $.each(this, function (k, v) {
+                                row += '<td>' + v + '</td>';
+                            })
+                            row += '</tr>'
+                            body.append(row)
+                        })
+
+                        MergeCommonRows($('#tbReport'), [1, 2]);
+                        mergeCommonColumns($('#tbReport'));
+                        $("#tbReport").freezeTable({
+                            'columnNum': 2
+                        });
+                    },
+                    error: function () {
+                        alert("查询发生错误！")
+                    }
+                })
+            });
+
+            $("#btnExportExcel").click(function () {
+                if ($("#beginDate").val() == "") {
+                    alert("请选择查询开始日期!")
+                    return;
+                }
+
+                if ($("#endDate").val() == "") {
+                    alert("请选择查询结束日期!")
+                    return;
+                }
+
+                if (Date.parse($("#beginDate").val()) > Date.parse($("#endDate").val())) {
+                    alert("查询开始日期不能大于结束日期!")
+                    return;
+                }
+
+                window.location.href = "@Url.RouteUrl(new { Controller = "ProjectManpowerReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&projectIds=" + $("#searchProject").val()
+            });
+
+        })
+    </script>
+}
+<div class="row">
+    <div class="col-xs-12">
+        <!-- /.box -->
+        <div class="box">
+            <div class="box box-header">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>开始日期</label>
+                            <input type="text" id="beginDate" class="form-control" onclick="WdatePicker()" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>结束日期</label>
+                            <input class="form-control" id="endDate" onclick="WdatePicker()" />
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>项目</label>
+                            <select class="form-control select2" id="searchProject"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-toggle pull-right">
+                    <button type="button" name="search" id="btnSearch" class="btn btn-success">
+                        查询 <i class="fa fa-search"></i>
+                    </button>
+                    <button type="button" name="search" id="btnExportExcel" class="btn btn-danger">
+                        下载Excel <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body" style="height: 100%; min-height: 100%; max-height: 100%; overflow-x: scroll;">
+                <table id="tbReport" class="table table-bordered table-striped table-hover">
+                    <thead id="head">
+                    </thead>
+                    <tbody id="body"></tbody>
+                </table>
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>

@@ -66,6 +66,33 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
             return dt;
         }
 
+        public DataTable GetProjectManpowerReport(ProjectReportSearch search)
+        {
+            var projectIDs = "";
+            if (search.projectIds != null)
+            {
+                search.projectIds.ForEach(item => {
+                    projectIDs += "," + item;
+                });
+                projectIDs = projectIDs.TrimStart(',');
+            }
+
+            DataTable dt = new DataTable();
+            EnsureConnectionOpen();
+
+            using (var command = CreateCommand("Proc_ProjectManpowerReport", CommandType.StoredProcedure,
+                new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate),
+                new SqlParameter("projectIDs", projectIDs), new SqlParameter("currentUserID", search.currentUserID)))
+            {
+                using (var da = new SqlDataAdapter(command))
+                {
+                    da.Fill(dt);
+                }
+            }
+
+            return dt;
+        }
+
         private SqlCommand CreateCommand(string commandText, CommandType commandType, params SqlParameter[] parameters)
         {
             var command = Context.Database.Connection.CreateCommand();

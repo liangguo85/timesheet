@@ -7783,6 +7783,7 @@
     <Compile Include="Controllers\LayoutController.cs" />
     <Compile Include="Controllers\PermissionModuleController.cs" />
     <Compile Include="Controllers\ProjectManagementController.cs" />
+    <Compile Include="Controllers\ProjectManpowerReportController.cs" />
     <Compile Include="Controllers\ProjectReportController.cs" />
     <Compile Include="Controllers\RoleManagementController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
@@ -7850,6 +7851,7 @@
     <Content Include="Views\Layout\_Menu.cshtml" />
     <Content Include="Views\Error\AccessDenied.cshtml" />
     <Content Include="Views\ProjectReport\Index.cshtml" />
+    <Content Include="Views\ProjectManpowerReport\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

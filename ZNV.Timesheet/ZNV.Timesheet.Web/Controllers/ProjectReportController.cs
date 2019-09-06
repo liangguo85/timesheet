@@ -23,7 +23,7 @@ namespace ZNV.Timesheet.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetDepartmentReport(ProjectReportSearch search)
+        public ActionResult GetProjectReport(ProjectReportSearch search)
         {
             search.currentUserID = Common.CommonHelper.CurrentUser;
             DataTable dt = _reportAppService.GetProjectReport(search);

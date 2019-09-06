@@ -93,6 +93,33 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
             return dt;
         }
 
+        public DataTable GetProductionLineReport(ProductionLineReportSearch search)
+        {
+            var productionLineList = "";
+            if (search.productionLineList != null)
+            {
+                search.productionLineList.ForEach(item => {
+                    productionLineList += "," + item;
+                });
+                productionLineList = productionLineList.TrimStart(',');
+            }
+
+            DataTable dt = new DataTable();
+            EnsureConnectionOpen();
+
+            using (var command = CreateCommand("Proc_ProductionLineReport", CommandType.StoredProcedure,
+                new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate),
+                new SqlParameter("productionLineList", productionLineList), new SqlParameter("currentUserID", search.currentUserID)))
+            {
+                using (var da = new SqlDataAdapter(command))
+                {
+                    da.Fill(dt);
+                }
+            }
+
+            return dt;
+        }
+
         private SqlCommand CreateCommand(string commandText, CommandType commandType, params SqlParameter[] parameters)
         {
             var command = Context.Database.Connection.CreateCommand();

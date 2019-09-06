@@ -23,6 +23,10 @@ namespace ZNV.Timesheet.Report
         {
             return _reportRepository.GetProjectManpowerReport(search);
         }
+        public DataTable GetProductionLineReport(ProductionLineReportSearch search)
+        {
+            return _reportRepository.GetProductionLineReport(search);
+        }
         public DataTable GetNotSubmitTimesheetUserList(string dateList)
         {
             return _reportRepository.GetNotSubmitTimesheetUserList(dateList);

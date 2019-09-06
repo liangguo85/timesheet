@@ -1,6 +1,6 @@
 ﻿@{
 
-    ViewBag.Title = "项目人力报表";
+    ViewBag.Title = "产线项目报表";
 }
 @section styles {
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
@@ -17,35 +17,12 @@
     <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
     <script>
         $(document).ready(function () {
-            $("#searchProject").select2({
-                placeholder: '输入项目编号或名称',
+            $("#searchProductionLine").select2({
+                placeholder: '输入项目产线属性',
                 minimumInputLength: 0,
                 allowClear: true,
-                multiple: true,
-                ajax: {
-                    delay: 150,
-                    url: 'Timesheet/GetProjectList',
-                    dataType: 'json',
-                    async: true,
-                    data: function (params) {
-                        return {
-                            pageSize: 100,
-                            pageNum: params.page || 1,
-                            searchTerm: params.term,
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.Results, function (obj) {
-                                return { id: obj.ProjectCode, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
-                            }),
-                            pagination: {
-                                more: (params.page * 100) <= data.Total
-                            }
-                        };
-                    }
-                }
+                multiple: true
+                //initSelection: function (element, callback) {}
             });
 
             $("#btnSearch").click(function () {
@@ -66,12 +43,12 @@
 
                 $("#head, #body").empty();
                 $.ajax({
-                    url: '@Url.Action("GetReport", "ProjectManpowerReport")',
+                    url: '@Url.Action("GetReport", "ProductionLineReport")',
                     type: 'POST',
                     data: {
                         startDate: $("#beginDate").val(),
                         endDate: $("#endDate").val(),
-                        projectIds: $("#searchProject").val()
+                        productionLineList: $("#searchProductionLine").val()
                     },
                     success: function (data) {
                         var head = $("#head")
@@ -96,9 +73,6 @@
                             if (k.indexOf('--') > 0) {
                                 row += "<th style='text-align: center; vertical-align: middle;'>" + k.substring(k.indexOf('--') + 2, k.length) + '</th>';
                             }
-                            //else {
-                            //    row += '<th>' + k + '</th>';
-                            //}
                         })
                         row += '</tr>'
                         head.append(row);
@@ -140,7 +114,7 @@
                     return;
                 }
 
-                window.location.href = "@Url.RouteUrl(new { Controller = "ProjectManpowerReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&projectIds=" + $("#searchProject").val()
+                window.location.href = "@Url.RouteUrl(new { Controller = "ProductionLineReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&productionLineList=" + $("#searchProductionLine").val()
             });
 
         })
@@ -166,8 +140,16 @@
                     </div>
                     <div class="col-md-8">
                         <div class="form-group">
-                            <label>项目</label>
-                            <select class="form-control select2" id="searchProject"></select>
+                            <label>项目产线</label>
+                            <select class="form-control select2" id="searchProductionLine">
+                                <option value="研发公共">研发公共</option>
+                                <option value="智慧城市">智慧城市</option>
+                                <option value="公共安全">公共安全</option>
+                                <option value="公共安全-心测及定位">公共安全-心测及定位</option>
+                                <option value="物联网">物联网</option>
+                                <option value="战略投入">战略投入</option>
+                                <option value="云运维">云运维</option>
+                            </select>
                         </div>
                     </div>
                 </div>

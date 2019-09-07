@@ -575,6 +575,515 @@ begin
 end
 GO
 
+USE [ZNVTimesheet]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create Proc [dbo].[Proc_ProductionLineReport]
+(
+	@startDate datetime,
+	@endDate datetime,
+	@productionLineList nvarchar(max), -- 多个productionLine 以,号分开， 如果为空则查询所有
+	@currentUserID nvarchar(50)
+)
+as
+begin
+	-- 计算工作天数(周六算工作日)
+	declare @workDays int, @workHours int
+	select @workDays = (DATEDIFF(dd, @startDate, @endDate) + 1)
+		-(DATEDIFF(wk, @startDate, @endDate))
+		-(case when ((DATEPART(dw, @endDate) + @@DATEFIRST) % 7) = 0 THEN 1 ELSE 0 END) -- 结束日期是星期六，减一天
+		-(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '节假日')
+		+(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '工作日')
+	set @workHours = @workDays*8
+
+	-- 计算工作天数(周六不算工作日)
+	--declare @workDays int, @workHours int
+	--select @workDays = (DATEDIFF(dd, @startDate, @endDate) + 1)
+	--	-(DATEDIFF(wk, @startDate, @endDate) * 2)
+	--	-(case when ((DATEPART(dw, @startDate) + @@DATEFIRST) % 7) = 1 THEN 1 ELSE 0 END)
+	--	-(case when ((DATEPART(dw, @endDate) + @@DATEFIRST) % 7) = 0 THEN 1 ELSE 0 END)
+	--	-(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '节假日')
+	--	+(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '工作日')
+	--set @workHours = @workDays*8
+
+	CREATE TABLE #AllowSearchDepartment(departmentID nvarchar(50));
+
+	declare @searchAllDepartment bit;
+	set @searchAllDepartment = 0
+	-- 是否有查询所有部门的部门报表的权限
+	if exists(
+		select * from UserRole A
+			inner join RoleModule B on A.RoleId = B.RoleId
+			inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200040001'
+		where A.UserId = @currentUserID)
+	begin
+		set @searchAllDepartment = 1
+	end
+
+	-- 没有查询全部的权限，则查找对应的部门
+	if @searchAllDepartment = 0
+	begin
+		-- 获取人员部门权限
+		insert into #AllowSearchDepartment(departmentID) select DEPT_CODE from [MAPSysDB].[dbo].[HREhrDeptManager] where MANAGER_CODE = @currentUserID
+
+		-- 角色是有查询本部门报表的权限
+		if exists(
+			select * from UserRole A
+				inner join RoleModule B on A.RoleId = B.RoleId
+				inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200040002'
+			where A.UserId = @currentUserID)
+		begin
+			insert into #AllowSearchDepartment(departmentID) select DeptCode from [MAPSysDB].[dbo].[HREmployee] where EmployeeCode = @currentUserID
+		end
+
+		-- 角色的部门权限
+		insert into #AllowSearchDepartment(departmentID) select A.DepartmentId from RoleDepartment A, UserRole B where A.RoleId = B.RoleId and B.UserId = @currentUserID
+	end
+
+	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX);
+
+	SELECT  D.DeptName1+ '('+D.DeptCode1+')' as '部门名称'
+	  , C.EmployeeName+'('+[TimesheetUser]+')' as '人员姓名'
+	  ,cast(SUM([Workload])/@workHours as decimal(18,2)) AS Workload
+	  ,CONCAT(ISNULL(B.ProductionLineAttribute,' '), '--', B.ProjectName) AS ProjectName
+	INTO #TempTimesheet
+	FROM [Timesheet] A
+		INNER JOIN [Project] B ON A.ProjectID = B.Id
+		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
+		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
+	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+		AND (
+			-- 所有权限
+			@searchAllDepartment = 1
+			-- 部门权限
+			OR EXISTS(SELECT 1 FROM #AllowSearchDepartment WHERE CHARINDEX('.'+ departmentID + '.', '.'+ D.FullDeptCode + '.') > 0)
+			-- 科室权限
+			OR EXISTS(SELECT 1 FROM UserSetting U INNER JOIN Team T ON U.TeamId = T.Id WHERE T.TeamLeader = @currentUserID AND U.UserId = C.EmployeeCode)
+			-- 项目权限
+			OR EXISTS(SELECT 1 FROM Project P WHERE P.Id = A.ProjectID AND (P.ProductLeaderID = @currentUserID OR P.ProductManagerID = @currentUserID OR P.ProjectManagerID = @currentUserID))
+			-- 查询本人
+			OR A.TimesheetUser = @currentUserID
+		)
+		AND CHARINDEX(','+ cast(B.ProductionLineAttribute as nvarchar(50)) + ',', ','+ case when isnull(@productionLineList, '') = '' then B.ProductionLineAttribute else @productionLineList end + ',') > 0
+	GROUP BY [TimesheetUser]
+      ,[ProjectID]
+	  , B.ProjectName
+	  , B.ProductionLineAttribute
+	  , D.DeptCode1
+	  , D.DeptName1
+	  , C.EmployeeName
+	ORDER BY D.DeptName1, C.EmployeeName
+
+	SELECT @ColumnGroup = COALESCE(@ColumnGroup + ',' ,'' ) + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName) 
+
+	DECLARE @columnHeaders NVARCHAR (MAX)
+	SELECT @columnHeaders = COALESCE(@columnHeaders + ',' ,'') + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
+
+	DECLARE @GrandTotalCol	NVARCHAR (MAX)
+	SELECT @GrandTotalCol = 
+	COALESCE (@GrandTotalCol + 'ISNULL ('+ QUOTENAME(ProjectName) +',0) + ', 'ISNULL(' + QUOTENAME(ProjectName)+ ',0) + ')
+	FROM	#TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
+	SET @GrandTotalCol = LEFT (@GrandTotalCol, LEN (@GrandTotalCol)-1)
+
+	DECLARE @GrandTotalRow	NVARCHAR(MAX)
+	SELECT @GrandTotalRow = COALESCE(@GrandTotalRow + ',ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)', 'ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)')
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	DECLARE @GrandSum NVARCHAR(MAX)
+	SELECT @GrandSum = COALESCE(@GrandSum + ',SUM(' + QUOTENAME(ProjectName) +') as '+QUOTENAME(ProjectName), 'SUM(' + QUOTENAME(ProjectName) +') as '+ QUOTENAME(ProjectName))
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	/* MAIN QUERY */
+	DECLARE @FinalQuery NVARCHAR (MAX)
+	SET @FinalQuery = 	'SELECT *, ('+ @GrandTotalCol + ')
+	AS [行总计] INTO #temp_MatchesTotal
+				FROM
+					(SELECT *
+					FROM #TempTimesheet
+					) A
+				PIVOT
+					(
+					 SUM(Workload)
+					 FOR ProjectName
+					 IN ('+@columnHeaders +')
+					) B
+	ORDER BY [部门名称], [人员姓名]
+	
+
+	SELECT [部门名称],[人员姓名], '+@GrandSum+', SUM([行总计]) as [行总计(人力)] into #temp_FinalTotal FROM #temp_MatchesTotal
+	group by [部门名称], [人员姓名] with rollup
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''部门总计(人力)'' WHERE [部门名称] IS NOT NULL AND [人员姓名] IS NULL
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''全部总计(人力)'', [部门名称]='''' WHERE [部门名称] IS NULL AND [人员姓名] IS NULL
+
+	SELECT * FROM #temp_FinalTotal
+
+	DROP TABLE #temp_MatchesTotal
+
+	DROP TABLE #temp_FinalTotal'
+	PRINT 'Pivot Query '+@FinalQuery
+	EXECUTE(@FinalQuery)
+	DROP TABLE #AllowSearchDepartment
+	DROP TABLE #TempTimesheet
+end
+GO
+
+USE [ZNVTimesheet]
+GO
+/****** Object:  StoredProcedure [dbo].[Proc_ProjectManpowerReport]    Script Date: 2019/9/7 8:12:26 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Proc [dbo].[Proc_ProjectManpowerReport]
+(
+	@startDate datetime,
+	@endDate datetime,
+	@projectIDs nvarchar(max), -- 多个projectID 以,号分开， 如果为空则查询所有
+	@currentUserID nvarchar(50)
+)
+as
+begin
+	--declare @startDate datetime, @endDate datetime,@projectIDs nvarchar(max),@currentUserID nvarchar(50)
+	--set @startDate = '2019-09-08'
+	--set @endDate =  '2019-09-14'
+	--set @currentUserID = '0049002415'
+	--set @projectIDs = ''
+
+	--select (DATEDIFF(dd, @startDate, @endDate) + 1),(DATEDIFF(wk, @startDate, @endDate)),
+	--(case when ((DATEPART(dw, @startDate) + @@DATEFIRST) % 7) = 1 THEN 1 ELSE 0 END),
+	--(case when ((DATEPART(dw, @endDate) + @@DATEFIRST) % 7) = 0 THEN 1 ELSE 0 END)
+
+	--select (DATEDIFF(dd, @startDate, @endDate) + 1)
+	--	-(DATEDIFF(wk, @startDate, @endDate) * 1)
+	--	-(case when ((DATEPART(dw, @endDate) + @@DATEFIRST) % 7) = 0 THEN 1 ELSE 0 END)
+
+	-- 计算工作天数(目前周六算工作日)
+	declare @workDays int, @workHours int
+	select @workDays = (DATEDIFF(dd, @startDate, @endDate) + 1)
+		-(DATEDIFF(wk, @startDate, @endDate))
+		-(case when ((DATEPART(dw, @endDate) + @@DATEFIRST) % 7) = 0 THEN 1 ELSE 0 END) -- 结束日期是星期六，减一天
+		-(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '节假日')
+		+(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '工作日')
+	set @workHours = @workDays*8
+
+	-- 计算工作天数(目前周六不算工作日)
+	--declare @workDays int, @workHours int
+	--select @workDays = (DATEDIFF(dd, @startDate, @endDate) + 1)
+	--	-(DATEDIFF(wk, @startDate, @endDate) * 2)
+	--	-(case when ((DATEPART(dw, @startDate) + @@DATEFIRST) % 7) = 1 THEN 1 ELSE 0 END)
+	--	-(case when ((DATEPART(dw, @endDate) + @@DATEFIRST) % 7) = 0 THEN 1 ELSE 0 END)
+	--	-(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '节假日')
+	--	+(select count(*) from [Holiday] where HolidayDate between @startDate and @endDate and HolidayType = '工作日')
+	--set @workHours = @workDays*8
+
+	--select projectID, sum(Workload)/@workDays from Timesheet group by ProjectID
+	--select projectID, cast(sum(Workload)/@workDays as decimal(18,2)) from Timesheet group by ProjectID
+
+	CREATE TABLE #AllowSearchDepartment(departmentID nvarchar(50));
+
+	declare @searchAllDepartment bit;
+	set @searchAllDepartment = 0
+	-- 是否有查询所有部门的部门报表的权限
+	if exists(
+		select * from UserRole A
+			inner join RoleModule B on A.RoleId = B.RoleId
+			inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200030001'
+		where A.UserId = @currentUserID)
+	begin
+		set @searchAllDepartment = 1
+	end
+
+	-- 没有查询全部的权限，则查找对应的部门
+	if @searchAllDepartment = 0
+	begin
+		-- 获取人员部门权限
+		insert into #AllowSearchDepartment(departmentID) select DEPT_CODE from [MAPSysDB].[dbo].[HREhrDeptManager] where MANAGER_CODE = @currentUserID
+
+		-- 角色是有查询本部门报表的权限
+		if exists(
+			select * from UserRole A
+				inner join RoleModule B on A.RoleId = B.RoleId
+				inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200030002'
+			where A.UserId = @currentUserID)
+		begin
+			insert into #AllowSearchDepartment(departmentID) select DeptCode from [MAPSysDB].[dbo].[HREmployee] where EmployeeCode = @currentUserID
+		end
+
+		-- 角色的部门权限
+		insert into #AllowSearchDepartment(departmentID) select A.DepartmentId from RoleDepartment A, UserRole B where A.RoleId = B.RoleId and B.UserId = @currentUserID
+	end
+
+	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX);
+
+	SELECT  D.DeptName1+ '('+D.DeptCode1+')' as '部门名称'
+	  , C.EmployeeName+'('+[TimesheetUser]+')' as '人员姓名'
+	  ,cast(SUM([Workload])/@workHours as decimal(18,2)) AS Workload
+	  ,CONCAT(ISNULL(B.ProductionLineAttribute,' '), '--', B.ProjectName) AS ProjectName
+	INTO #TempTimesheet
+	FROM [Timesheet] A
+		INNER JOIN [Project] B ON A.ProjectID = B.Id
+		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
+		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
+	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+		AND (
+			-- 所有权限
+			@searchAllDepartment = 1
+			-- 部门权限
+			OR EXISTS(SELECT 1 FROM #AllowSearchDepartment WHERE CHARINDEX('.'+ departmentID + '.', '.'+ D.FullDeptCode + '.') > 0)
+			-- 科室权限
+			OR EXISTS(SELECT 1 FROM UserSetting U INNER JOIN Team T ON U.TeamId = T.Id WHERE T.TeamLeader = @currentUserID AND U.UserId = C.EmployeeCode)
+			-- 项目权限
+			OR EXISTS(SELECT 1 FROM Project P WHERE P.Id = A.ProjectID AND (P.ProductLeaderID = @currentUserID OR P.ProductManagerID = @currentUserID OR P.ProjectManagerID = @currentUserID))
+			-- 查询本人
+			OR A.TimesheetUser = @currentUserID
+		)
+		AND CHARINDEX(','+ cast(A.ProjectID as nvarchar(50)) + ',', ','+ case when isnull(@projectIDs, '') = '' then cast(A.ProjectID as nvarchar(50)) else @projectIDs end + ',') > 0
+	GROUP BY [TimesheetUser]
+      ,[ProjectID]
+	  , B.ProjectName
+	  , B.ProductionLineAttribute
+	  , D.DeptCode1
+	  , D.DeptName1
+	  , C.EmployeeName
+	ORDER BY D.DeptName1, C.EmployeeName
+
+	SELECT @ColumnGroup = COALESCE(@ColumnGroup + ',' ,'' ) + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName) 
+
+	DECLARE @columnHeaders NVARCHAR (MAX)
+	SELECT @columnHeaders = COALESCE(@columnHeaders + ',' ,'') + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
+
+	DECLARE @GrandTotalCol	NVARCHAR (MAX)
+	SELECT @GrandTotalCol = 
+	COALESCE (@GrandTotalCol + 'ISNULL ('+ QUOTENAME(ProjectName) +',0) + ', 'ISNULL(' + QUOTENAME(ProjectName)+ ',0) + ')
+	FROM	#TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
+	SET @GrandTotalCol = LEFT (@GrandTotalCol, LEN (@GrandTotalCol)-1)
+
+	DECLARE @GrandTotalRow	NVARCHAR(MAX)
+	SELECT @GrandTotalRow = COALESCE(@GrandTotalRow + ',ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)', 'ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)')
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	DECLARE @GrandSum NVARCHAR(MAX)
+	SELECT @GrandSum = COALESCE(@GrandSum + ',SUM(' + QUOTENAME(ProjectName) +') as '+QUOTENAME(ProjectName), 'SUM(' + QUOTENAME(ProjectName) +') as '+ QUOTENAME(ProjectName))
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	/* MAIN QUERY */
+	DECLARE @FinalQuery NVARCHAR (MAX)
+	SET @FinalQuery = 	'SELECT *, ('+ @GrandTotalCol + ')
+	AS [行总计] INTO #temp_MatchesTotal
+				FROM
+					(SELECT *
+					FROM #TempTimesheet
+					) A
+				PIVOT
+					(
+					 SUM(Workload)
+					 FOR ProjectName
+					 IN ('+@columnHeaders +')
+					) B
+	ORDER BY [部门名称], [人员姓名]
+	
+
+	SELECT [部门名称],[人员姓名], '+@GrandSum+', SUM([行总计]) as [行总计(人力)] into #temp_FinalTotal FROM #temp_MatchesTotal
+	group by [部门名称], [人员姓名] with rollup
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''部门总计(人力)'' WHERE [部门名称] IS NOT NULL AND [人员姓名] IS NULL
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''全部总计(人力)'', [部门名称]='''' WHERE [部门名称] IS NULL AND [人员姓名] IS NULL
+
+	SELECT * FROM #temp_FinalTotal
+
+	DROP TABLE #temp_MatchesTotal
+
+	DROP TABLE #temp_FinalTotal'
+	PRINT 'Pivot Query '+@FinalQuery
+	EXECUTE(@FinalQuery)
+	DROP TABLE #AllowSearchDepartment
+	DROP TABLE #TempTimesheet
+end
+GO
+
+USE [ZNVTimesheet]
+GO
+/****** Object:  StoredProcedure [dbo].[Proc_ProjectReport]    Script Date: 2019/9/7 8:13:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Proc [dbo].[Proc_ProjectReport]
+(
+	@startDate datetime,
+	@endDate datetime,
+	@projectIDs nvarchar(max), -- 多个projectID 以,号分开， 如果为空则查询所有
+	@currentUserID nvarchar(50)
+)
+as
+begin
+	--declare @startDate datetime, @endDate datetime,@projectIDs nvarchar(max),@currentUserID nvarchar(50)
+	--set @startDate = DATEADD(year,-1, getdate())
+	--set @endDate = DATEADD(year,1, getdate())
+	--set @currentUserID = '0049002415'
+	--set @projectIDs = ''
+
+	CREATE TABLE #AllowSearchDepartment(departmentID nvarchar(50));
+
+	declare @searchAllDepartment bit;
+	set @searchAllDepartment = 0
+	-- 是否有查询所有部门的部门报表的权限
+	if exists(
+		select * from UserRole A
+			inner join RoleModule B on A.RoleId = B.RoleId
+			inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200020001'
+		where A.UserId = @currentUserID)
+	begin
+		set @searchAllDepartment = 1
+	end
+
+	-- 没有查询全部的权限，则查找对应的部门
+	if @searchAllDepartment = 0
+	begin
+		-- 获取人员部门权限
+		insert into #AllowSearchDepartment(departmentID) select DEPT_CODE from [MAPSysDB].[dbo].[HREhrDeptManager] where MANAGER_CODE = @currentUserID
+
+		-- 角色是有查询本部门报表的权限
+		if exists(
+			select * from UserRole A
+				inner join RoleModule B on A.RoleId = B.RoleId
+				inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200020002'
+			where A.UserId = @currentUserID)
+		begin
+			insert into #AllowSearchDepartment(departmentID) select DeptCode from [MAPSysDB].[dbo].[HREmployee] where EmployeeCode = @currentUserID
+		end
+
+		-- 角色的部门权限
+		insert into #AllowSearchDepartment(departmentID) select A.DepartmentId from RoleDepartment A, UserRole B where A.RoleId = B.RoleId and B.UserId = @currentUserID
+	end
+
+	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX);
+
+	SELECT  D.DeptName1+ '('+D.DeptCode1+')' as '部门名称'
+	  , C.EmployeeName+'('+[TimesheetUser]+')' as '人员姓名'
+	  ,SUM([Workload]) AS Workload
+	  ,CONCAT(ISNULL(B.ProductionLineAttribute,' '), '--', B.ProjectName) AS ProjectName
+	INTO #TempTimesheet
+	FROM [Timesheet] A
+		INNER JOIN [Project] B ON A.ProjectID = B.Id
+		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
+		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
+	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+		AND (
+			-- 所有权限
+			@searchAllDepartment = 1
+			-- 部门权限
+			OR EXISTS(SELECT 1 FROM #AllowSearchDepartment WHERE CHARINDEX('.'+ departmentID + '.', '.'+ D.FullDeptCode + '.') > 0)
+			-- 科室权限
+			OR EXISTS(SELECT 1 FROM UserSetting U INNER JOIN Team T ON U.TeamId = T.Id WHERE T.TeamLeader = @currentUserID AND U.UserId = C.EmployeeCode)
+			-- 项目权限
+			OR EXISTS(SELECT 1 FROM Project P WHERE P.Id = A.ProjectID AND (P.ProductLeaderID = @currentUserID OR P.ProductManagerID = @currentUserID OR P.ProjectManagerID = @currentUserID))
+			-- 查询本人
+			OR A.TimesheetUser = @currentUserID
+		)
+		AND CHARINDEX(','+ cast(A.ProjectID as nvarchar(50)) + ',', ','+ case when isnull(@projectIDs, '') = '' then cast(A.ProjectID as nvarchar(50)) else @projectIDs end + ',') > 0
+	GROUP BY [TimesheetUser]
+      ,[ProjectID]
+	  , B.ProjectName
+	  , B.ProductionLineAttribute
+	  , D.DeptCode1
+	  , D.DeptName1
+	  , C.EmployeeName
+	ORDER BY D.DeptName1, C.EmployeeName
+
+	SELECT @ColumnGroup = COALESCE(@ColumnGroup + ',' ,'' ) + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName) 
+
+	DECLARE @columnHeaders NVARCHAR (MAX)
+	SELECT @columnHeaders = COALESCE(@columnHeaders + ',' ,'') + QUOTENAME(ProjectName) 
+	FROM #TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
+
+	DECLARE @GrandTotalCol	NVARCHAR (MAX)
+	SELECT @GrandTotalCol = 
+	COALESCE (@GrandTotalCol + 'ISNULL ('+ QUOTENAME(ProjectName) +',0) + ', 'ISNULL(' + QUOTENAME(ProjectName)+ ',0) + ')
+	FROM	#TempTimesheet
+	GROUP BY QUOTENAME(ProjectName)
+	ORDER BY QUOTENAME(ProjectName)
+	SET @GrandTotalCol = LEFT (@GrandTotalCol, LEN (@GrandTotalCol)-1)
+
+	DECLARE @GrandTotalRow	NVARCHAR(MAX)
+	SELECT @GrandTotalRow = COALESCE(@GrandTotalRow + ',ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)', 'ISNULL(SUM(' + QUOTENAME(ProjectName) +'),0)')
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	DECLARE @GrandSum NVARCHAR(MAX)
+	SELECT @GrandSum = COALESCE(@GrandSum + ',SUM(' + QUOTENAME(ProjectName) +') as '+QUOTENAME(ProjectName), 'SUM(' + QUOTENAME(ProjectName) +') as '+ QUOTENAME(ProjectName))
+	FROM #TempTimesheet
+	GROUP BY ProjectName
+	ORDER BY ProjectName
+
+	/* MAIN QUERY */
+	DECLARE @FinalQuery NVARCHAR (MAX)
+	SET @FinalQuery = 	'SELECT *, ('+ @GrandTotalCol + ')
+	AS [行总计] INTO #temp_MatchesTotal
+				FROM
+					(SELECT *
+					FROM #TempTimesheet
+					) A
+				PIVOT
+					(
+					 SUM(Workload)
+					 FOR ProjectName
+					 IN ('+@columnHeaders +')
+					) B
+	ORDER BY [部门名称], [人员姓名]
+	
+
+	SELECT [部门名称],[人员姓名], '+@GrandSum+', SUM([行总计]) as [行总计(小时)] into #temp_FinalTotal FROM #temp_MatchesTotal
+	group by [部门名称], [人员姓名] with rollup
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''部门总计(小时)'' WHERE [部门名称] IS NOT NULL AND [人员姓名] IS NULL
+
+	UPDATE #temp_FinalTotal SET [人员姓名] = ''全部总计(小时)'', [部门名称]='''' WHERE [部门名称] IS NULL AND [人员姓名] IS NULL
+
+	SELECT * FROM #temp_FinalTotal
+
+	DROP TABLE #temp_MatchesTotal
+
+	DROP TABLE #temp_FinalTotal'
+	PRINT 'Pivot Query '+@FinalQuery
+	EXECUTE(@FinalQuery)
+	DROP TABLE #AllowSearchDepartment
+	DROP TABLE #TempTimesheet
+end
+GO
 
 USE [ZNVTimesheet]
 GO

@@ -24,8 +24,8 @@ namespace ZNV.Timesheet
             {
                 if (Debugger.IsAttached)
                 {//如果是调试阶段，则跳过sso登录，节省时间
-                    filterContext.HttpContext.Session["OAUserName"] = "0049002415";
-                    CommonHelper.CurrentUser = "0049002415";
+                    filterContext.HttpContext.Session["OAUserName"] = "0049003006";
+                    CommonHelper.CurrentUser = "0049003006";
                     return;
                 }
                 string casServerUrlPrefix = ConfigurationManager.AppSettings["casServerUrlPrefix"];

@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using ZNV.Timesheet.ApproveLog;
 using ZNV.Timesheet.Project;
 using ZNV.Timesheet.Timesheet;
+using ZNV.Timesheet.UserSetting;
+using ZNV.Timesheet.Web.Common;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
@@ -15,15 +17,18 @@ namespace ZNV.Timesheet.Web.Controllers
         private readonly IProjectAppService _projectService;
         private readonly IApproveLogAppService _alService;
         private readonly Employee.IEmployeeAppService _employeeAppService;
+        private readonly IUserSettingAppService _usService;
         public TimesheetPendingController(ITimesheetAppService appService,
             IProjectAppService projectService,
             IApproveLogAppService alService,
-            Employee.IEmployeeAppService employeeAppService)
+            Employee.IEmployeeAppService employeeAppService,
+            IUserSettingAppService usService)
         {
             _appService = appService;
             _projectService = projectService;
             _alService = alService;
             _employeeAppService = employeeAppService;
+            _usService = usService;
         }
 
         // GET: Timesheet
@@ -80,7 +85,7 @@ namespace ZNV.Timesheet.Web.Controllers
             alList.ForEach(item =>
             {
                 var tsUser = _employeeAppService.GetEmployeeByCode(item.CurrentOperator);
-                item.CurrentOperator = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
+                item.CurrentOperatorName = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
             });
             return Common.CommonHelper.GetApproveLogTreeHtml(alList);
         }
@@ -113,6 +118,11 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult CommApprove(String tsIdList, string comment)
         {
+            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
+            if (!(us != null && us.TeamId != 0))
+            {
+                return Json(new { success = false, message = "请先在个人设置中设置科室!" }, JsonRequestBehavior.AllowGet);
+            }
             if (!string.IsNullOrEmpty(tsIdList))
             {
                 var operateTime = DateTime.Now;
@@ -151,6 +161,11 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult CommReject(String tsIdList, string comment)
         {
+            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
+            if (!(us != null && us.TeamId != 0))
+            {
+                return Json(new { success = false, message = "请先在个人设置中设置科室!" }, JsonRequestBehavior.AllowGet);
+            }
             if (!string.IsNullOrEmpty(tsIdList))
             {
                 var operateTime = DateTime.Now;
@@ -230,6 +245,11 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult CommTransfer(String tsIdList, string transferUser)
         {
+            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
+            if (!(us != null && us.TeamId != 0))
+            {
+                return Json(new { success = false, message = "请先在个人设置中设置科室!" }, JsonRequestBehavior.AllowGet);
+            }
             if (!string.IsNullOrEmpty(tsIdList))
             {
                 var operateTime = DateTime.Now;

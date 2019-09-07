@@ -25,8 +25,7 @@
                                 <th style="width:100px">日期</th>
                                 <th style="width:120px">项目代码</th>
                                 <th style="width:60px">工时</th>
-                                <th style="width:150px">工作内容</th>
-                                <th>备注</th>
+                                <th>工作内容</th>
                                 <th style="width:80px">状态</th>
                                 <th style="width:85px"></th>
                             </tr>
@@ -69,8 +68,7 @@
                                         </select>
                                     </td>
                                     <td><input type="text" name="Workload" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].Workload" /></td>
-                                    <td><textarea rows="2" name="WorkContent" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].WorkContent" /></td>
-                                    <td><textarea rows="2" name="Remarks" @eleDisabled style="width:100%" value="@Model.TimesheetList[i].Remarks" /></td>
+                                    <td><textarea rows="2" name="WorkContent" @eleDisabled style="width:100%">@Model.TimesheetList[i].WorkContent</textarea></td>
                                     <td>
                                         @if (Model.TimesheetList[i].Status == ZNV.Timesheet.Timesheet.ApproveStatus.Draft)
                                         {

@@ -12,6 +12,9 @@ namespace ZNV.Timesheet.ApproveLog
 
         [Required(ErrorMessage = "当前操作人不能为空!")]
         public virtual string CurrentOperator { get; set; }
+
+        [NotMapped]
+        public virtual string CurrentOperatorName { get; set; }
         
         public virtual string NextOperator { get; set; }
 

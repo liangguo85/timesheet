@@ -43,31 +43,31 @@ namespace ZNV.Timesheet.ApproveLog
             var isExists = _alRepository.GetAllList().Where(w => w.WorkflowInstanceID == al.WorkflowInstanceID && w.OperateTime == al.OperateTime).ToList();
             if (isExists.Count == 0)
             {
-                if (al.OperateType == "提交" || al.OperateType == "提交" || al.OperateType == "提交" || al.OperateType == "提交")
+                if (al.OperateType == "提交" || al.OperateType == "审批通过" || al.OperateType == "驳回" || al.OperateType == "转办")
                 {
-                    string departmentName = string.Empty;
-                    string submitterName = string.Empty;
-                    string approverName = string.Empty;
-                    string approverEmail = string.Empty;
                     var submitter = _userRepository.GetAll().Where(u => u.EmployeeCode == al.Creator).FirstOrDefault();
                     var setting = _settingRepository.GetAll().Where(s => s.UserId == submitter.EmployeeCode).FirstOrDefault();
                     var team = _teamRepository.Get(setting.TeamId);
-                    var approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.NextOperator).FirstOrDefault();
+                    HREmployee approver = null;
 
                     if (al.OperateType == "提交")
                     {
+                        approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.NextOperator).FirstOrDefault();
                         EmailSender.SendEmailForSubmitToApprover(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
                     }
                     else if (al.OperateType == "审批通过")
                     {
+                        approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.CurrentOperator).FirstOrDefault();
                         EmailSender.SendEmailForApproverCompleteApprove(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
                     }
                     else if (al.OperateType == "驳回")
                     {
+                        approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.CurrentOperator).FirstOrDefault();
                         EmailSender.SendEmailForRollbackToSubmitter(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
                     }
                     else if (al.OperateType == "转办")
                     {
+                        approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.CurrentOperator).FirstOrDefault();
                         EmailSender.SendEmailForApproverTransferToOther(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
                     }
                 }

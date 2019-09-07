@@ -36,13 +36,14 @@ namespace ZNV.Timesheet.Web.Controllers
             if (us != null)
             {
                 teamId = us.TeamId;
+                Team.Team team = _teamService.GetTeamList().Where(t => t.Id == teamId).FirstOrDefault();
+                if (team != null)
+                {
+                    us.TeamName = team.TeamName;
+                    return Json(new { success = true, TeamName = team.TeamName, TeamId = team.Id }, JsonRequestBehavior.AllowGet);
+                }
             }
-            Team.Team team = _teamService.GetTeamList().Where(t => t.Id == teamId).FirstOrDefault();
-            if (team != null)
-            {
-                us.TeamName = team.TeamName;
-            }
-            return Json(new { success = true, TeamName = team.TeamName, TeamId = team.Id }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, TeamName = "", TeamId = 0 }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -53,16 +54,19 @@ namespace ZNV.Timesheet.Web.Controllers
             if (us != null)
             {
                 teamId = us.TeamId;
+                Team.Team team = _teamService.GetTeamList().Where(t => t.Id == teamId).FirstOrDefault();
+                if (team != null)
+                {
+                    us.TeamName = team.TeamName;
+                    var teamList = new List<Team.Team>() {
+                       team
+                    };
+                    ViewBag.Teams = new SelectList(teamList, "Id", "TeamName");
+                    return View(us);
+                }
             }
-            Team.Team team = _teamService.GetTeamList().Where(t => t.Id == teamId).FirstOrDefault();
-            if (team != null)
-            {
-                us.TeamName = team.TeamName;
-            }
-            var teamList = new List<Team.Team>() {
-               team
-            };
-            ViewBag.Teams = new SelectList(teamList, "Id", "TeamName");
+            var teamListEmpty = new List<Team.Team>() { null };
+            ViewBag.Teams = new SelectList(teamListEmpty, "Id", "TeamName");
             return View(us);
         }
 

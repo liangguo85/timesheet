@@ -8,6 +8,7 @@ using ZNV.Timesheet.Project;
 using ZNV.Timesheet.Team;
 using ZNV.Timesheet.Timesheet;
 using ZNV.Timesheet.UserSetting;
+using ZNV.Timesheet.Utility;
 using ZNV.Timesheet.Web.Common;
 
 namespace ZNV.Timesheet.Web.Controllers
@@ -182,28 +183,25 @@ namespace ZNV.Timesheet.Web.Controllers
                 endDate = DateTime.Parse(id.Split('到')[1]);
             }
             //判断endDate是否为调休成上班，如果是则周日也允许填写工时
-            var isSundayWork = _holidayService.GetHolidayByDate(endDate);
-            if (isSundayWork == null || isSundayWork.HolidayType != "周末转上班")
-            {
-                endDate = endDate.AddDays(-1);
-            }
+            var workDate = Comm.GetWorkDateTimes(startDate);
+            startDate = workDate.Min();
+            endDate = workDate.Max();
             Timesheet.TimesheetForWeek tfw = new TimesheetForWeek();
             tfw.startDate = startDate.ToString("yyyy-MM-dd");
             tfw.endDate = endDate.ToString("yyyy-MM-dd");
             var tss = _appService.GetAllTimesheetsByUser(Common.CommonHelper.CurrentUser, startDate, endDate);
 
-            while (startDate <= endDate)
+            for (int i = 0; i < workDate.Count; i++)
             {
-                if (tss.Find(ts => { return ts.TimesheetDate.Value == startDate; }) == null)
+                if (tss.Find(ts => { return ts.TimesheetDate.Value == workDate[i]; }) == null)
                 {//把缺少的日期初始化一个空白的记录
                     tss.Add(new Timesheet.Timesheet()
                     {
                         Id = 0,
-                        TimesheetDate = startDate,
+                        TimesheetDate = workDate[i],
                         Status = ApproveStatus.Draft,
                     });
                 }
-                startDate = startDate.AddDays(1);
             }
             //排序
             tss.Sort((a, b) => a.TimesheetDate.Value.CompareTo(b.TimesheetDate.Value));
@@ -249,6 +247,11 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult SubmitFormForWeek(Timesheet.TimesheetForWeek tsfw, string comment)
         {
+            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
+            if (!(us != null && us.TeamId != 0))
+            {
+                return Json(new { success = false, message = "请先在个人设置中设置科室!" }, JsonRequestBehavior.AllowGet);
+            }
             if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
             {
                 var operateTime = DateTime.Now;

@@ -26,8 +26,8 @@
     <script src="~/js/config.js"></script>
 
     <script>
-        var Popup, dataTable
-
+        var Popup, dataTable  
+        
         $(document).ready(function () {
             dataTable = $("#dtTimesheet").DataTable({
                 "ajax": {
@@ -83,7 +83,7 @@
                         tb += '<td></td>';
                         tb += '</tr>'
                     }
-                    $("[data-toggle='tooltip']").tooltip({ content: function () { return $(this).attr("title"); } }); 
+                    $(nRow).attr("detailDatas", tb);
                 },
                 "serverSide": true,
                 "processing": true,
@@ -126,7 +126,7 @@
                             $(this).html('+').attr("title", "展开");
                         }
                     });
-                    $("[data-toggle='tooltip']").tooltip();
+                    $("[data-toggle='tooltip']").tooltip({ content: function () { return $(this).attr("title"); } }); 
                 }
             });
 
@@ -171,6 +171,7 @@
                             <th>项目名称</th>
                             <th>工时</th>
                             <th>工作内容</th>
+                            <th>备注</th>
                         </tr>
                     </thead>
                 </table>

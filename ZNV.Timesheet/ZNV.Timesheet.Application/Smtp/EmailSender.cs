@@ -116,14 +116,14 @@ namespace ZNV.Timesheet.Smtp
     public static class EmailType
     {
         /// <summary>
-        /// 本周有未提交的工时
-        /// </summary>
-        public static string NotSubmitTimesheetThisWeek = "0001";
-
-        /// <summary>
         /// 上周有未提交的工时
         /// </summary>
-        public static string NotSubmitTimesheetPreWeek = "0002";
+        public static string NotSubmitTimesheetPreWeek = "0001";
+
+        /// <summary>
+        /// 本周有未提交的工时
+        /// </summary>
+        public static string NotSubmitTimesheetThisWeek = "0002";
 
         /// <summary>
         /// 申请人提交到审批人

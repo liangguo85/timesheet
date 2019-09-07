@@ -77,11 +77,11 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             string al = "";
             var alList = _alService.GetApproveLogByWorkflowInstanceID(workflowInstanceID);
-            //alList.ForEach(item =>
-            //{
-            //    var tsUser = _employeeAppService.GetEmployeeByCode(item.CurrentOperator);
-            //    item.CurrentOperator = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
-            //});
+            alList.ForEach(item =>
+            {
+                var tsUser = _employeeAppService.GetEmployeeByCode(item.CurrentOperator);
+                item.CurrentOperatorName = tsUser.EmployeeName + "(" + tsUser.EmployeeCode + ")";
+            });
             return Common.CommonHelper.GetApproveLogTreeHtml(alList);
         }
         

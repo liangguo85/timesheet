@@ -173,7 +173,7 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
         {
             DataTable dt = new DataTable();
             EnsureConnectionOpen();
-            using (var command = CreateCommand("SELECT * from HRActiveDeptManagerV", CommandType.Text))
+            using (var command = CreateCommand("select * from HRActiveDeptManagerV a where a.FullDeptCode like '10000.11000%' and a.IsActiveDept = 'Y'", CommandType.Text))
             {
                 using (var da = new SqlDataAdapter(command))
                 {

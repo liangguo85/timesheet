@@ -26,6 +26,7 @@ namespace ZNV.Timesheet.Workers
             : base(timer)
         {
             Timer.Period = 5 * 1000 * 60;//10分钟
+            //Timer.Period = 1 * 1000 * 60;//10分钟
         }
 
         [UnitOfWork]
@@ -39,6 +40,7 @@ namespace ZNV.Timesheet.Workers
             }
             //每周一早上9点自动生成领导的工时
             else if (timeNow.DayOfWeek == DayOfWeek.Monday && timeNow.Hour == 9 && timeNow.Minute > 0 && timeNow.Minute <= 10)
+            //else if (timeNow.DayOfWeek == DayOfWeek.Saturday && timeNow.Hour == 16 && timeNow.Minute > 35 && timeNow.Minute <= 36)
             {
                 AutoCreateManagerTimesheet(timeNow);
             }
@@ -60,7 +62,7 @@ namespace ZNV.Timesheet.Workers
             }
 
             emailTemplate = IocManager.Instance.Resolve<IEmailTemplateAppService>().GetEmailTemplateList().Where(et => et.EmailTemplateCode == EmailType.NotSubmitTimesheetThisWeek).FirstOrDefault();
-            if (emailTemplate == null)
+            if (emailTemplate != null)
             {
                 //本周未提交的
                 dateTimeList = Comm.GetWorkDateTimes(timeNow);
@@ -95,8 +97,8 @@ namespace ZNV.Timesheet.Workers
 
         private void AutoCreateManagerTimesheet(DateTime timeNow)
         {
-            //先拿到所有的部门manager，TODO：这里需要改成从部门拿manager
-            var managerList = IocManager.Instance.Resolve<IEmployeeAppService>().GetEmployeeList();
+            //先拿到所有的部门manager
+            var userList = IocManager.Instance.Resolve<IReportAppService>().GetDepartmentManagerList();
 
             //每个部门的manager都自动创建本周的工时，项目对应名称是“部门管理”的项目，还需要结合节假日
             var project = IocManager.Instance.Resolve<IProjectAppService>().GetAllProjectList().Where(p => p.ProjectName == "部门管理").FirstOrDefault();
@@ -104,7 +106,7 @@ namespace ZNV.Timesheet.Workers
             {
                 List<DateTime> dateTimeList = Comm.GetWorkDateTimes(timeNow);
                 var tsAppService = IocManager.Instance.Resolve<ITimesheetAppService>();
-                foreach (var manager in managerList)
+                for (int k = 0; k < userList.Rows.Count; k++)
                 {
                     for (int i = 0; i < dateTimeList.Count; i++)
                     {
@@ -123,7 +125,7 @@ namespace ZNV.Timesheet.Workers
                             Remarks = "自动创建",
                             Status = ApproveStatus.Approved,
                             TimesheetDate = dateTimeList[i],
-                            TimesheetUser = manager.EmployeeCode,
+                            TimesheetUser = userList.Rows[k]["UserNum"].ToString(),
                             WorkContent = "部门管理",
                             WorkflowInstanceID = "",
                             Workload = 8

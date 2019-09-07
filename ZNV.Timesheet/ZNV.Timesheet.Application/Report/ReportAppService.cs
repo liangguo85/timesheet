@@ -31,5 +31,10 @@ namespace ZNV.Timesheet.Report
         {
             return _reportRepository.GetNotSubmitTimesheetUserList(dateList);
         }
+
+        public DataTable GetDepartmentManagerList()
+        {
+            return _reportRepository.GetDepartmentManagerList();
+        }
     }
 }

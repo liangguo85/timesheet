@@ -15,8 +15,8 @@ namespace ZNV.Timesheet.ApproveLog
         private readonly ITeamRepository _teamRepository;
         private readonly IUserSettingRepository _settingRepository;
 
-        public ApproveLogAppService(IApproveLogRepository alRepository, 
-            IHREmployeeRepository userRepository, 
+        public ApproveLogAppService(IApproveLogRepository alRepository,
+            IHREmployeeRepository userRepository,
             ITeamRepository teamRepository,
             IUserSettingRepository settingRepository)
         {
@@ -46,6 +46,12 @@ namespace ZNV.Timesheet.ApproveLog
                 if (al.OperateType == "提交" || al.OperateType == "审批通过" || al.OperateType == "驳回" || al.OperateType == "转办")
                 {
                     var submitter = _userRepository.GetAll().Where(u => u.EmployeeCode == al.Creator).FirstOrDefault();
+                    if (al.OperateType != "提交")
+                    {
+                        //如果不是提交，则需要先根据WorkflowInstanceID找到提交人，同一个WorkflowInstanceID操作日期最小的就是提交人记录的
+                        var submitLog = _alRepository.GetAllList().Where(w => w.WorkflowInstanceID == al.WorkflowInstanceID).OrderBy(alog => alog.OperateTime).FirstOrDefault();
+                        submitter = _userRepository.GetAll().Where(u => u.EmployeeCode == submitLog.Creator).FirstOrDefault();
+                    }
                     var setting = _settingRepository.GetAll().Where(s => s.UserId == submitter.EmployeeCode).FirstOrDefault();
                     var team = _teamRepository.Get(setting.TeamId);
                     HREmployee approver = null;

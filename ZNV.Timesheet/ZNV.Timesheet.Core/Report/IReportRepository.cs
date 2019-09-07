@@ -10,5 +10,6 @@ namespace ZNV.Timesheet.Report
         DataTable GetProjectManpowerReport(ProjectReportSearch search);
         DataTable GetProductionLineReport(ProductionLineReportSearch search);
         DataTable GetNotSubmitTimesheetUserList(string dateList);
+        DataTable GetDepartmentManagerList();
     }
 }

@@ -24,7 +24,7 @@ namespace ZNV.Timesheet.Utility
             }
             else
             {
-                timeNow = timeNow.AddDays((int)timeNow.DayOfWeek - 1);
+                timeNow = timeNow.AddDays(-((int)timeNow.DayOfWeek - 1));
             }
             var holidayList = IocManager.Instance.Resolve<IHolidayAppService>().GetHolidayList().Where(p => p.HolidayDate.Value.Date >= timeNow.Date && p.HolidayDate.Value.Date < timeNow.Date.AddDays(7));
             for (int i = 0; i < 7; i++)

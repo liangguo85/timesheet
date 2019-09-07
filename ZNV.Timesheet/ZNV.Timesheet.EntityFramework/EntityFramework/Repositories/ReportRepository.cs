@@ -164,5 +164,23 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
             }
             return dt;
         }
+
+        /// <summary>
+        /// 获取所有在职的部门manager
+        /// </summary>
+        /// <returns></returns>
+        public DataTable GetDepartmentManagerList()
+        {
+            DataTable dt = new DataTable();
+            EnsureConnectionOpen();
+            using (var command = CreateCommand("SELECT * from HRActiveDeptManagerV", CommandType.Text))
+            {
+                using (var da = new SqlDataAdapter(command))
+                {
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
     }
 }

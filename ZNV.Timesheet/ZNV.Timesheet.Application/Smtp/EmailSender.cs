@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -21,10 +22,10 @@ namespace ZNV.Timesheet.Smtp
         /// <returns></returns>
         public static bool SendEmail(string Subject, string Body, string mailTo, bool IsBodyHtml = false)
         {
-            string smtpServer = "smtp.znv.com"; //SMTP服务器
-            string senderDisplayName = "ZNV Email Sender";
-            string mailFrom = "znvoa@znv.com"; //登陆用户名，邮箱
-            string userPassword = "ItAdmin12";
+            string smtpServer = ConfigurationManager.AppSettings["smtpServer"]; //SMTP服务器
+            string senderDisplayName = ConfigurationManager.AppSettings["senderDisplayName"];
+            string mailFrom = ConfigurationManager.AppSettings["mailFrom"]; //登陆用户名，邮箱
+            string userPassword = ConfigurationManager.AppSettings["userPassword"];
             SmtpClient smtpClient = new SmtpClient();
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式
             smtpClient.Host = smtpServer; //指定SMTP服务器

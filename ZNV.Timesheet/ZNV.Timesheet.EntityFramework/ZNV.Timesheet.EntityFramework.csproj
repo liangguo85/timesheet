@@ -211,13 +211,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityFramework\MAPSysDbContext.cs" />
     <Compile Include="EntityFramework\Repositories\ApproveLogRepository.cs" />
     <Compile Include="EntityFramework\Repositories\EmailTemplateRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HRDepartmentRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HREmployeeRepository.cs" />
     <Compile Include="EntityFramework\Repositories\HolidayRepository.cs" />
-    <Compile Include="EntityFramework\Repositories\MAPSysDbRepositoryBase.cs" />
     <Compile Include="EntityFramework\Repositories\PermissionModuleRepository.cs" />
     <Compile Include="EntityFramework\Repositories\ProjectRepository.cs" />
     <Compile Include="EntityFramework\Repositories\ReportRepository.cs" />
@@ -230,7 +228,6 @@
     <Compile Include="EntityFramework\Repositories\UserRoleRepository.cs" />
     <Compile Include="EntityFramework\TimesheetDbContext.cs" />
     <Compile Include="EntityFramework\Repositories\TimesheetRepositoryBase.cs" />
-    <Compile Include="MAPSysDBModule.cs" />
     <Compile Include="Migrations\201906210717586_InitialCreate.cs" />
     <Compile Include="Migrations\201906210717586_InitialCreate.Designer.cs">
       <DependentUpon>201906210717586_InitialCreate.cs</DependentUpon>

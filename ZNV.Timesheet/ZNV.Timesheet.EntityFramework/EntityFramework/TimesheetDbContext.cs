@@ -1,6 +1,7 @@
 ﻿using System.Data.Common;
 using System.Data.Entity;
 using Abp.EntityFramework;
+using ZNV.Timesheet.Employee;
 
 namespace ZNV.Timesheet.EntityFramework
 {
@@ -34,6 +35,9 @@ namespace ZNV.Timesheet.EntityFramework
         public virtual IDbSet<ZNV.Timesheet.EmailTemplate.EmailTemplate> EmailTemplates { get; set; }
 
         public virtual IDbSet<ZNV.Timesheet.UserSetting.UserSetting> UserSettings { get; set; }
+
+        public virtual IDbSet<HREmployee> Employees { get; set; }
+        public virtual IDbSet<HRDepartment> Departments { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.

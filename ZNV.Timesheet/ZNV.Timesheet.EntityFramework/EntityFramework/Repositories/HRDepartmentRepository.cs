@@ -3,9 +3,9 @@ using Abp.EntityFramework;
 
 namespace ZNV.Timesheet.EntityFramework.Repositories
 {
-    public class HRDepartmentRepository : MAPSysDbRepositoryBase<HRDepartment, string>, IHRDepartmentRepository
+    public class HRDepartmentRepository : TimesheetRepositoryBase<HRDepartment, string>, IHRDepartmentRepository
     {
-        public HRDepartmentRepository(IDbContextProvider<MAPSysDbContext> dbContextProvider)
+        public HRDepartmentRepository(IDbContextProvider<TimesheetDbContext> dbContextProvider)
            : base(dbContextProvider)
         {
 

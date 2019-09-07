@@ -7714,6 +7714,7 @@
     <Content Include="lib\AdminLTE-2.4.10\bower_components\fullcalendar\CHANGELOG.md" />
     <Content Include="lib\AdminLTE-2.4.10\bower_components\fullcalendar\CONTRIBUTING.md" />
     <Content Include="lib\AdminLTE-2.4.10\bower_components\fullcalendar\README.md" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\expressive.annotations.validate.js" />
     <Content Include="Scripts\expressive.annotations.validate.min.js" />
@@ -7834,7 +7835,6 @@
     <Content Include="Views\Team\AddOrEdit.cshtml" />
     <Content Include="Views\TimesheetApproved\Index.cshtml" />
     <Content Include="Views\TimesheetPending\Index.cshtml" />
-    <Content Include="Views\TimesheetSubmit\Index.cshtml" />
     <Content Include="Views\RoleManagement\Index.cshtml" />
     <Content Include="Views\RoleManagement\AddOrEdit.cshtml" />
     <Content Include="Views\PermissionModule\Index.cshtml" />

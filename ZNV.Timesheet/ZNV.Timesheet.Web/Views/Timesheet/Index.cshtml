@@ -23,6 +23,7 @@
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/notify.min.js"></script>
     <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/lib/My97DatePicker/WdatePicker.js"></script>
 
     @*@Html.IncludeScript("~/js/Timesheet/Index.js")*@
 
@@ -209,7 +210,7 @@
                                 if ($.ui.dialog.prototype._allowInteraction) {
                                     $.ui.dialog.prototype._allowInteraction = function (e) {
                                         if ($(e.target).closest('.select2-drop').length) return true;
-                                        return ui_dialog_interaction.apply(this, arguments);
+                                        return true;// ui_dialog_interaction.apply(this, arguments);
                                     };
                                     $.ui.dialog.prototype._allowInteractionRemapped = true;
                                 }
@@ -389,7 +390,9 @@
                     return tsList[i].TimesheetDate + "的工时超过了8";
                 }
                 //其次，相同日期的工时之和不能超过8
-                var tsf = tsList.filter(ts => ts.TimesheetDate == tsList[i].TimesheetDate);
+                var tsf = $(tsList).filter(function () {
+                    return this.TimesheetDate == tsList[i].TimesheetDate;
+                });
                 if (tsf.length > 1) {
                     var allWorkload = 0;
                     tsf.forEach(function (tsfe) {
@@ -486,13 +489,13 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>开始日期</label>
-                            <input type="text" class="form-control" id="searchFromDate" onclick="WdatePicker()" />
+                            <input type="text" class="form-control" id="searchFromDate" onclick="WdatePicker(({readOnly:true,dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'searchToDate\')}'}))" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>结束日期</label>
-                            <input type="text" class="form-control" id="searchToDate" onclick="WdatePicker()" />
+                            <input type="text" class="form-control" id="searchToDate" onclick="WdatePicker(({readOnly:true,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'searchFromDate\')}'}))" />
                         </div>
                     </div>
                 </div>

@@ -69,8 +69,8 @@ function ConvertStringToDatetime(dateString) {
 }
 
 //把字符串转换成日期格式，原格式是/Date(1479285877000)/这样的，返回字符串
-function ConvertStringToDatetimeEx(str, contansTime = false) {
-    if (str && str.startsWith('/Date') && str.endsWith(')/')) {
+function ConvertStringToDatetimeEx(str, contansTime) {
+    if (str && /^\/Date(.*)\/$/.test(str)) {
         var d = eval('new ' + str.substr(1, str.length - 2));
         var ar_date = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()];
         for (var i = 0; i < ar_date.length; i++) ar_date[i] = dFormat(ar_date[i]);
@@ -89,7 +89,7 @@ function ConvertStringToDatetimeEx(str, contansTime = false) {
 
 //把字符串转换成日期格式，原格式是/Date(1479285877000)/这样的，返回日期类型
 function ConvertStringToDatetimeObject(str) {
-    if (str && str.startsWith('/Date') && str.endsWith(')/')) {
+    if (str && /^\/Date(.*)\/$/.test(str)) {
         var d = eval('new ' + str.substr(1, str.length - 2));
         return d;
     }

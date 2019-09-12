@@ -17,7 +17,7 @@ namespace ZNV.Timesheet.Timesheet
         }
         public List<Timesheet> GetAllTimesheets()
         {
-            return _repository.GetAllList();
+            return _repository.GetAll().OrderByDescending(ts => ts.TimesheetDate).ToList();
         }
 
         public List<Timesheet> GetAllTimesheetsByUser(string user, DateTime? startDate, DateTime? endDate)
@@ -35,7 +35,7 @@ namespace ZNV.Timesheet.Timesheet
             {
                 query = query.Where(ts => ts.TimesheetDate <= endDate);
             }
-            return query.OrderBy(ts => ts.TimesheetDate).ToList();
+            return query.OrderByDescending(ts => ts.TimesheetDate).ToList();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace ZNV.Timesheet.Timesheet
         {
             var query = _repository.GetAll();
             query = query.Where(ts => ts.TimesheetUser == user && ts.TimesheetDate == date);
-            return query.OrderBy(ts => ts.LastModifyTime).ToList();
+            return query.OrderByDescending(ts => ts.LastModifyTime).ToList();
         }
 
         /// <summary>

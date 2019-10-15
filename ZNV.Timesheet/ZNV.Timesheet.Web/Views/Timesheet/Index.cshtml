@@ -138,7 +138,7 @@
             if (dayOfWeek === 0)
                 dayOfWeek = 7;
             var optionNow = "";
-            for (var i = -2; i <= 2; i++) {
+            for (var i = -1; i <= 0; i++) {
                 var firstDayOfWeek = new Date();
                 var lastDayOfWeek = new Date();
                 firstDayOfWeek.setDate(dateNow.getDate() + i * 7 - dayOfWeek + 1);

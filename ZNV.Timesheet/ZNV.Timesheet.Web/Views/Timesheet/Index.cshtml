@@ -161,6 +161,7 @@
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("Delete", "Timesheet")/' + id,
+                    cache: false,
                     success: function (data) {
                         if (data.success) {
                             dataTable.ajax.reload();
@@ -191,6 +192,8 @@
             }
             //这里需要把选择的周开始结束日期传递到后台
             url += "/" + encodeURI(weekDate);
+            //这里增加一个参数，防止从缓存中取数据
+            url += "?i=" + new Date().toString();
             $.get(url)
                 .done(function (response) {
                     formDiv.html(response);
@@ -389,15 +392,18 @@
                 if (tsList[i].Workload > 8) {
                     return tsList[i].TimesheetDate + "的工时超过了8";
                 }
+                else if (tsList[i].Workload <= 0) {
+                    return tsList[i].TimesheetDate + "的工时不能为0";
+                }
                 //其次，相同日期的工时之和不能超过8
                 var tsf = $(tsList).filter(function () {
                     return this.TimesheetDate == tsList[i].TimesheetDate;
                 });
                 if (tsf.length > 1) {
                     var allWorkload = 0;
-                    tsf.forEach(function (tsfe) {
-                        allWorkload += tsfe.Workload;
-                    });
+                    for (var j = 0; j < tsf.length; j++) {
+                        allWorkload += tsf[j].Workload;
+                    }
                     if (allWorkload > 8) {
                         return tsList[i].TimesheetDate + "的总工时超过了8";
                     }

@@ -36,6 +36,7 @@
         $(document).ready(function () {
             $.ajax({
                 type: "GET",
+                cache: false,
                 url: "UserSetting/GetUserSetting",
                 success: function (data) {
                     if (data.success) {

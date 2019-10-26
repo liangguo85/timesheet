@@ -22,34 +22,34 @@ namespace ZNV.Timesheet.Smtp
         /// <returns></returns>
         public static bool SendEmail(string Subject, string Body, string mailTo, bool IsBodyHtml = false)
         {
-            string smtpServer = ConfigurationManager.AppSettings["smtpServer"]; //SMTP服务器
-            string senderDisplayName = ConfigurationManager.AppSettings["senderDisplayName"];
-            string mailFrom = ConfigurationManager.AppSettings["mailFrom"]; //登陆用户名，邮箱
-            string userPassword = ConfigurationManager.AppSettings["userPassword"];
-            SmtpClient smtpClient = new SmtpClient();
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式
-            smtpClient.Host = smtpServer; //指定SMTP服务器
-            smtpClient.Credentials = new System.Net.NetworkCredential(mailFrom, userPassword);//用户名和密码
-                                                                                              // 发送邮件设置       
-            MailMessage mailMessage = new MailMessage(new MailAddress(mailFrom, senderDisplayName), new MailAddress(mailTo)); // 发送人和收件人
-            mailMessage.Subject = Subject;//主题
-            mailMessage.Body = Body;//内容
-            mailMessage.BodyEncoding = Encoding.UTF8;//正文编码
-            mailMessage.IsBodyHtml = IsBodyHtml;//设置为HTML格式
-            mailMessage.Priority = MailPriority.Low;//优先级
-
             try
             {
+                string smtpServer = ConfigurationManager.AppSettings["smtpServer"]; //SMTP服务器
+                string senderDisplayName = ConfigurationManager.AppSettings["senderDisplayName"];
+                string mailFrom = ConfigurationManager.AppSettings["mailFrom"]; //登陆用户名，邮箱
+                string userPassword = ConfigurationManager.AppSettings["userPassword"];
+                SmtpClient smtpClient = new SmtpClient();
+                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;//指定电子邮件发送方式
+                smtpClient.Host = smtpServer; //指定SMTP服务器
+                smtpClient.Credentials = new System.Net.NetworkCredential(mailFrom, userPassword);//用户名和密码
+                                                                                                  // 发送邮件设置       
+                MailMessage mailMessage = new MailMessage(new MailAddress(mailFrom, senderDisplayName), new MailAddress(mailTo)); // 发送人和收件人
+                mailMessage.Subject = Subject;//主题
+                mailMessage.Body = Body;//内容
+                mailMessage.BodyEncoding = Encoding.UTF8;//正文编码
+                mailMessage.IsBodyHtml = IsBodyHtml;//设置为HTML格式
+                mailMessage.Priority = MailPriority.Low;//优先级
+
                 smtpClient.Send(mailMessage); // 发送邮件
                 return true;
             }
-            catch (SmtpException ex)
+            catch
             {
                 return false;
             }
         }
 
-        public static void SendEmailForSubmitToApprover(string submitterTeamName, string submitterName, string approverName, string mailTo,string comments, DateTime? dateTimeNow)
+        public static void SendEmailForSubmitToApprover(string submitterTeamName, string submitterName, string approverName, string mailTo, string comments, DateTime? dateTimeNow)
         {
             var emailTemplate = IocManager.Instance.Resolve<IEmailTemplateAppService>().GetEmailTemplateList()
                 .Where(et => et.EmailTemplateCode == EmailType.SubmitToApprover).FirstOrDefault();

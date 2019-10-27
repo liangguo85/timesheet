@@ -14,12 +14,25 @@ namespace ZNV.Timesheet.Web.Common
 {
     public class CommonHelper
     {
-        public static string _currentUser;
-
         /// <summary>
         /// 当前登陆的用户
         /// </summary>
-        public static string CurrentUser { get { return _currentUser ?? ""; } set { _currentUser = value; } }
+        public static string CurrentUser
+        {
+            get
+            {
+                if (HttpContext.Current.Session["CurrentUser"] != null)
+                {
+                    return HttpContext.Current.Session["CurrentUser"].ToString();
+                }
+                else
+                    return "";
+            }
+            set
+            {
+                HttpContext.Current.Session["CurrentUser"] = value;
+            }
+        }
 
         public static string GetProjectNameByProjectID(List<Project.Project> projects, int projectID)
         {

@@ -64,12 +64,12 @@ namespace ZNV.Timesheet.ApproveLog
                     else if (al.OperateType == "审批通过")
                     {
                         approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.CurrentOperator).FirstOrDefault();
-                        EmailSender.SendEmailForApproverCompleteApprove(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
+                        EmailSender.SendEmailForApproverCompleteApprove(team.TeamName, submitter.EmployeeName, approver.EmployeeName, submitter.Email, al.Comment, al.OperateTime);
                     }
                     else if (al.OperateType == "驳回")
                     {
                         approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.CurrentOperator).FirstOrDefault();
-                        EmailSender.SendEmailForRollbackToSubmitter(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
+                        EmailSender.SendEmailForRollbackToSubmitter(team.TeamName, submitter.EmployeeName, approver.EmployeeName, submitter.Email, al.Comment, al.OperateTime);
                     }
                     else if (al.OperateType == "转办")
                     {

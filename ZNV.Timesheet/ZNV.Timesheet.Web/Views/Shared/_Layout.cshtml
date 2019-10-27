@@ -443,6 +443,10 @@ desired effect
                 }
             })
         });
+
+        $.ajaxSetup({
+            cache: false
+        });
     </script>
 
     <!-- Dynamic scripts of ABP system (They are created on runtime and can not be bundled) -->

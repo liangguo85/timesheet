@@ -52,6 +52,8 @@ namespace ZNV.Timesheet.Web.Controllers
             if (emailTemplate.Id == 0)
             {
                 emailTemplate.Creator = Common.CommonHelper.CurrentUser;
+                emailTemplate.LastModifier = emailTemplate.Creator;
+                emailTemplate.LastModifyTime = DateTime.Now;
                 _emailTemplateAppService.AddEmailTemplate(emailTemplate);
                 return Json(new { success = true, message = "新增邮件模板信息成功!" }, JsonRequestBehavior.AllowGet);
             }

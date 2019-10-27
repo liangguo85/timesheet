@@ -48,8 +48,14 @@
                         "searchable": false
                     },
                     {
+                        "data": "LastModifyTime", "name": "LastModifyTime", "render": function (d) {
+                            return moment(d).format("YYYY-MM-DD");
+                        },
+                        "visible": false
+                    },
+                    {
                         "data": "Id", "render": function (data) {
-                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "RoleManagement")/"+ data+"','编辑角色信息')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("Permission", "RoleManagement")/"+ data+"','角色权限管理')><i class='fa fa-pencil'></i>权限管理</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("DepartmentPermission", "RoleManagement")/"+ data+"','部门权限管理')><i class='fa fa-pencil'></i>部门权限</a>"
+                            return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "RoleManagement")/" + data + "','编辑角色信息')><i class='fa fa-pencil'></i>编辑</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("Permission", "RoleManagement")/" + data + "','角色权限管理')><i class='fa fa-pencil'></i>权限管理</a> <a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("DepartmentPermission", "RoleManagement")/" + data + "','部门权限管理')><i class='fa fa-pencil'></i>部门权限</a> <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a>"
                         },
                         "orderable": false,
                         "searchable": false,
@@ -58,7 +64,7 @@
                 ],
                 "serverSide": true,
                 "processing": true,
-                "order": [0, "asc"],
+                "order": [2, "desc"],
                 "language": {
                     "emptyTable": "没有记录, 请点击 <b>新增</b> 按钮添加记录!",
                     "processing": "处理中... 请等待!",
@@ -168,6 +174,7 @@
                         <tr>
                             <th>角色名称</th>
                             <th>角色成员</th>
+                            <th>更新时间</th>
                             <th></th>
                         </tr>
                     </thead>

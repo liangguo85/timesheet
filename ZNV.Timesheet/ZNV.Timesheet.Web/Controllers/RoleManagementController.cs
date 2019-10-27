@@ -11,7 +11,7 @@ using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
-    //[TimesheetAuthorize(ModuleCode = "00010004")]
+    [TimesheetAuthorize(ModuleCode = "00010004")]
     public class RoleManagementController : Controller
     {
         private readonly IRoleManagementAppService _roleManagementAppService;
@@ -61,6 +61,8 @@ namespace ZNV.Timesheet.Web.Controllers
             if (role.Id == 0)
             {
                 role.Creator = Common.CommonHelper.CurrentUser;
+                role.LastModifier = role.Creator;
+                role.LastModifyTime = DateTime.Now;
                 _roleManagementAppService.AddRole(role);
                 return Json(new { success = true, message = "新增角色信息成功!" }, JsonRequestBehavior.AllowGet);
             }

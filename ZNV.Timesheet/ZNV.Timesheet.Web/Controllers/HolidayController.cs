@@ -39,8 +39,8 @@ namespace ZNV.Timesheet.Web.Controllers
                 holidayList = holidayList.Where(x => x.HolidayType.Equals(Request["columns[1][search][value]"].ToLower())).ToList();
             }
             int totalRow = holidayList.Count;
-            holidayList = holidayList.Skip(start).Take(length).ToList();
             holidayList = holidayList.OrderBy(sortColumnName + " " + sortDirection).ToList();
+            holidayList = holidayList.Skip(start).Take(length).ToList();
             return Json(new { data = holidayList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 
@@ -63,6 +63,8 @@ namespace ZNV.Timesheet.Web.Controllers
             if (holiday.Id == 0)
             {
                 holiday.Creator = Common.CommonHelper.CurrentUser;
+                holiday.LastModifier = holiday.Creator;
+                holiday.LastModifyTime = DateTime.Now;
                 _holidayAppService.AddHoliday(holiday);
                 return Json(new { success = true, message = "新增节假日信息成功!" }, JsonRequestBehavior.AllowGet);
             }

@@ -159,7 +159,7 @@
         function PopupForm(url) {
             var formDiv = $('<div/>');
             //这里增加一个参数，防止从缓存中取数据
-            url += "?i=" + new Date().toString();
+            url += "?i=" + (new Date()).valueOf();
             $.get(url)
                 .done(function (response) {
                     formDiv.html(response);

@@ -45,11 +45,11 @@
                                     <td>
                                         @if (Model.TimesheetList[i].TimesheetDate.HasValue)
                                         {
-                                            <input name="TimesheetDate" style="width:100%" type="text" @eleDisabled value='@Model.TimesheetList[i].TimesheetDate.Value.ToString("yyyy-MM-dd")' />
+                                            <input name="TimesheetDate" style="width:100%" type="text" @eleDisabled value='@Model.TimesheetList[i].TimesheetDate.Value.ToString("yyyy-MM-dd")' onclick="WdatePicker(({readOnly:true,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startDate\')}',maxDate:'#F{$dp.$D(\'endDate\')}'}))" />
                                         }
                                         else
                                         {
-                                            <input name="TimesheetDate" style="width:100%" type="text" @eleDisabled value='' />
+                                            <input name="TimesheetDate" style="width:100%" type="text" @eleDisabled value='' onclick="WdatePicker(({readOnly:true,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startDate\')}',maxDate:'#F{$dp.$D(\'endDate\')}'}))" />
                                         }
                                     </td>
                                     <td>
@@ -99,7 +99,11 @@
                                         }
                                         else
                                         {//只显示加号，因为数据已经存在不允许删除，可以到列表界面单独进行删除
-                                            <a class='btn btn-info btn-sm' style="margin-right: 5px;" title="增加一个工时" onclick='CreateNewTimesheet(this)'>+</a>
+                                         //只有草稿状态的才允许新增
+                                            @if (Model.TimesheetList[i].Status == ZNV.Timesheet.Timesheet.ApproveStatus.Draft)
+                                            {
+                                              <a class='btn btn-info btn-sm' style="margin-right: 5px;" title="增加一个工时" onclick='CreateNewTimesheet(this)'>+</a>
+                                            }
                                         }
                                     </td>
                                 </tr>
@@ -122,13 +126,13 @@
 <script>
     $(document).ready(function () {
         //Date picker
-        $("input[name='TimesheetDate']").datepicker({
-            autoclose: true,
-            dateFormat: "yy-mm-dd",
-            minDate: $("#startDate").val(),
-            maxDate: $("#endDate").val(),
-            weekStart: 1,
-        });
+        //$("input[name='TimesheetDate']").datepicker({
+        //    autoclose: true,
+        //    dateFormat: "yy-mm-dd",
+        //    minDate: $("#startDate").val(),
+        //    maxDate: $("#endDate").val(),
+        //    weekStart: 1,
+        //});
 
 
         $("select[name=ProjectID]").select2(

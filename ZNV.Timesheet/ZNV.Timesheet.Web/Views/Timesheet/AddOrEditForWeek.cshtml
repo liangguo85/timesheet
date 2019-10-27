@@ -54,16 +54,9 @@
                                     </td>
                                     <td>
                                         <select name="ProjectID" style="width:100%" @eleDisabled>
-                                            @foreach (var project in ViewData["Projects"] as List<SelectListItem>)
+                                            @if (Model.TimesheetList[i].ProjectID.HasValue)
                                             {
-                                                if (Model.TimesheetList[i].ProjectID.HasValue && project.Value == Model.TimesheetList[i].ProjectID.Value.ToString())
-                                                {
-                                                    <option value="@project.Value" selected="selected">@project.Text</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="@project.Value">@project.Text</option>
-                                                }
+                                                <option value="@Model.TimesheetList[i].ProjectID.Value" selected="selected">@Model.TimesheetList[i].ProjectName</option>
                                             }
                                         </select>
                                     </td>

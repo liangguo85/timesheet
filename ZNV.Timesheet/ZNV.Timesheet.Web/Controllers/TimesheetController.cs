@@ -119,7 +119,7 @@ namespace ZNV.Timesheet.Web.Controllers
         /// </summary>
         private void SetProjectListToViewData()
         {
-            List<Project.Project> projects = _projectService.GetAllProjectList();
+            List<Project.Project> projects = _projectService.GetAllValidProjectList();
             List<SelectListItem> selectLists = new List<SelectListItem>();
             if (projects != null && projects.Count > 0)
             {
@@ -205,8 +205,16 @@ namespace ZNV.Timesheet.Web.Controllers
             }
             //排序
             tss.Sort((a, b) => a.TimesheetDate.Value.CompareTo(b.TimesheetDate.Value));
-
-            SetProjectListToViewData();
+            //将项目的名称更新到对象中，方便前端展示
+            var allProjectList = _projectService.GetAllProjectList();
+            foreach (var tsItem in tss)
+            {
+                if (tsItem.ProjectID.HasValue && tsItem.ProjectID.Value != 0)
+                {
+                    tsItem.ProjectName = allProjectList.Where(p => p.Id == tsItem.ProjectID.Value).First().ProjectName;
+                }
+            }
+            //SetProjectListToViewData();
             tfw.TimesheetList = tss;
             return View(tfw);
         }
@@ -325,7 +333,11 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpGet]
         public ActionResult GetProjectList(string searchTerm, int pageSize, int pageNum)
         {
-            var itemList = _projectService.GetAllProjectList().Where(x => string.IsNullOrEmpty(searchTerm) || x.ProjectName.Contains(searchTerm) || x.ProjectCode.Contains(searchTerm)).ToList();
+            var itemList = _projectService.GetAllValidProjectList().Where(x => string.IsNullOrEmpty(searchTerm) || x.ProjectName.Contains(searchTerm) || x.ProjectCode.Contains(searchTerm)).ToList();
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                itemList = _projectService.GetAllValidProjectList();
+            }
             var result = new
             {
                 Total = itemList.Count(),

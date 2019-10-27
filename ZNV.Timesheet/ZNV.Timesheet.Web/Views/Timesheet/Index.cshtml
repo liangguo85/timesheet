@@ -184,8 +184,8 @@
                 var dayOfWeek = dateNow.getDay();
                 if (dayOfWeek === 0)
                     dayOfWeek = 7;
-                var firstDayOfWeek = new Date();
-                var lastDayOfWeek = new Date();
+                var firstDayOfWeek = dateNow;
+                var lastDayOfWeek = dateNow;
                 firstDayOfWeek.setDate(dateNow.getDate() - dayOfWeek + 1);
                 lastDayOfWeek.setDate(dateNow.getDate() - dayOfWeek + 7);
                 weekDate = firstDayOfWeek.Format() + "到" + lastDayOfWeek.Format();

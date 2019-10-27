@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 
@@ -38,6 +39,16 @@ namespace ZNV.Timesheet.Project
         public int GetProjectCount()
         {
             return _projectRepository.Count();
+        }
+        public List<Project> GetAllValidProjectList()
+        {
+            var allProjectList = _projectRepository.GetAll().ToList();
+            if (allProjectList!=null)
+            {
+                var datenow = DateTime.Now.Date;
+                return allProjectList.Where(x => x.EffectiveDate <= datenow && x.ExpirationDate>= datenow).ToList();
+            }
+            return allProjectList;
         }
     }
 }

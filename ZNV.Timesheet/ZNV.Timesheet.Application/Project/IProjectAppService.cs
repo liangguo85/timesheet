@@ -11,5 +11,6 @@ namespace ZNV.Timesheet.Project
         void DeleteProject(int id);
 
         int GetProjectCount();
+        List<Project> GetAllValidProjectList();
     }
 }

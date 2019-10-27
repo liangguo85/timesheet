@@ -51,9 +51,11 @@ namespace ZNV.Timesheet.Project
 
         public virtual bool IsEnabled { get; set; }
 
+        [Required(ErrorMessage = "生效日期不能为空!")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public virtual DateTime? EffectiveDate { get; set; }
 
+        [Required(ErrorMessage = "失效日期不能为空!")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public virtual DateTime? ExpirationDate { get; set; }
 

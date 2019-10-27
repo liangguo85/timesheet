@@ -41,30 +41,32 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "ProjectCode", "name": "ProjectCode" },
+                    { "data": "ProjectCode", "name": "ProjectCode", "width": "60px" },
                     { "data": "ProjectName", "name": "ProjectName" },
-                    { "data": "Category", "name": "Category" },
+                    { "data": "Category", "name": "Category", "width": "60px" },
                     { "data": "ProjectManagerName", "name": "ProjectManagerName" },
                     { "data": "ProductManagerName", "name": "ProductManagerName" },
-                    { "data": "ProjectType", "name": "ProjectType" },
-                    { "data": "ProjectLevel", "name": "ProjectLevel" },
-                    { "data": "ProjectKind", "name": "ProjectKind" },
-                    { "data": "ProductionLineAttribute", "name": "ProductionLineAttribute" },
-                    { "data": "ProjectStatus", "name": "ProjectStatus" },
-                    {
-                        "data": "IsEnabled", "name": "IsEnabled", "render": function (d) {
-                            return d == true ? "是" : "否";
-                        }
-                    },
+                    { "data": "ProjectType", "name": "ProjectType", "width": "60px" },
+                    { "data": "ProjectLevel", "name": "ProjectLevel", "width": "60px" },
+                    { "data": "ProjectKind", "name": "ProjectKind", "width": "60px" },
+                    { "data": "ProductionLineAttribute", "name": "ProductionLineAttribute", "width": "60px" },
+                    { "data": "ProjectStatus", "name": "ProjectStatus", "width": "60px" },
+                    //{
+                    //    "data": "IsEnabled", "name": "IsEnabled", "render": function (d) {
+                    //        return d == true ? "是" : "否";
+                    //    }
+                    //},
                     {
                         "data": "EffectiveDate", "name": "EffectiveDate", "render": function (d) {
                             return moment(d).format("YYYY-MM-DD");
-                        }
+                        },
+                        "width": "60px"
                     },
                     {
                         "data": "ExpirationDate", "name": "ExpirationDate", "render": function (d) {
                             return moment(d).format("YYYY-MM-DD");
-                        }
+                        },
+                        "width": "60px"
                     },
                     {
                         "data": "CreationTime", "name": "CreationTime", "render": function (d) {
@@ -83,7 +85,7 @@
                 ],
                 "serverSide": true,
                 "processing": true,
-                "order": [13, "desc"],
+                "order": [12, "desc"],
                 "language": {
                     "emptyTable": "没有记录, 请点击 <b>新增</b> 按钮添加记录!",
                     "processing": "处理中... 请等待!",
@@ -304,7 +306,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-                <table id="projectTable" class="table table-bordered table-striped table-hover">
+                <table id="projectTable" class="table table-bordered table-striped table-hover" style="width:100%">
                     <thead>
                         <tr>
                             <th>项目编码</th>
@@ -317,7 +319,7 @@
                             <th>项目性质</th>
                             <th>产线属性</th>
                             <th>项目状态</th>
-                            <th>是否投入</th>
+                            @*<th>是否投入</th>*@
                             <th>生效日期</th>
                             <th>失效日期</th>
                             <th>创建日期</th>

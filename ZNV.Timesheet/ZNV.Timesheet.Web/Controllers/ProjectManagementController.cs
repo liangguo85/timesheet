@@ -10,7 +10,7 @@ using ZNV.Timesheet.Utility;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
-    [TimesheetAuthorize(ModuleCode = "00010002")]
+    //[TimesheetAuthorize(ModuleCode = "00010002")]
     public class ProjectManagementController : Controller
     {
         private readonly IProjectAppService _projectAppService;

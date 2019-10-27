@@ -9,7 +9,7 @@ using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
-    [TimesheetAuthorize(ModuleCode = "00010001")]
+    //[TimesheetAuthorize(ModuleCode = "00010001")]
     public class TeamController : Controller
     {
         private readonly IEmployeeAppService _employeeAppService;

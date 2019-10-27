@@ -66,7 +66,9 @@ namespace ZNV.Timesheet.Team
                              TeamLeader = team.TeamLeader,
                              TeamLeaderName = user.EmployeeName + "(" + user.EmployeeCode + ")",
                              DepartmentID = team.DepartmentID,
-                             DepartmentName = department.FullDeptName+ "(" + department.DeptCode1 + ")"
+                             DepartmentName = department.FullDeptName+ "(" + department.DeptCode1 + ")",
+                             CreationTime = team.CreationTime,
+                             LastModifyTime = team.LastModifyTime
                          }).OrderBy(sortColumnName + " " + sortDirection).Skip(start).Take(length).ToList();
 
             var list = new List<Team>();
@@ -79,7 +81,9 @@ namespace ZNV.Timesheet.Team
                     TeamLeader = team.TeamLeader,
                     TeamLeaderName = team.TeamLeaderName,
                     DepartmentID = team.DepartmentID,
-                    DepartmentName = team.DepartmentName
+                    DepartmentName = team.DepartmentName,
+                    CreationTime = team.CreationTime,
+                    LastModifyTime = team.LastModifyTime
                 });
             });
 

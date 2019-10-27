@@ -62,6 +62,8 @@ namespace ZNV.Timesheet.Web.Controllers
             if (team.Id == 0)
             {
                 team.Creator = Common.CommonHelper.CurrentUser;
+                team.LastModifier = team.Creator;
+                team.LastModifyTime = DateTime.Now;
                 _teamAppService.AddTeam(team);
                 return Json(new { success = true, message = "新增科室信息成功!" }, JsonRequestBehavior.AllowGet);
             }

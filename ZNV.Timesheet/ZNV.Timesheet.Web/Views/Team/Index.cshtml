@@ -43,6 +43,12 @@
                 "columns": [
                     { "data": "TeamName", "name": "TeamName" },
                     { "data": "TeamLeaderName", "name": "TeamLeaderName" },
+                    {
+                        "data": "LastModifyTime", "name": "LastModifyTime", "render": function (d) {
+                            return moment(d).format("YYYY-MM-DD");
+                        },
+                        "visible": false
+                    },
                     { "data": "DepartmentName", "name": "DepartmentName" },
                     {
                         "data": "Id", "render": function (data) {
@@ -55,7 +61,7 @@
                 ],
                 "serverSide": true,
                 "processing": true,
-                "order": [0, "asc"],
+                "order": [2, "desc"],
                 "language": {
                     "emptyTable": "没有记录, 请点击 <b>新增</b> 按钮添加记录!",
                     "processing": "处理中... 请等待!",
@@ -216,6 +222,7 @@
                             <th>科室名称</th>
                             <th>科室领导</th>
                             <th>所属部门</th>
+                            <th>更新时间</th>
                             <th></th>
                         </tr>
                     </thead>

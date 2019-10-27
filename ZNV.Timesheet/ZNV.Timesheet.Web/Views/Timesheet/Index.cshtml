@@ -24,6 +24,7 @@
     <script src="~/Scripts/notify.min.js"></script>
     <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
     <script src="~/lib/My97DatePicker/WdatePicker.js"></script>
+    <script src="~/js/config.js"></script>
 
     @*@Html.IncludeScript("~/js/Timesheet/Index.js")*@
 
@@ -436,17 +437,15 @@
                 //先把id和class清空，否则无法绑定日历插件和正确赋值
                 $(dates).removeAttr("id").removeAttr("class");
                 $(dates).removeAttr("disabled");
-                $(dates).datepicker({
-                    autoclose: true,
-                    dateFormat: "yy-mm-dd",
-                    minDate: $("#startDate").val(),
-                    maxDate: $("#endDate").val(),
-                    weekStart: 1,
-                })
             }
             var inputProjectID = $(trList).find("select[name='ProjectID']");
             if (inputProjectID.length > 0) {//新增的需要去掉只读属性disabled
                 $(inputProjectID).removeAttr("disabled");
+                //增加动态筛选功能
+                //先把这个select后面的span对象移除
+                $(inputProjectID).next().remove();
+                //然后再重新初始化动态筛选
+                $(inputProjectID).select2(select2.project);
             }
             var inputWorkload = $(trList).find("input[name='Workload']");
             if (inputWorkload.length > 0) {//新增的需要去掉只读属性disabled

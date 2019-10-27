@@ -97,5 +97,34 @@
                 };
             }
         }
+    },
+    project: {
+        placeholder: '输入项目编号或名称',
+        minimumInputLength: 0,
+        allowClear: false,
+        ajax: {
+            delay: 150,
+            url: 'Timesheet/GetProjectList',
+            dataType: 'json',
+            async: true,
+            data: function (params) {
+                return {
+                    pageSize: 100,
+                    pageNum: params.page || 1,
+                    searchTerm: params.term,
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.Results, function (obj) {
+                        return { id: obj.Id, text: obj.ProjectName + "(" + obj.Id + ")" };
+                    }),
+                    pagination: {
+                        more: (params.page * 100) <= data.Total
+                    }
+                };
+            }
+        }
     }
 }

@@ -28,5 +28,9 @@ namespace ZNV.Timesheet.ApproveLog
 
         [Required(ErrorMessage = "OperateTime不能为空!")]
         public virtual DateTime OperateTime { get; set; }
+        [NotMapped]
+        public virtual string StartDate { get; set; }
+        [NotMapped]
+        public virtual string EndDate { get; set; }
     }
 }

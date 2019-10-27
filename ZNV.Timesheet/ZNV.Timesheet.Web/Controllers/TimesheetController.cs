@@ -263,6 +263,8 @@ namespace ZNV.Timesheet.Web.Controllers
             if (tsfw != null && tsfw.TimesheetList != null && tsfw.TimesheetList.Count > 0)
             {
                 var operateTime = DateTime.Now;
+                var startDate = tsfw.TimesheetList.Min(ts => ts.TimesheetDate).Value.ToString("yyyy-MM-dd");
+                var endDate = tsfw.TimesheetList.Max(ts => ts.TimesheetDate).Value.ToString("yyyy-MM-dd");
                 var newWorkflowInstanceID = Guid.NewGuid().ToString();
                 foreach (var ts in tsfw.TimesheetList)
                 {
@@ -283,7 +285,9 @@ namespace ZNV.Timesheet.Web.Controllers
                         OperateType = "提交",
                         CurrentOperator = Common.CommonHelper.CurrentUser,
                         NextOperator = nextOperator,
-                        Creator = Common.CommonHelper.CurrentUser
+                        Creator = Common.CommonHelper.CurrentUser,
+                        StartDate = startDate,
+                        EndDate = endDate
                     });
                 }
                 return Json(new { success = true, message = "提交周工时数据成功!" }, JsonRequestBehavior.AllowGet);

@@ -49,7 +49,7 @@ namespace ZNV.Timesheet.Smtp
             }
         }
 
-        public static void SendEmailForSubmitToApprover(string submitterTeamName, string submitterName, string approverName, string mailTo, string comments, DateTime? dateTimeNow)
+        public static void SendEmailForSubmitToApprover(string submitterTeamName, string submitterName, string approverName, string mailTo, string comments, DateTime? dateTimeNow,string startDate ="",string endDate="")
         {
             var emailTemplate = IocManager.Instance.Resolve<IEmailTemplateAppService>().GetEmailTemplateList()
                 .Where(et => et.EmailTemplateCode == EmailType.SubmitToApprover).FirstOrDefault();
@@ -57,7 +57,7 @@ namespace ZNV.Timesheet.Smtp
             {
                 return;
             }
-            CommSendEmail(submitterTeamName, submitterName, approverName, mailTo, comments, dateTimeNow, emailTemplate);
+            CommSendEmail(submitterTeamName, submitterName, approverName, mailTo, comments, dateTimeNow, emailTemplate,startDate,endDate);
         }
 
         public static void SendEmailForRollbackToSubmitter(string submitterTeamName, string submitterName, string approverName, string mailTo, string comments, DateTime? dateTimeNow)
@@ -93,7 +93,7 @@ namespace ZNV.Timesheet.Smtp
             CommSendEmail(submitterTeamName, submitterName, approverName, mailTo, comments, dateTimeNow, emailTemplate);
         }
 
-        private static void CommSendEmail(string submitterTeamName, string submitterName, string approverName, string mailTo, string comments, DateTime? dateTimeNow, EmailTemplate.EmailTemplate emailTemplate)
+        private static void CommSendEmail(string submitterTeamName, string submitterName, string approverName, string mailTo, string comments, DateTime? dateTimeNow, EmailTemplate.EmailTemplate emailTemplate, string startDate = "", string endDate = "")
         {
             if (!dateTimeNow.HasValue)
             {
@@ -103,10 +103,12 @@ namespace ZNV.Timesheet.Smtp
             string emailBodyTemplate = emailTemplate.EmailTemplateBody;
             string subject = emailSubjectTemplate.Replace("[TeamName]", submitterTeamName)
                 .Replace("[Submitter]", submitterName);
-            string body = emailBodyTemplate.Replace("[Approver]", submitterTeamName)
+            string body = emailBodyTemplate.Replace("[Approver]", approverName)
                 .Replace("[Submitter]", submitterName)
                 .Replace("[EmailTime]", dateTimeNow.Value.ToString("yyyy-MM-dd HH:mm:ss"))
-                .Replace("[Comments]", comments);
+                .Replace("[Comments]", comments)
+                .Replace("[StartDate]", startDate)
+                .Replace("[EndDate]", endDate);
             SendEmail(subject, body, mailTo, false);
         }
     }

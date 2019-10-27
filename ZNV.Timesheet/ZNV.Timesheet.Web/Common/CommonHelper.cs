@@ -172,7 +172,7 @@ namespace ZNV.Timesheet.Web.Common
             string al = "<p style = \"align:left\">";
             for (int i = 0; i < alList.Count; i++)
             {
-                al += string.Format(@"<div>{0} | {1} : {2}</div>", alList[i].OperateTime.ToString("yyyy-MM-dd"), alList[i].CurrentOperatorName, alList[i].OperateType);
+                al += string.Format(@"<div>{0} | {1} : {2}</div>", alList[i].OperateTime.ToString("yyyy-MM-dd HH:mm:ss"), alList[i].CurrentOperatorName, alList[i].OperateType);
             }
             al += "</p>";
             return al;

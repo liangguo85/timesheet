@@ -59,7 +59,7 @@ namespace ZNV.Timesheet.ApproveLog
                     if (al.OperateType == "提交")
                     {
                         approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.NextOperator).FirstOrDefault();
-                        EmailSender.SendEmailForSubmitToApprover(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
+                        EmailSender.SendEmailForSubmitToApprover(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime,al.StartDate,al.EndDate);
                     }
                     else if (al.OperateType == "审批通过")
                     {

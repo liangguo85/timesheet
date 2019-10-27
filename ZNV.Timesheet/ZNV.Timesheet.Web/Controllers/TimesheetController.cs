@@ -265,10 +265,20 @@ namespace ZNV.Timesheet.Web.Controllers
                 var operateTime = DateTime.Now;
                 var startDate = tsfw.TimesheetList.Min(ts => ts.TimesheetDate).Value.ToString("yyyy-MM-dd");
                 var endDate = tsfw.TimesheetList.Max(ts => ts.TimesheetDate).Value.ToString("yyyy-MM-dd");
-                var newWorkflowInstanceID = Guid.NewGuid().ToString();
+                var newWorkflowInstanceID = string.Empty;
+                Dictionary<string, string> approverWFIDList = new Dictionary<string, string>();
                 foreach (var ts in tsfw.TimesheetList)
                 {
                     var nextOperator = GetNextOperator(ts);
+                    if (approverWFIDList.ContainsKey(nextOperator))
+                    {
+                        newWorkflowInstanceID = approverWFIDList[nextOperator];
+                    }
+                    else
+                    {
+                        newWorkflowInstanceID = Guid.NewGuid().ToString();
+                        approverWFIDList.Add(nextOperator, Guid.NewGuid().ToString());
+                    }
                     if (string.IsNullOrEmpty(ts.WorkflowInstanceID))
                     {
                         ts.WorkflowInstanceID = newWorkflowInstanceID;

@@ -118,6 +118,7 @@ function ShowApproveComment(actionName, tsIdList) {
     divButton.append(btComment);
     btComment.val(actionName);
     btComment.click(function () {
+        abp.ui.block();
         var comment = $(textArea).val();
         if (comment && comment.trim() != '') {
             if (actionName == "审批通过") {
@@ -160,7 +161,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
-                abp.ui.clearBusy(this);
+                abp.ui.unblock();
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -189,7 +190,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
-                abp.ui.clearBusy(this);
+                abp.ui.unblock();
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -218,7 +219,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
-                abp.ui.clearBusy(this);
+                abp.ui.unblock();
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -250,7 +251,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
-                abp.ui.clearBusy(this);
+                abp.ui.unblock();
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -287,7 +288,7 @@ function ShowSelectUser(tsIdList) {
     var divButton = $('<div style="text-align: center;"/>');
     divButton.append(btOk);
     btOk.click(function () {
-        abp.ui.setBusy(this);
+        abp.ui.block();
         var user = $(selectUser).val();
         if (user && user.trim() != '') {
             $.ajax({
@@ -298,7 +299,7 @@ function ShowSelectUser(tsIdList) {
                     transferUser: user
                 },
                 success: function (data) {
-                    abp.ui.clearBusy(this);
+                    abp.ui.unblock();
                     if (data.success) {
                         dataTable.ajax.reload();
                         $.notify(data.message, {

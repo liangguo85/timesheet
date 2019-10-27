@@ -87,6 +87,8 @@ namespace ZNV.Timesheet.Web.Controllers
             if (project.Id == 0)
             {
                 project.Creator = Common.CommonHelper.CurrentUser;
+                project.LastModifier = project.Creator;
+                project.LastModifyTime = DateTime.Now;
                 _projectAppService.CreateProject(project);
                 return Json(new { success = true, message = "新增项目成功!" }, JsonRequestBehavior.AllowGet);
             }

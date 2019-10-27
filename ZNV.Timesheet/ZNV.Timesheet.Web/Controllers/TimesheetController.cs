@@ -277,7 +277,7 @@ namespace ZNV.Timesheet.Web.Controllers
                     else
                     {
                         newWorkflowInstanceID = Guid.NewGuid().ToString();
-                        approverWFIDList.Add(nextOperator, Guid.NewGuid().ToString());
+                        approverWFIDList.Add(nextOperator, newWorkflowInstanceID);
                     }
                     if (string.IsNullOrEmpty(ts.WorkflowInstanceID))
                     {

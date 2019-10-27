@@ -150,7 +150,7 @@
                         params.page = params.page || 1;
                         return {
                             results: $.map(data.Results, function (obj) {
-                                return { id: obj.ProjectCode, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
+                                return { id: obj.Id, text: obj.ProjectName + "(" + obj.Id + ")" };
                             }),
                             pagination: {
                                 more: (params.page * 100) <= data.Total

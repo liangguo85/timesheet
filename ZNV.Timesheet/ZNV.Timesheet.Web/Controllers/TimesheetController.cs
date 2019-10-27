@@ -211,7 +211,7 @@ namespace ZNV.Timesheet.Web.Controllers
             {
                 if (tsItem.ProjectID.HasValue && tsItem.ProjectID.Value != 0)
                 {
-                    tsItem.ProjectName = allProjectList.Where(p => p.Id == tsItem.ProjectID.Value).First().ProjectName;
+                    tsItem.ProjectName = Common.CommonHelper.GetProjectNameByProjectID(allProjectList, tsItem.ProjectID.Value);
                 }
             }
             //SetProjectListToViewData();

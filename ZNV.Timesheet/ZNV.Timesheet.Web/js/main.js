@@ -160,6 +160,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
+                abp.ui.clearBusy(this);
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -188,6 +189,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
+                abp.ui.clearBusy(this);
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -216,6 +218,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
+                abp.ui.clearBusy(this);
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -247,6 +250,7 @@ function ShowApproveComment(actionName, tsIdList) {
                 comment: comment
             },
             success: function (data) {
+                abp.ui.clearBusy(this);
                 if (data.success) {
                     dataTable.ajax.reload();
                     $.notify(data.message, {
@@ -283,6 +287,7 @@ function ShowSelectUser(tsIdList) {
     var divButton = $('<div style="text-align: center;"/>');
     divButton.append(btOk);
     btOk.click(function () {
+        abp.ui.setBusy(this);
         var user = $(selectUser).val();
         if (user && user.trim() != '') {
             $.ajax({
@@ -293,6 +298,7 @@ function ShowSelectUser(tsIdList) {
                     transferUser: user
                 },
                 success: function (data) {
+                    abp.ui.clearBusy(this);
                     if (data.success) {
                         dataTable.ajax.reload();
                         $.notify(data.message, {

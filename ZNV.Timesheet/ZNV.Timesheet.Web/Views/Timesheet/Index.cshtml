@@ -159,11 +159,13 @@
 
         function Delete(id) {
             if (confirm("确认删除吗?")) {
+                abp.ui.setBusy(this);
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("Delete", "Timesheet")/' + id,
                     cache: false,
                     success: function (data) {
+                        abp.ui.clearBusy(this);
                         if (data.success) {
                             dataTable.ajax.reload();
 
@@ -177,7 +179,8 @@
             }
         }
 
-        function PopupFormForWeek(url,currentDate) {
+        function PopupFormForWeek(url, currentDate) {
+            abp.ui.setBusy(this);
             var formDiv = $('<div/>');
             var weekDate = $("#selectWeek").val();
             if (currentDate != undefined && currentDate != "" && currentDate != null) {//如果这个参数有值，则需要更加该日期把对应的周一和周末找出来
@@ -197,6 +200,7 @@
             url += "?i=" + (new Date()).valueOf();
             $.get(url)
                 .done(function (response) {
+                    abp.ui.clearBusy(this);
                     formDiv.html(response);
 
                     Popup = formDiv.dialog({
@@ -231,6 +235,7 @@
         }
 
         function SubmitFormForWeek(form) {
+            abp.ui.setBusy(this);
             //按周操作的是多个工时对象，需要把form表单进行转换
             var weekData = GetTimeSheetFromForm(form, ApproveStatus.Draft);
             if (weekData.TimesheetList.length == 0) {
@@ -255,6 +260,7 @@
         }
 
         function RollBackForWeek(form) {
+            abp.ui.setBusy(this);
             //按周操作的是多个工时对象，需要把form表单进行转换
             var weekData = GetTimeSheetFromForm(form, ApproveStatus.Approving);
             if (weekData.TimesheetList.length == 0) {
@@ -268,6 +274,7 @@
         }
 
         function SaveDraftForWeek(form) {
+            abp.ui.setBusy(this);
             //按周操作的是多个工时对象，需要把form表单进行转换
             var weekData = GetTimeSheetFromForm(form, ApproveStatus.Draft);
             if (weekData.TimesheetList.length == 0) {
@@ -291,6 +298,7 @@
                 url: '@Url.Action("SaveDraftForWeek", "Timesheet")',
                 data: weekData,//JSON.stringify(weekData),
                 success: function (data) {
+                    abp.ui.clearBusy(this);
                     if (data.success) {
                         Popup.dialog('close');
                         dataTable.ajax.reload();
@@ -308,6 +316,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
+                    abp.ui.clearBusy(this);
                     $.notify(error, {
                         globalPosition: "top center",
                         className: "error"

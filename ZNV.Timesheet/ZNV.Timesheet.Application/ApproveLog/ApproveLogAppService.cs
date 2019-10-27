@@ -73,7 +73,7 @@ namespace ZNV.Timesheet.ApproveLog
                     }
                     else if (al.OperateType == "转办")
                     {
-                        approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.CurrentOperator).FirstOrDefault();
+                        approver = _userRepository.GetAll().Where(u => u.EmployeeCode == al.NextOperator).FirstOrDefault();
                         EmailSender.SendEmailForApproverTransferToOther(team.TeamName, submitter.EmployeeName, approver.EmployeeName, approver.Email, al.Comment, al.OperateTime);
                     }
                 }

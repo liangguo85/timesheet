@@ -436,7 +436,6 @@ desired effect
                 type: "POST",
                 url: 'Home/SSOLogOut',
                 success: function (data) {
-                    alert("data.message");
                     if (data.success) {
                         $(location).prop('href', 'http://oatest.znv.com:8112/sso/logout')
                     }

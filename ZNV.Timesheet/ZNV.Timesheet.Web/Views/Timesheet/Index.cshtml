@@ -193,7 +193,7 @@
             //这里需要把选择的周开始结束日期传递到后台
             url += "/" + encodeURI(weekDate);
             //这里增加一个参数，防止从缓存中取数据
-            url += "?i=" + new Date().toString();
+            url += "?i=" + (new Date()).valueOf();
             $.get(url)
                 .done(function (response) {
                     formDiv.html(response);
@@ -240,7 +240,7 @@
                 return;
             }
             //各种检验，单天不能超过8，同一个日期的工时不能超过8
-            var validCheck = CheckTimesheetValid(weekData.TimesheetList);
+            var validCheck = CheckTimesheetValid(GetTimeSheetFromForm(form, ApproveStatus.Draft, true).TimesheetList);
             if (validCheck != "") {
                 $.notify(validCheck, {
                     globalPosition: "top center",
@@ -277,7 +277,7 @@
                 return;
             }
             //各种检验，单天不能超过8，同一个日期的工时不能超过8
-            var validCheck = CheckTimesheetValid(weekData.TimesheetList);
+            var validCheck = CheckTimesheetValid(GetTimeSheetFromForm(form, ApproveStatus.Draft, true).TimesheetList);
             if (validCheck != "") {
                 $.notify(validCheck, {
                     globalPosition: "top center",
@@ -317,8 +317,13 @@
             return false;
         }
 
+        function CloseWeekForm(form) {
+            Popup.dialog('close');
+        }
+
         //获取周工时的数据，不管是保存草稿还是提交，都只针对状态是ApproveStatus.Draft的，撤回只针对状态是ApproveStatus.Approving的
-        function GetTimeSheetFromForm(form, approveStatus) {
+        function GetTimeSheetFromForm(form, approveStatus, isGetAll) {
+            debugger;
             var weekData = {
                 startDate: $("#startDate").val(),
                 endDate: $("#endDate").val(),
@@ -379,7 +384,12 @@
                     ts.WorkflowInstanceID = $(tsWorkflowInstanceID).val();
                 }
                 //不管是保存草稿还是提交，都只针对状态是ApproveStatus.Draft的，撤回只针对状态是ApproveStatus.Approving的
-                if (ts.Status == approveStatus) {
+                if (!isGetAll) {
+                    if (ts.Status == approveStatus) {
+                        weekData.TimesheetList.push(ts);
+                    }
+                }
+                else {
                     weekData.TimesheetList.push(ts);
                 }
             }

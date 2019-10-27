@@ -72,25 +72,25 @@
                     }
                 ],
                 "fnCreatedRow": function (nRow, aData, iDataIndex) {
-                    $('td:eq(1)', nRow).html("<span class='row-details' title='展开' style = 'padding-left: 5px;padding - right: 5px;cursor: pointer;color: blue;'>+</span> " + aData.TimesheetUser);
+                    $('td:eq(0)', nRow).html("<span class='row-details' title='展开' style = 'padding-left: 5px;padding - right: 5px;cursor: pointer;color: blue;'>+</span> " + aData.TimesheetUser);
                     //再把工时清单加载到子表格中
                     var tb = '';
                     for (var i = 0; i < aData.TimesheetList.length; i++) {
                         tb += '<tr name = "tr' + aData.IDList + '">';
-                        tb += '<td></td><td>' + aData.TimesheetList[i].TimesheetUser + '</td><td>' + ConvertStringToDatetimeEx(aData.TimesheetList[i].TimesheetDate) + '</td><td>' + aData.TimesheetList[i].ProjectName + '</td><td>' + aData.TimesheetList[i].Workload + '</td>';
+                        tb += '<td>' + aData.TimesheetList[i].TimesheetUser + '</td><td>' + ConvertStringToDatetimeEx(aData.TimesheetList[i].TimesheetDate) + '</td><td>' + aData.TimesheetList[i].ProjectName + '</td><td>' + aData.TimesheetList[i].Workload + '</td>';
                         tb += '<td><label title="' + aData.TimesheetList[i].WorkContent + '">' + GetShortStringForCell(aData.TimesheetList[i].WorkContent) + '</label></td>';
                         tb += '<td><label title="' + aData.TimesheetList[i].Remarks + '">' + GetShortStringForCell(aData.TimesheetList[i].Remarks) + '</label></td>';
                         tb += '<td></td>';
                         tb += '</tr>'
                     }
-                    $(nRow).attr("detailDatas", tb);
+                    $(nRow).attr("detailDatas", tb).attr("idlist", aData.IDList);
                 },
                 "serverSide": true,
                 "processing": true,
                 //"order": [1, "asc"],
                 "aaSorting": [[1, "desc"]],
                 "bSort": true,
-                "aoColumnDefs": [{ "bSortable": false, "aTargets": [0] }],
+                "aoColumnDefs": [{ "bSortable": false, "aTargets": [5] }],
                 "language": {
                     "emptyTable": "没有记录",
                     "processing": "处理中... 请等待!",
@@ -115,7 +115,7 @@
                     $('#dtTimesheet').on('click', ' tbody td .row-details', function () {
                         var nTr = $(this).parents('tr')[0];
                         var detailDatas = $(nTr).attr("detailDatas");
-                        var idlist = $(nTr).find("input[name='ckboxTS']").val();
+                        var idlist = $(nTr).attr("idlist");
                         var childTR = $("tr[name='tr" + idlist + "']");
                         if (childTR.length == 0) {//没有找到则加上
                             $(detailDatas).insertAfter($(nTr));

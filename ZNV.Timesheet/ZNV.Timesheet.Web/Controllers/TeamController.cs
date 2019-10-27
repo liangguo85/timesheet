@@ -32,29 +32,9 @@ namespace ZNV.Timesheet.Web.Controllers
             int length = Convert.ToInt32(Request["length"]);
             string sortColumnName = Request["columns[" + Request["order[0][column]"] + "][name]"];
             string sortDirection = Request["order[0][dir]"];
-            List<Team.Team> teamList = _teamAppService.GetTeamList();
-            if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
-            {
-                teamList = teamList.Where(x => x.TeamName.ToString().Contains(Request["columns[0][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
-            {
-                teamList = teamList.Where(x => x.TeamLeader.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList();
-            }
-            if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
-            {
-                teamList = teamList.Where(x => x.DepartmentID.ToLower().Contains(Request["columns[2][search][value]"].ToLower())).ToList();
-            }
-            int totalRow = teamList.Count;
-            teamList = teamList.Skip(start).Take(length).ToList();
-            teamList = teamList.OrderBy(sortColumnName + " " + sortDirection).ToList();
-            teamList.ForEach(item => {
-                var leader = _employeeAppService.GetEmployeeByCode(item.TeamLeader);
-                var dept = _employeeAppService.GetDepartmentByCode(item.DepartmentID);
-                item.TeamLeaderName = leader.EmployeeName + "(" + leader.EmployeeCode + ")";
-                item.DepartmentName = dept.FullDeptName + "(" + dept.DeptCode1 + ")";
-            });
-            
+            int totalRow = 0;
+            List<Team.Team> teamList = _teamAppService.GetTeamList(start, length, sortColumnName, sortDirection, Request["columns[0][search][value]"],
+                Request["columns[1][search][value]"], Request["columns[2][search][value]"], out totalRow);
             return Json(new { data = teamList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
 

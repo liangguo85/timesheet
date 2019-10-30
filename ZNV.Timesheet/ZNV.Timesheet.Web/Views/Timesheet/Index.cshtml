@@ -276,10 +276,11 @@
             //按周操作的是多个工时对象，需要把form表单进行转换
             var weekData = GetTimeSheetFromForm(form, ApproveStatus.Draft);
             if (weekData.TimesheetList.length == 0) {
+                abp.ui.unblock();
                 $.notify('需要保存的周工时草稿数据为空!', {
                     globalPosition: "top center",
                     className: "error"
-                })
+                });
                 return;
             }
             //各种检验，单天不能超过8，同一个日期的工时不能超过8

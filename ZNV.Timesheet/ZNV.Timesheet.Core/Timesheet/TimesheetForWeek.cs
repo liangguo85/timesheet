@@ -16,6 +16,7 @@ namespace ZNV.Timesheet.Timesheet
         /// 某个星期的所有timesheet
         /// </summary>
         public virtual List<Timesheet> TimesheetList { get; set; }
-        
+
+        public virtual decimal? AllWorkload { get; set; }
     }
 }

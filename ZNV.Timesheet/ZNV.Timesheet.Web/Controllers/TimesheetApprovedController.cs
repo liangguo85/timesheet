@@ -38,7 +38,7 @@ namespace ZNV.Timesheet.Web.Controllers
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
             string submitUser = string.Empty;
-            var list = _appService.GetAllTimesheets().Where(ts => ts.Status == ApproveStatus.Approved && ts.Approver == user).ToList();
+            var list = _appService.GetAllTimesheets().Where(ts => (ts.Status == ApproveStatus.Approved|| ts.Status == ApproveStatus.Rejected) && ts.Approver == user).ToList();
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]) && Request["columns[1][search][value]"] != "null")
             {
                 submitUser = Request["columns[1][search][value]"];

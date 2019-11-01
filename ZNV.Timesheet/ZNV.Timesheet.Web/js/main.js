@@ -10,7 +10,8 @@
 var ApproveStatus = {
     Draft: 0,
     Approving: 1,
-    Approved: 2
+    Approved: 2,
+    Rejected: 3
 };
 
 /**
@@ -118,7 +119,6 @@ function ShowApproveComment(actionName, tsIdList) {
     divButton.append(btComment);
     btComment.val(actionName);
     btComment.click(function () {
-        abp.ui.block();
         var comment = $(textArea).val();
         if (comment && comment.trim() != '') {
             if (actionName == "审批通过") {
@@ -151,127 +151,134 @@ function ShowApproveComment(actionName, tsIdList) {
         }
     });
 
-    //公用的驳回方法，参数是对应的工时id列表，多个则用英文逗号隔开
-    function commReject(tsIdList, comment) {
-        $.ajax({
-            type: "POST",
-            url: 'TimesheetPending/CommReject',
-            data: {
-                tsIdList: tsIdList,
-                comment: comment
-            },
-            success: function (data) {
-                abp.ui.unblock();
-                if (data.success) {
-                    dataTable.ajax.reload();
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "success"
-                    })
-                    CommentPopup.dialog('destroy').remove();
-                }
-                else {
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "error"
-                    })
-                }
-            }
-        })
-    }
+}
 
-    //公用的Approve方法，参数是对应的工时id列表，多个则用英文逗号隔开
-    function commApprove(tsIdList, comment) {
-        $.ajax({
-            type: "POST",
-            url: 'TimesheetPending/CommApprove',
-            data: {
-                tsIdList: tsIdList,
-                comment: comment
-            },
-            success: function (data) {
-                abp.ui.unblock();
-                if (data.success) {
-                    dataTable.ajax.reload();
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "success"
-                    })
-                    CommentPopup.dialog('destroy').remove();
-                }
-                else {
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "error"
-                    })
-                }
+//公用的驳回方法，参数是对应的工时id列表，多个则用英文逗号隔开
+function commReject(tsIdList, comment) {
+    abp.ui.block();
+    $.ajax({
+        type: "POST",
+        url: 'TimesheetPending/CommReject',
+        data: {
+            tsIdList: tsIdList,
+            comment: comment
+        },
+        success: function (data) {
+            abp.ui.unblock();
+            if (data.success) {
+                dataTable.ajax.reload();
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "success"
+                })
+                CommentPopup.dialog('destroy').remove();
             }
-        })
-    }
+            else {
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "error"
+                })
+            }
+        }
+    })
+}
 
-    //公用的Submit方法，参数是对应的工时id列表，多个则用英文逗号隔开
-    function commSubmit(tsIdList, comment) {
-        $.ajax({
-            type: "POST",
-            url: 'Timesheet/SubmitFormForWeek',
-            data: {
-                tsfw: tsIdList,
-                comment: comment
-            },
-            success: function (data) {
-                abp.ui.unblock();
-                if (data.success) {
-                    dataTable.ajax.reload();
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "success"
-                    })
-                    CommentPopup.dialog('destroy').remove();
-                    if (Popup) {
-                        Popup.dialog('destroy').remove();
-                    }
-                }
-                else {
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "error"
-                    })
-                }
+//公用的Approve方法，参数是对应的工时id列表，多个则用英文逗号隔开
+function commApprove(tsIdList, comment) {
+    abp.ui.block();
+    $.ajax({
+        type: "POST",
+        url: 'TimesheetPending/CommApprove',
+        data: {
+            tsIdList: tsIdList,
+            comment: comment
+        },
+        success: function (data) {
+            abp.ui.unblock();
+            if (data.success) {
+                dataTable.ajax.reload();
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "success"
+                })
+                CommentPopup.dialog('destroy').remove();
             }
-        })
-    }
+            else {
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "error"
+                })
+            }
+        }
+    })
+}
 
-    //公用的RollBack方法，参数是对应的工时id列表，多个则用英文逗号隔开
-    function commRollBack(tsIdList, comment) {
-        $.ajax({
-            type: "POST",
-            url: 'Timesheet/CommRollBack',
-            data: {
-                tsfw: tsIdList,
-                comment: comment
-            },
-            success: function (data) {
-                abp.ui.unblock();
-                if (data.success) {
-                    dataTable.ajax.reload();
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "success"
-                    })
+//公用的Submit方法，参数是对应的工时id列表，多个则用英文逗号隔开
+function commSubmit(tsIdList, comment) {
+    abp.ui.block();
+    $.ajax({
+        type: "POST",
+        url: 'Timesheet/SubmitFormForWeek',
+        data: {
+            tsfw: tsIdList,
+            comment: comment
+        },
+        success: function (data) {
+            abp.ui.unblock();
+            if (data.success) {
+                dataTable.ajax.reload();
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "success"
+                })
+                if (CommentPopup && CommentPopup.dialog) {
                     CommentPopup.dialog('destroy').remove();
-                    if (Popup) {
-                        Popup.dialog('destroy').remove();
-                    }
                 }
-                else {
-                    $.notify(data.message, {
-                        globalPosition: "top center",
-                        className: "error"
-                    })
+                if (Popup) {
+                    Popup.dialog('destroy').remove();
                 }
             }
-        })
-    }
+            else {
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "error"
+                })
+            }
+        }
+    })
+}
+
+//公用的RollBack方法，参数是对应的工时id列表，多个则用英文逗号隔开
+function commRollBack(tsIdList, comment) {
+    abp.ui.block();
+    $.ajax({
+        type: "POST",
+        url: 'Timesheet/CommRollBack',
+        data: {
+            tsfw: tsIdList,
+            comment: comment
+        },
+        success: function (data) {
+            abp.ui.unblock();
+            if (data.success) {
+                dataTable.ajax.reload();
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "success"
+                })
+                CommentPopup.dialog('destroy').remove();
+                if (Popup) {
+                    Popup.dialog('destroy').remove();
+                }
+            }
+            else {
+                $.notify(data.message, {
+                    globalPosition: "top center",
+                    className: "error"
+                })
+            }
+        }
+    })
 }
 
 var SelectUserPopup;

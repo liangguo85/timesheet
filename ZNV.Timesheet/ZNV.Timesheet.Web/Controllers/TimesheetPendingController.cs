@@ -173,7 +173,7 @@ namespace ZNV.Timesheet.Web.Controllers
                 foreach (var id in idList)
                 {
                     var ts = _appService.GetTimesheetsByID(int.Parse(id));
-                    ts.Status = ApproveStatus.Draft;
+                    ts.Status = ApproveStatus.Rejected;
                     ts.Approver = ts.Creator;
                     ts.ApprovedTime = operateTime;
                     AddOrEdit(ts);

@@ -37,11 +37,12 @@ namespace ZNV.Timesheet.Timesheet
     /// <summary>
     /// 审批状态
     /// </summary>
-    public enum ApproveStatus {
+    public enum ApproveStatus
+    {
         /// <summary>
         /// 草稿
         /// </summary>
-        Draft=0,
+        Draft = 0,
         /// <summary>
         /// 审核中
         /// </summary>
@@ -49,7 +50,11 @@ namespace ZNV.Timesheet.Timesheet
         /// <summary>
         /// 审批通过
         /// </summary>
-        Approved = 2
+        Approved = 2,
+        /// <summary>
+        /// 已拒绝
+        /// </summary>
+        Rejected = 3
     }
 }
 

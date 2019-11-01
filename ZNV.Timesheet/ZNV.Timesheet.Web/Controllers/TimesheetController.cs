@@ -190,10 +190,11 @@ namespace ZNV.Timesheet.Web.Controllers
             tfw.startDate = startDate.ToString("yyyy-MM-dd");
             tfw.endDate = endDate.ToString("yyyy-MM-dd");
             var tss = _appService.GetAllTimesheetsByUser(Common.CommonHelper.CurrentUser, startDate, endDate);
-
+            decimal allWorkload = 0;
             for (int i = 0; i < workDate.Count; i++)
             {
-                if (tss.Find(ts => { return ts.TimesheetDate.Value == workDate[i]; }) == null)
+                Timesheet.Timesheet findTimesheet = tss.Find(ts => { return ts.TimesheetDate.Value == workDate[i]; });
+                if (findTimesheet == null)
                 {//把缺少的日期初始化一个空白的记录
                     tss.Add(new Timesheet.Timesheet()
                     {
@@ -201,6 +202,11 @@ namespace ZNV.Timesheet.Web.Controllers
                         TimesheetDate = workDate[i],
                         Status = ApproveStatus.Draft,
                     });
+                    allWorkload += 0;
+                }
+                else
+                {
+                    allWorkload += findTimesheet.Workload.HasValue ? findTimesheet.Workload.Value : 0;
                 }
             }
             //排序
@@ -215,6 +221,7 @@ namespace ZNV.Timesheet.Web.Controllers
                 }
             }
             //SetProjectListToViewData();
+            tfw.AllWorkload = allWorkload;
             tfw.TimesheetList = tss;
             return View(tfw);
         }

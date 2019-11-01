@@ -43,13 +43,13 @@
                 "columns": [
                     { "data": "TeamName", "name": "TeamName" },
                     { "data": "TeamLeaderName", "name": "TeamLeaderName" },
+                    { "data": "DepartmentName", "name": "DepartmentName" },
                     {
                         "data": "LastModifyTime", "name": "LastModifyTime", "render": function (d) {
                             return moment(d).format("YYYY-MM-DD");
                         },
                         "visible": false
                     },
-                    { "data": "DepartmentName", "name": "DepartmentName" },
                     {
                         "data": "Id", "render": function (data) {
                             return "<a class='btn btn-info btn-sm' onclick=PopupForm('@Url.Action("AddOrEdit", "Team")/" + data + "')><i class='fa fa-pencil'></i>编辑</a > <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick=Delete(" + data + ")><i class='fa fa-trash'></i>删除</a >"
@@ -61,7 +61,7 @@
                 ],
                 "serverSide": true,
                 "processing": true,
-                "order": [2, "desc"],
+                "order": [3, "desc"],
                 "language": {
                     "emptyTable": "没有记录, 请点击 <b>新增</b> 按钮添加记录!",
                     "processing": "处理中... 请等待!",

@@ -422,6 +422,15 @@
 
         function CheckTimesheetValid(tsList) {
             for (var i = 0; i < tsList.length; i++) {
+                //日期必须有值
+                if (!tsList[i].TimesheetDate || tsList[i].TimesheetDate == "") {
+                    return "第" + (i+1) + "条数据的日期数据为空";
+                }
+                //项目必须有值
+                if (!tsList[i].ProjectID || tsList[i].ProjectID == "" || tsList[i].ProjectID == null) {
+                    return tsList[i].TimesheetDate + "的项目未填写";
+                }
+
                 //首先自身工时不能超过8
                 if (tsList[i].Workload > 8) {
                     return tsList[i].TimesheetDate + "的工时超过了8";

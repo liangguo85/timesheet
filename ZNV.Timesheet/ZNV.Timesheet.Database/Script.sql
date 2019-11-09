@@ -1272,7 +1272,7 @@ GO
 
 USE [ZNVTimesheet]
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_TimesheetReport]    Script Date: 2019/11/9 14:50:35 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_TimesheetReport]    Script Date: 2019/11/9 22:40:10 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1397,7 +1397,7 @@ begin
 	  , ProductionLineAttribute as '产品线'
 	  , ProductManager as '产品经理'
 	  , ProjectManager as '项目经理'
-	  , TimesheetDate as '日期'
+	  , CONVERT(char(10), TimesheetDate,120) as '日期'
 	  ,[Workload] as '工时'
 	  ,[Status] as '状态'
 	  ,WorkContent as '工作内容'

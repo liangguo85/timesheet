@@ -36,7 +36,7 @@ namespace ZNV.Timesheet.Web.Controllers
             search.currentUserID = Common.CommonHelper.CurrentUser;
             DataTable dt = _reportAppService.GetProductionLineReport(search);
             string sheetName = "项目工时统计报表";
-            var book = Common.CommonHelper.CreateHSSFromDataTable(sheetName, dt, new List<int>() { 0 });
+            var book = Common.CommonHelper.CreateHSSFromDataTable(sheetName, dt, new List<int>() { 0 }, true);
             MemoryStream ms = new MemoryStream();
             book.Write(ms);
             ms.Seek(0, SeekOrigin.Begin);

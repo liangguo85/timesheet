@@ -54,14 +54,19 @@ namespace ZNV.Timesheet.Web.Common
         /// <param name="dt">数据库返回的表格数据</param>
         /// <param name="mergeCellIndexList">需要合并的列集合，暂不支持行合并，为空则不需要合并（需要数据库返回的结果已经按照这些字段进行了排序，本方法仅实现这些列相同值合并）</param>
         /// <returns></returns>
-        public static HSSFWorkbook CreateHSSFromDataTable(string exportTableName, DataTable dt, List<int> mergeCellIndexList)
+        public static HSSFWorkbook CreateHSSFromDataTable(string exportTableName, DataTable dt, List<int> mergeCellIndexList, bool showProductionLineTitle = false)
         {
             //创建excel对象
             HSSFWorkbook book = new HSSFWorkbook();
             //创建sheet
             ISheet sheet = book.CreateSheet(exportTableName);
             //创建标题行
-            IRow rowTitle = sheet.CreateRow(0);
+            IRow rowTitle = showProductionLineTitle ? sheet.CreateRow(1) : sheet.CreateRow(0);
+            IRow rowProductionLine = null;
+            if (showProductionLineTitle)
+            {
+                rowProductionLine = sheet.CreateRow(0);
+            }
 
             //设置标题表格样式
             ICellStyle cellStyleTitle = book.CreateCellStyle();
@@ -85,14 +90,58 @@ namespace ZNV.Timesheet.Web.Common
             //设置表头
             for (int i = 0; i < dt.Columns.Count; i++)
             {
-                ICell cellTitle = rowTitle.CreateCell(i);
-                cellTitle.CellStyle = cellStyleTitle;
-                cellTitle.SetCellValue(dt.Columns[i].ColumnName);
+                if (showProductionLineTitle)
+                {
+                    var s = dt.Columns[i].ColumnName.Replace("--","|").Split('|');
+                    var title = s.Length == 2 ? s[1] : s[0];
+                    
+                    var cellProductionLine = rowProductionLine.CreateCell(i);
+                    cellProductionLine.CellStyle = cellStyleTitle;
+                    cellProductionLine.SetCellValue(s[0]);
+
+                    ICell cellTitle = rowTitle.CreateCell(i);
+                    cellTitle.CellStyle = cellStyleTitle;
+                    cellTitle.SetCellValue(title);
+                }
+                else
+                {
+                    ICell cellTitle = rowTitle.CreateCell(i);
+                    cellTitle.CellStyle = cellStyleTitle;
+                    cellTitle.SetCellValue(dt.Columns[i].ColumnName);
+                }
             }
+
+            //合并表头
+            if (showProductionLineTitle)
+            {
+                var s = "";
+                int startIndex = 0;
+                for (int cellIndex = 0; cellIndex < dt.Columns.Count; cellIndex++)
+                {
+                    string value = sheet.GetRow(0).GetCell(cellIndex).StringCellValue;
+                    string value1 = sheet.GetRow(1).GetCell(cellIndex).StringCellValue;
+                    if (cellIndex == 0)
+                    {
+                        s = value;
+                    }
+                    if (value == value1)
+                    {
+                        sheet.AddMergedRegion(new CellRangeAddress(0, 1, cellIndex, cellIndex));
+                    }
+                    if (s != value)
+                    {
+                        s = value;
+                        sheet.AddMergedRegion(new CellRangeAddress(0, 0, startIndex, cellIndex - 1));
+                        startIndex = cellIndex;
+                    }
+                }
+            }
+
+            var startRow = showProductionLineTitle ? 2 : 1;
             //填充数据
             for (int i = 0; i < dt.Rows.Count; i++)
             {
-                IRow rowData = sheet.CreateRow(i + 1);
+                IRow rowData = sheet.CreateRow(i + startRow);
                 for (int j = 0; j < dt.Columns.Count; j++)
                 {
                     var cellValue = dt.Rows[i][j].ToString().Trim();
@@ -111,7 +160,7 @@ namespace ZNV.Timesheet.Web.Common
                 foreach (var cellIndex in mergeCellIndexList)
                 {
                     //索引从1开始是因为sheet表中首行是标题
-                    for (int i = 1; i < dt.Rows.Count + 1; i++)
+                    for (int i = startRow; i < dt.Rows.Count + 1; i++)
                     {
                         string value = sheet.GetRow(i).GetCell(cellIndex).StringCellValue;
                         int end = i;

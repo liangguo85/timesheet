@@ -1268,3 +1268,143 @@ begin
 	DROP TABLE #AllowSearchDepartment
 	DROP TABLE #TempTimesheet
 end
+GO
+
+USE [ZNVTimesheet]
+GO
+/****** Object:  StoredProcedure [dbo].[Proc_TimesheetReport]    Script Date: 2019/11/9 14:50:35 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE Proc [dbo].[Proc_TimesheetReport]
+(
+	@startDate datetime,
+	@endDate datetime,
+	@departmentIDs nvarchar(max), -- 多个departmentID 以,号分开， 如果为空则查询所有
+	@productionLineList nvarchar(max),
+	@projectIds nvarchar(max),
+	@userIds nvarchar(max),
+	@currentUserID nvarchar(50),
+	@isPage bit,-- 是否分页【解决导出Excel全部导出问题】
+	@pageSize int, -- 每页记录数
+	@pageStart int,
+	@totalRecords int output -- 总记录数
+)
+as
+begin
+	CREATE TABLE #AllowSearchDepartment(departmentID nvarchar(50));
+
+	declare @searchAllDepartment bit;
+	set @searchAllDepartment = 0
+	-- 是否有查询所有部门的部门报表的权限
+	if exists(
+		select * from UserRole A
+			inner join RoleModule B on A.RoleId = B.RoleId
+			inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200050001'
+		where A.UserId = @currentUserID)
+	begin
+		set @searchAllDepartment = 1
+	end
+
+	-- 没有查询全部的权限，则查找对应的部门
+	if @searchAllDepartment = 0
+	begin
+		-- 获取人员部门权限
+		insert into #AllowSearchDepartment(departmentID) 
+		select A.[DeptCode] from [MAPSysDB].[dbo].[HRDeptManager] A,[ZNVTimesheet].[dbo].[HREmployee] B 
+		where A.[ManagerUserID] = B.UserID and B.EmployeeCode = @currentUserID
+
+		-- 角色是有查询本部门报表的权限
+		if exists(
+			select * from UserRole A
+				inner join RoleModule B on A.RoleId = B.RoleId
+				inner join PermissionModule C on C.Id = B.ModuleId and C.ModuleCode = '000200050002'
+			where A.UserId = @currentUserID)
+		begin
+			insert into #AllowSearchDepartment(departmentID) select DeptCode from [MAPSysDB].[dbo].[HREmployee] where EmployeeCode = @currentUserID
+		end
+
+		-- 角色的部门权限
+		insert into #AllowSearchDepartment(departmentID) select A.DepartmentId from RoleDepartment A, UserRole B where A.RoleId = B.RoleId and B.UserId = @currentUserID
+	end
+
+	DECLARE @ColumnGroup NVARCHAR(MAX), @PivotSQL NVARCHAR(MAX);
+
+	WITH CTE AS
+	(
+		SELECT    B.departmentID
+		  FROM      ( SELECT    [value] = CONVERT(XML , '<v>' + REPLACE(@departmentIDs , ',' , '</v><v>')
+								+ '</v>')
+					) A
+		  OUTER APPLY ( SELECT  departmentID = N.v.value('.' , 'nvarchar(50)')
+						FROM    A.[value].nodes('/v') N ( v )
+					  ) B
+    )
+	SELECT  RowID = ROW_NUMBER() over(order by D.DeptName1, C.EmployeeName, B.ProjectName, A.TimesheetDate desc),
+		D.DeptName1 as 'DeptName'
+	  , C.EmployeeName+'('+A.TimesheetUser+')' as 'EmployeeName'
+	  , B.ProjectCode
+	  , B.ProjectName
+	  ,ISNULL(B.ProductionLineAttribute,'') as 'ProductionLineAttribute'
+	  ,ISNULL(E.EmployeeName,' ') as 'ProductManager'
+	  ,ISNULL(F.EmployeeName,' ') as 'ProjectManager'
+	  , A.TimesheetDate
+	  ,[Workload]
+	  ,case A.Status when 0 then '草稿' when 1 then '审核中' when 2 then '审批通过' when 3 then '驳回' else '' end as 'Status'
+	  ,WorkContent
+	  ,Remarks
+	INTO #TempTimesheet
+	FROM [Timesheet] A
+		INNER JOIN [Project] B ON A.ProjectID = B.Id
+		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
+		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
+		LEFT JOIN [MAPSysDB].[dbo].[HREmployee] E ON E.EmployeeCode = B.ProductManagerID
+		LEFT JOIN [MAPSysDB].[dbo].[HREmployee] F ON F.EmployeeCode = B.ProjectManagerID
+	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+		AND (
+			-- 所有权限
+			@searchAllDepartment = 1
+			-- 部门权限
+			OR EXISTS(SELECT 1 FROM #AllowSearchDepartment WHERE CHARINDEX('.'+ departmentID + '.', '.'+ D.FullDeptCode + '.') > 0)
+			-- 科室权限
+			OR EXISTS(SELECT 1 FROM UserSetting U INNER JOIN Team T ON U.TeamId = T.Id WHERE T.TeamLeader = @currentUserID AND U.UserId = C.EmployeeCode)
+			-- 项目权限
+			OR EXISTS(SELECT 1 FROM Project P WHERE P.Id = A.ProjectID AND (P.ProductLeaderID = @currentUserID OR P.ProductManagerID = @currentUserID OR P.ProjectManagerID = @currentUserID))
+			-- 查询本人
+			OR A.TimesheetUser = @currentUserID
+		)
+		AND EXISTS(SELECT 1 FROM CTE WHERE CHARINDEX('.'+ case when isnull(@departmentIDs,'') = '' then C.DeptCode else departmentID end + '.', '.'+ D.FullDeptCode + '.') > 0)
+		AND CHARINDEX(','+ cast(A.ProjectID as nvarchar(50)) + ',', ','+ case when isnull(@projectIDs, '') = '' then cast(A.ProjectID as nvarchar(50)) else @projectIDs end + ',') > 0
+		AND CHARINDEX(','+ cast(B.ProductionLineAttribute as nvarchar(50)) + ',', ','+ case when isnull(@productionLineList, '') = '' then B.ProductionLineAttribute else @productionLineList end + ',') > 0
+		AND CHARINDEX(','+ cast(A.TimesheetUser as nvarchar(50)) + ',', ','+ case when isnull(@userIds, '') = '' then A.TimesheetUser else @userIds end + ',') > 0
+
+	-- 是否分页
+	select @TotalRecords = COUNT(*) from #TempTimesheet -- 设置总记录数
+	if(@isPage = 1)
+	begin
+		delete A from #TempTimesheet A
+		where not exists(
+		select 1 from #TempTimesheet
+		where RowID > @pageStart
+			and RowID <= @pageStart+@PageSize
+			and A.RowID = RowID)
+	end
+	select DeptName as '部门'
+	  , EmployeeName as '员工'
+	  , ProjectCode as '项目编码'
+	  , ProjectName as '项目名称'
+	  , ProductionLineAttribute as '产品线'
+	  , ProductManager as '产品经理'
+	  , ProjectManager as '项目经理'
+	  , TimesheetDate as '日期'
+	  ,[Workload] as '工时'
+	  ,[Status] as '状态'
+	  ,WorkContent as '工作内容'
+	  ,Remarks as '备注'
+	from #TempTimesheet
+
+	DROP TABLE #AllowSearchDepartment
+	DROP TABLE #TempTimesheet
+end
+go

@@ -127,11 +127,14 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
             var outputTotalSqlParameter = new SqlParameter("@totalRecords", SqlDbType.Int);
             outputTotalSqlParameter.Direction = ParameterDirection.Output;
 
+            var isPageSqlParameter = new SqlParameter("@isPage", SqlDbType.Bit);
+            isPageSqlParameter.Value = search.isPage ? 1 : 0;
+
             using (var command = CreateCommand("Proc_TimesheetReport", CommandType.StoredProcedure,
                 new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate),
                 new SqlParameter("departmentIDs", search.departmentIds ?? ""), new SqlParameter("productionLineList", search.productionLineList ?? ""),
                 new SqlParameter("projectIds", search.projectIds ?? ""), new SqlParameter("userIds", search.userIds ?? ""), new SqlParameter("currentUserID", search.currentUserID),
-                new SqlParameter("isPage", search.isPage), new SqlParameter("pageSize", search.pageSize), new SqlParameter("pageStart", search.pageStart), outputTotalSqlParameter
+                isPageSqlParameter, new SqlParameter("pageSize", search.pageSize), new SqlParameter("pageStart", search.pageStart), outputTotalSqlParameter
                 ))
             {
                 using (var da = new SqlDataAdapter(command))

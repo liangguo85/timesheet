@@ -27,7 +27,9 @@
             config.multiple = true
             $('#searchDepartment').select2(config);
 
-            $('#searchUser').select2(select2.employee);
+            var employeeConfig = select2.employee
+            employeeConfig.multiple = true
+            $('#searchUser').select2(employeeConfig);
 
             $("#searchProductionLine").select2({
                 placeholder: '输入项目产线属性',
@@ -36,6 +38,12 @@
                 multiple: true
             });
             $("#searchProductionLine").val('').trigger('change');
+
+            var beginDate = new Date();
+            beginDate.setDate(beginDate.getDate() - 7);
+            $("#beginDate").val(beginDate.toISOString().slice(0, 10))
+
+            $("#endDate").val(new Date().toISOString().slice(0, 10))
 
             dataTable = $("#reportTable").DataTable({
                 "ajax": {
@@ -156,10 +164,24 @@
                     return;
                 }
 
-                window.location.href = "@Url.RouteUrl(new { Controller = "DepartmentReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&departmentIds=" + $("#searchDepartment").val()
+                window.location.href = "@Url.RouteUrl(new { Controller = "TimesheetReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&departmentIds=" + $("#searchDepartment").val() + "&productionLineList=" + $("#searchProductionLine").val() + "&projectIds=" + $("#searchProject").val() + "&userIds=" + $("#searchUser").val()
             });
 
         })
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
     </script>
 }
 <div class="row">

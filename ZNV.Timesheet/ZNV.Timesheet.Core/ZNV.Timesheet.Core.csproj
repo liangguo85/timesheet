@@ -230,6 +230,7 @@
     <Compile Include="Report\IReportRepository.cs" />
     <Compile Include="Report\ProductionLineReportSearch.cs" />
     <Compile Include="Report\ProjectReportSearch.cs" />
+    <Compile Include="Report\TimesheetReportSearch.cs" />
     <Compile Include="RoleManagement\IRoleDepartmentRepository.cs" />
     <Compile Include="RoleManagement\IRoleModuleRepository.cs" />
     <Compile Include="RoleManagement\IRoleRepository.cs" />

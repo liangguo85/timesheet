@@ -120,6 +120,31 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
             return dt;
         }
 
+        public DataTable GetTimesheetReport(TimesheetReportSearch search, out int totalCount)
+        {
+            DataTable dt = new DataTable();
+            EnsureConnectionOpen();
+            var outputTotalSqlParameter = new SqlParameter("@totalRecords", SqlDbType.Int);
+            outputTotalSqlParameter.Direction = ParameterDirection.Output;
+
+            using (var command = CreateCommand("Proc_TimesheetReport", CommandType.StoredProcedure,
+                new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate),
+                new SqlParameter("departmentIDs", search.departmentIds ?? ""), new SqlParameter("productionLineList", search.productionLineList ?? ""),
+                new SqlParameter("projectIds", search.projectIds ?? ""), new SqlParameter("userIds", search.userIds ?? ""), new SqlParameter("currentUserID", search.currentUserID),
+                new SqlParameter("isPage", search.isPage), new SqlParameter("pageSize", search.pageSize), new SqlParameter("pageStart", search.pageStart), outputTotalSqlParameter
+                ))
+            {
+                using (var da = new SqlDataAdapter(command))
+                {
+                    da.Fill(dt);
+                }
+            }
+
+            totalCount = int.Parse(outputTotalSqlParameter.Value.ToString());
+
+            return dt;
+        }
+
         private SqlCommand CreateCommand(string commandText, CommandType commandType, params SqlParameter[] parameters)
         {
             var command = Context.Database.Connection.CreateCommand();

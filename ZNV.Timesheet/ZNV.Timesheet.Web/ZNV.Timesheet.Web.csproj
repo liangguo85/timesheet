@@ -7790,6 +7790,7 @@
     <Compile Include="Controllers\RoleManagementController.cs" />
     <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\ApproveLogController.cs" />
+    <Compile Include="Controllers\TimesheetReportController.cs" />
     <Compile Include="Controllers\UserSettingController.cs" />
     <Compile Include="Controllers\TimesheetApprovedController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
@@ -7854,6 +7855,7 @@
     <Content Include="Views\ProjectReport\Index.cshtml" />
     <Content Include="Views\ProjectManpowerReport\Index.cshtml" />
     <Content Include="Views\ProductionLineReport\Index.cshtml" />
+    <Content Include="Views\TimesheetReport\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

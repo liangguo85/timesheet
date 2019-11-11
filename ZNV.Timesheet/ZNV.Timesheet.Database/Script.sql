@@ -1268,3 +1268,55 @@ begin
 	DROP TABLE #AllowSearchDepartment
 	DROP TABLE #TempTimesheet
 end
+
+go
+
+USE [ZNVTimesheet]
+GO
+/****** Object:  StoredProcedure [dbo].[Proc_ProjectReport]    Script Date: 2019/9/6 21:10:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+--获取参数中日期所在周上班日期存在未填写工时的员工列表，发送提醒邮件
+--EXEC [dbo].[Proc_GetNotSubmitTimesheetUserList] '2019-11-04,2019-11-05,2019-11-06,2019-11-07,2019-11-08'
+Create PROCEDURE [dbo].[Proc_GetNotSubmitTimesheetUserList]
+  @dateList AS nvarchar(200) --需要检查的日期列表
+AS
+BEGIN
+	DECLARE @rowIndex INT,@maxRowIndex int
+	SELECT ROW_NUMBER() OVER(ORDER BY String) AS Rownum,* into #tmpDateList FROM dbo.SPLIT(@dateList,',')
+	SET @rowIndex = 1
+	SELECT @maxRowIndex = max(Rownum) from #tmpDateList
+	
+	create TABLE #tmpResult
+	(
+		EmployeeCode nvarchar(50),
+		EmployeeName nvarchar(50),
+		[Email]        nvarchar(100)
+	)
+	
+	DECLARE @FinalQuery NVARCHAR (MAX)
+	WHILE (@rowIndex<=@maxRowIndex)
+	BEGIN
+		INSERT into #tmpResult(EmployeeCode,EmployeeName,[Email])
+		select a.EmployeeCode,a.EmployeeName,[Email] from 
+		(
+			select t.* from [MAPSysDB].[dbo].[HRActiveEmployeeV] t
+			left join [MAPSysDB].dbo.HRActiveDeptTreeV b on t.DeptCode = b.DeptCode1
+			where b.FullDeptCode like '10000.11000%'
+		) a
+		left join Timesheet b on a.EmployeeCode=b.TimesheetUser 
+		and SUBSTRING(CONVERT(CHAR(19), b.TimesheetDate, 120),1,10) = (SELECT String from #tmpDateList where Rownum = @rowIndex)
+		where b.TimesheetDate is NULL 
+
+		SET @rowIndex=@rowIndex+1
+	END
+		
+	SELECT DISTINCT a.EmployeeCode,a.EmployeeName,[Email] from #tmpResult a
+	--这里先只返回阿杜的账号
+	where a.EmployeeCode = '0049002415'
+
+	drop table #tmpDateList
+	drop table #tmpResult
+END

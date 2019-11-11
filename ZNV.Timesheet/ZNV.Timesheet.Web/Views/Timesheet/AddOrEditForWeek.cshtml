@@ -111,14 +111,7 @@
                             <tr>
                                 <td colspan="2"></td>
                                 <td>
-                                    @if (Model.AllWorkload.HasValue)
-                                    {
-                                        <label class="lableAllWorkload">@Model.AllWorkload.Value</label>
-                                    }
-                                    else
-                                    {
-                                        <label class="lableAllWorkload">0</label>
-                                    }
+                                    <label class="lableAllWorkloadByInput">@Model.AllWorkloadByInput</label>/<label class="lableAllWorkloadByWorkDay">@Model.AllWorkloadByWorkDay</label>
                                 </td>
                                 <td colspan="3"></td>
                             </tr>
@@ -160,6 +153,6 @@
                 allWorkload += parseFloat($(this).val());
             }
         });
-        $("label.lableAllWorkload").text(allWorkload);
+        $("label.lableAllWorkloadByInput").text(allWorkload);
     }
 </script>

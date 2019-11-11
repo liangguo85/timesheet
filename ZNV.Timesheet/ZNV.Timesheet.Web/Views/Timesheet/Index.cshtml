@@ -421,6 +421,11 @@
         }
 
         function CheckTimesheetValid(tsList) {
+            var lableAllWorkloadByInput = $("label.lableAllWorkloadByInput").text();
+            var lableAllWorkloadByWorkDay = $("label.lableAllWorkloadByWorkDay").text();
+            if (lableAllWorkloadByInput != lableAllWorkloadByWorkDay) {
+                return "输入的工时和工作日总工时不相同，请检查";
+            }
             for (var i = 0; i < tsList.length; i++) {
                 //日期必须有值
                 if (!tsList[i].TimesheetDate || tsList[i].TimesheetDate == "") {
@@ -437,6 +442,9 @@
                 }
                 else if (tsList[i].Workload <= 0) {
                     return tsList[i].TimesheetDate + "的工时不能为0";
+                }
+                else if (tsList[i].Workload < 8) {
+                    return tsList[i].TimesheetDate + "的工时低于8";
                 }
                 //其次，相同日期的工时之和不能超过8
                 var tsf = $(tsList).filter(function () {

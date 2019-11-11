@@ -1,0 +1,272 @@
+﻿
+@{
+
+    ViewBag.Title = "员工工时报表";
+}
+@section styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-simple-tree-table.css" rel="stylesheet" />
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/css/select2.min.css">
+    <link href="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+}
+@section scripts
+{
+    <script src="~/js/mergeCell.js"></script>
+    <script src="~/Scripts/freeze-table.min.js"></script>
+    <script src="~/lib/My97DatePicker/WdatePicker.js"></script>
+    <!-- Select2 -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/js/config.js"></script>
+    <!-- DataTables -->
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var config = select2.department
+            config.multiple = true
+            $('#searchDepartment').select2(config);
+
+            var employeeConfig = select2.employee
+            employeeConfig.multiple = true
+            $('#searchUser').select2(employeeConfig);
+
+            $("#searchProductionLine").select2({
+                placeholder: '输入项目产线属性',
+                minimumInputLength: 0,
+                allowClear: true,
+                multiple: true
+            });
+            $("#searchProductionLine").val('').trigger('change');
+
+            var beginDate = new Date();
+            beginDate.setDate(beginDate.getDate() - 7);
+            $("#beginDate").val(beginDate.toISOString().slice(0, 10))
+
+            $("#endDate").val(new Date().toISOString().slice(0, 10))
+
+            dataTable = $("#reportTable").DataTable({
+                "ajax": {
+                    "url": "/TimesheetReport/GetTimesheetReport",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "DeptName", "name": "DeptName", "orderable": false },
+                    { "data": "EmployeeName", "name": "EmployeeName", "orderable": false },
+                    { "data": "ProjectCode", "name": "ProjectCode", "orderable": false },
+                    { "data": "ProjectName", "name": "ProjectName", "orderable": false },
+                    { "data": "ProductionLineAttribute", "name": "ProductionLineAttribute", "orderable": false },
+                    { "data": "ProductManager", "name": "ProductManager", "orderable": false  },
+                    { "data": "ProjectManager", "name": "ProjectManager", "orderable": false  },
+                    {
+                        "data": "TimesheetDate", "name": "TimesheetDate", "render": function (d) {
+                            return moment(d).format("YYYY-MM-DD");
+                        },
+                        "orderable": false
+                    },
+                    { "data": "Workload", "name": "Workload", "orderable": false },
+                    { "data": "Status", "name": "Status", "orderable": false }
+                ],
+                "serverSide": true,
+                "processing": true,
+                "language": {
+                    "emptyTable": "没有任何记录",
+                    "processing": "处理中... 请等待!",
+                    "decimal": "",
+                    "info": "共 _TOTAL_ 条记录",
+                    "infoEmpty": "共 0 条记录",
+                    "infoFiltered": "(filtered from _MAX_ total entries)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "每页 _MENU_ 条",
+                    "search": "查找:",
+                    "zeroRecords": "没有找到匹配的记录",
+                    "paginate": {
+                        "first": "首页",
+                        "last": "尾页",
+                        "next": "下一页",
+                        "previous": "上一页"
+                    }
+                },
+                "dom": '<"top"l>rt<"bottom"ip><"clear">'
+            });
+
+            $("#searchProject").select2({
+                placeholder: '输入项目编号或名称',
+                minimumInputLength: 0,
+                allowClear: true,
+                multiple: true,
+                ajax: {
+                    delay: 150,
+                    url: 'Timesheet/GetProjectList',
+                    dataType: 'json',
+                    async: true,
+                    data: function (params) {
+                        return {
+                            pageSize: 100,
+                            pageNum: params.page || 1,
+                            searchTerm: params.term,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.Results, function (obj) {
+                                return { id: obj.ProjectCode, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
+                            }),
+                            pagination: {
+                                more: (params.page * 100) <= data.Total
+                            }
+                        };
+                    }
+                }
+            });
+
+            $("#btnSearch").click(function () {
+                if ($("#beginDate").val() == "") {
+                    alert("请选择查询开始日期!")
+                    return;
+                }
+
+                if ($("#endDate").val() == "") {
+                    alert("请选择查询结束日期!")
+                    return;
+                }
+
+                if (Date.parse($("#beginDate").val()) > Date.parse($("#endDate").val())) {
+                    alert("查询开始日期不能大于结束日期!")
+                    return;
+                }
+                dataTable.columns(0).search($("#beginDate").val() == null ? "" : $("#beginDate").val());
+                dataTable.columns(1).search($("#endDate").val() == null ? "" : $("#endDate").val());
+                dataTable.columns(2).search($("#searchDepartment").val() == null ? "" : $("#searchDepartment").val());
+                dataTable.columns(3).search($("#searchProductionLine").val() == null ? "" : $("#searchProductionLine").val());
+                dataTable.columns(4).search($("#searchProject").val() == null ? "" : $("#searchProject").val());
+                dataTable.columns(5).search($("#searchUser").val() == null ? "" : $("#searchUser").val());
+                dataTable.draw();
+            });
+
+            $("#btnExportExcel").click(function () {
+                if ($("#beginDate").val() == "") {
+                    alert("请选择查询开始日期!")
+                    return;
+                }
+
+                if ($("#endDate").val() == "") {
+                    alert("请选择查询结束日期!")
+                    return;
+                }
+
+                if (Date.parse($("#beginDate").val()) > Date.parse($("#endDate").val())) {
+                    alert("查询开始日期不能大于结束日期!")
+                    return;
+                }
+
+                window.location.href = "@Url.RouteUrl(new { Controller = "TimesheetReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&departmentIds=" + $("#searchDepartment").val() + "&productionLineList=" + $("#searchProductionLine").val() + "&projectIds=" + $("#searchProject").val() + "&userIds=" + $("#searchUser").val()
+            });
+
+        })
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+    </script>
+}
+<div class="row">
+    <div class="col-xs-12">
+        <!-- /.box -->
+        <div class="box">
+            <div class="box box-header">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>开始日期</label>
+                            <input type="text" id="beginDate" class="form-control" onclick="WdatePicker()" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>结束日期</label>
+                            <input class="form-control" id="endDate" onclick="WdatePicker()" />
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>所属部门</label>
+                            <select class="form-control select2" id="searchDepartment"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>项目产线</label>
+                            <select class="form-control select2" id="searchProductionLine">
+                                <option value="研发公共">研发公共</option>
+                                <option value="智慧城市">智慧城市</option>
+                                <option value="公共安全">公共安全</option>
+                                <option value="公共安全-心测及定位">公共安全-心测及定位</option>
+                                <option value="物联网">物联网</option>
+                                <option value="战略投入">战略投入</option>
+                                <option value="云运维">云运维</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>项目</label>
+                            <select class="form-control select2" id="searchProject"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>人员</label>
+                            <select class="form-control select2" id="searchUser"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-toggle pull-right">
+                    <button type="button" name="search" id="btnSearch" class="btn btn-success">
+                        查询 <i class="fa fa-search"></i>
+                    </button>
+                    <button type="button" name="search" id="btnExportExcel" class="btn btn-danger">
+                        下载Excel <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body" style="height: 100%; min-height: 100%; max-height: 100%; overflow-x: scroll;">
+                <table id="reportTable" class="table table-bordered table-striped table-hover" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>部门</th>
+                            <th>员工</th>
+                            <th>项目编码</th>
+                            <th>项目名称</th>
+                            <th>产品线</th>
+                            <th>产品经理</th>
+                            <th>项目经理</th>
+                            <th>日期</th>
+                            <th>工时</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+
+
+

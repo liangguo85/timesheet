@@ -443,9 +443,6 @@
                 else if (tsList[i].Workload <= 0) {
                     return tsList[i].TimesheetDate + "的工时不能为0";
                 }
-                //else if (tsList[i].Workload < 8) {
-                //    return tsList[i].TimesheetDate + "的工时低于8";
-                //}
                 //其次，相同日期的工时之和不能超过8
                 var tsf = $(tsList).filter(function () {
                     return this.TimesheetDate == tsList[i].TimesheetDate;
@@ -457,6 +454,9 @@
                     }
                     if (allWorkload > 8) {
                         return tsList[i].TimesheetDate + "的总工时超过了8";
+                    }
+                    else if (allWorkload < 8) {
+                        return tsList[i].TimesheetDate + "的总工时低于8";
                     }
                 }
                 console.log(tsList[i].TimesheetDate + ' , ' + tsf.length);

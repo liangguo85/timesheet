@@ -346,9 +346,8 @@
                 endDate: $("#endDate").val(),
                 TimesheetList: []
             };
-            var trList = $(form.form).find("tr");
-            //这里取的是form，所以需要从1开始，第一行是标题
-            for (var i = 1; i < trList.length; i++) {
+            var trList = $(form.form).find("tr[name='DataRow']");
+            for (var i = 0; i < trList.length; i++) {
                 var ts = {};
                 var inputId = $(trList[i]).find("input[name='Id']");
                 if (inputId.length > 0) {
@@ -458,6 +457,18 @@
                     else if (allWorkload < 8) {
                         return tsList[i].TimesheetDate + "的总工时低于8";
                     }
+                }
+                else {
+                    if (tsList[i].Workload < 8) {
+                        return tsList[i].TimesheetDate + "的工时低于8";
+                    }
+                }
+                //同一天不能分多次选择同一个项目
+                var tsfproject = $(tsList).filter(function () {
+                    return this.TimesheetDate == tsList[i].TimesheetDate && this.ProjectID == tsList[i].ProjectID;
+                });
+                if (tsfproject.length > 1) {
+                    return tsList[i].TimesheetDate + "的相同项目的工时不能分开填写，请合并成一条";
                 }
                 console.log(tsList[i].TimesheetDate + ' , ' + tsf.length);
             }

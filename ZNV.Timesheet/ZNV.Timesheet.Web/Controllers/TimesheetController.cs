@@ -190,7 +190,7 @@ namespace ZNV.Timesheet.Web.Controllers
             tfw.startDate = startDate.ToString("yyyy-MM-dd");
             tfw.endDate = endDate.ToString("yyyy-MM-dd");
             var tss = _appService.GetAllTimesheetsByUser(Common.CommonHelper.CurrentUser, startDate, endDate);
-            decimal allWorkload = 0;
+            decimal allWorkload = Math.Round(tss.Sum(t => t.Workload).Value,0);
             decimal allWorkloadByWorkday = 0;
             for (int i = 0; i < workDate.Count; i++)
             {
@@ -204,11 +204,6 @@ namespace ZNV.Timesheet.Web.Controllers
                         TimesheetDate = workDate[i],
                         Status = ApproveStatus.Draft,
                     });
-                    allWorkload += 0;
-                }
-                else
-                {
-                    allWorkload += findTimesheet.Workload.HasValue ? findTimesheet.Workload.Value : 0;
                 }
             }
             //排序

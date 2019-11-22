@@ -35,7 +35,7 @@
                             {
                                 var eleDisabled = (Model.TimesheetList[i].Status == ZNV.Timesheet.Timesheet.ApproveStatus.Draft
                                     || Model.TimesheetList[i].Status == ZNV.Timesheet.Timesheet.ApproveStatus.Rejected) ? "" : " disabled ='disabled' ";//只有草稿状态的才能编辑
-                                <tr>
+                                <tr name="DataRow">
                                     <td style="display:none">
                                         <input name="Id" type="hidden" value="@Model.TimesheetList[i].Id" />
                                         <input name="Approver" type="hidden" value="@Model.TimesheetList[i].Approver" />

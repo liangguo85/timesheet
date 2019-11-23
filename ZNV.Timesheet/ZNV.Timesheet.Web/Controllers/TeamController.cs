@@ -9,7 +9,7 @@ using ZNV.Timesheet.Web.App_Start;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
-    //[TimesheetAuthorize(ModuleCode = "00010001")]
+    [TimesheetAuthorize(ModuleCode = "00010001")]
     public class TeamController : Controller
     {
         private readonly IEmployeeAppService _employeeAppService;
@@ -81,40 +81,6 @@ namespace ZNV.Timesheet.Web.Controllers
         {
             _teamAppService.DeleteTeam(id);
             return Json(new { success = true, message = "删除科室信息成功!" }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public ActionResult GetEmployeeList(string searchTerm, int pageSize, int pageNum)
-        {
-            int totalCount = 0;
-            var itemList = _employeeAppService.GetEmployeeList(searchTerm, pageSize, pageNum, out totalCount);
-            var result = new
-            {
-                Total = totalCount,
-                Results = itemList
-            };
-            return new JsonResult
-            {
-                Data = result,
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-            };
-        }
-
-        [HttpGet]
-        public ActionResult GetDepartmentList(string searchTerm, int pageSize, int pageNum)
-        {
-            int totalCount = 0;
-            var itemList = _employeeAppService.GetDepartmentList(searchTerm, pageSize, pageNum, out totalCount);
-            var result = new
-            {
-                Total = totalCount,
-                Results = itemList
-            };
-            return new JsonResult
-            {
-                Data = result,
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-            };
         }
     }
 }

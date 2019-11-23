@@ -365,7 +365,7 @@ function ShowSelectUser(tsIdList) {
             allowClear: false,
             ajax: {
                 delay: 150,
-                url: 'ProjectManagement/GetEmployeeList',
+                url: 'Home/GetEmployeeList',
                 dataType: 'json',
                 async: true,
                 data: function (params) {

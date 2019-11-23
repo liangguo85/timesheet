@@ -347,26 +347,5 @@ namespace ZNV.Timesheet.Web.Controllers
                 return Json(new { success = false, message = "需要撤回周工时数据为空!" }, JsonRequestBehavior.AllowGet);
             }
         }
-
-
-        [HttpGet]
-        public ActionResult GetProjectList(string searchTerm, int pageSize, int pageNum)
-        {
-            var itemList = _projectService.GetAllValidProjectList().Where(x => string.IsNullOrEmpty(searchTerm) || x.ProjectName.Contains(searchTerm) || x.ProjectCode.Contains(searchTerm)).ToList();
-            if (string.IsNullOrEmpty(searchTerm))
-            {
-                itemList = _projectService.GetAllValidProjectList();
-            }
-            var result = new
-            {
-                Total = itemList.Count(),
-                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
-            };
-            return new JsonResult
-            {
-                Data = result,
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-            };
-        }
     }
 }

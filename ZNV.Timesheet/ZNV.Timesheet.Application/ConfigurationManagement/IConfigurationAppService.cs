@@ -12,6 +12,7 @@ namespace ZNV.Timesheet.ConfigurationManagement
         List<Configuration> GetConfigurationList();
         List<Configuration> GetConfigurationList(int start, int length, string sortColumnName, string sortDirection, out int totalCount);
         Configuration GetConfiguration(int id);
+        List<Configuration> GetConfigurationByParentConfigValue(string parentConfigValue);
         int AddConfiguration(Configuration configuration);
         Configuration UpdateConfiguration(Configuration configuration);
         void DeleteConfiguration(int id);

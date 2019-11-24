@@ -7,6 +7,7 @@ using ZNV.Timesheet.Employee;
 using System.Linq.Dynamic;
 using ZNV.Timesheet.Web.App_Start;
 using ZNV.Timesheet.Utility;
+using ZNV.Timesheet.ConfigurationManagement;
 
 namespace ZNV.Timesheet.Web.Controllers
 {
@@ -15,10 +16,12 @@ namespace ZNV.Timesheet.Web.Controllers
     {
         private readonly IProjectAppService _projectAppService;
         private readonly IEmployeeAppService _employeeAppService;
-        public ProjectManagementController(IProjectAppService projectAppService, IEmployeeAppService employeeAppService)
+        private readonly IConfigurationAppService _configurationAppService;
+        public ProjectManagementController(IProjectAppService projectAppService, IEmployeeAppService employeeAppService, IConfigurationAppService configurationAppService)
         {
             _projectAppService = projectAppService;
             _employeeAppService = employeeAppService;
+            _configurationAppService = configurationAppService;
         }
         // GET: ProjectManagement
         public ActionResult Index()
@@ -65,6 +68,11 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpGet]
         public ActionResult AddOrEdit(int id = 0)
         {
+            ViewBag.ProjectTypes = new SelectList(_configurationAppService.GetConfigurationByParentConfigValue("01"), "ConfigText", "ConfigText");
+            ViewBag.ProjectKinds = new SelectList(_configurationAppService.GetConfigurationByParentConfigValue("02"), "ConfigText", "ConfigText");
+            ViewBag.ProjectLevels = new SelectList(_configurationAppService.GetConfigurationByParentConfigValue("03"), "ConfigText", "ConfigText");
+            ViewBag.ProductionLineAttributes = new SelectList(_configurationAppService.GetConfigurationByParentConfigValue("04"), "ConfigText", "ConfigText");
+            ViewBag.ProjectStatusList = new SelectList(_configurationAppService.GetConfigurationByParentConfigValue("05"), "ConfigText", "ConfigText");
             if (id == 0)
             {
                 ViewBag.Employees = new SelectList(_employeeAppService.GetEmployeeList().Take(10), "EmployeeCode", "EmployeeName");

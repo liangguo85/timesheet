@@ -64,6 +64,10 @@ namespace ZNV.Timesheet.ConfigurationManagement
         {
             return _configurationRepository.GetAll().Where(item => item.Id == id).FirstOrDefault();
         }
+        public List<Configuration> GetConfigurationByParentConfigValue(string parentConfigValue)
+        {
+            return GetConfigurationList().Where(item => item.ParentConfigValue == parentConfigValue).ToList();
+        }
         public int AddConfiguration(Configuration configuration)
         {
             if (configuration.ParentId != null)

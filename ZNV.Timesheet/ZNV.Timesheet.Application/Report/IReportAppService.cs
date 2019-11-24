@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using Abp.Application.Services;
 
 namespace ZNV.Timesheet.Report
@@ -10,7 +11,7 @@ namespace ZNV.Timesheet.Report
         DataTable GetProjectManpowerReport(ProjectReportSearch search);
         DataTable GetProductionLineReport(ProductionLineReportSearch search);
         DataTable GetNotSubmitTimesheetUserList(string dateList);
-        DataTable GetDepartmentManagerList();
+        DataTable GetDepartmentManagerList(DateTime dateFrom, DateTime dateTo);
         DataTable GetTimesheetReport(TimesheetReportSearch search, out int totalCount);
     }
 }

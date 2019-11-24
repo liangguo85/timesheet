@@ -1469,3 +1469,16 @@ USE [master]
 GO
 ALTER DATABASE [ZNVTimesheet] SET  READ_WRITE 
 GO
+
+--获取所有在职的部门manager，只取工时表日期区间内没有记录的manager
+--EXEC [dbo].[Proc_GetDepartmentManagerList] '2019-12-04','2019-12-08'
+CREATE PROCEDURE [dbo].[Proc_GetDepartmentManagerList](
+  @dateFrom AS datetime,  --开始日期
+	@dateTo AS datetime		--结束日期
+)
+AS
+BEGIN
+	select DISTINCT a.UserNum from (select * from HRActiveDeptManagerV where FullDeptCode like '10000.11000%' and IsActiveDept = 'Y') a 
+	left join (select * from Timesheet where TimesheetDate BETWEEN @dateFrom and @dateTo) b on a.UserNum=b.TimesheetUser 
+	where b.TimesheetDate is NULL 
+END

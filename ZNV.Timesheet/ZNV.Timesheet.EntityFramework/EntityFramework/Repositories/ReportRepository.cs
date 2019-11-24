@@ -2,6 +2,7 @@
 using ZNV.Timesheet.Report;
 using System.Data;
 using System.Data.SqlClient;
+using System;
 
 namespace ZNV.Timesheet.EntityFramework.Repositories
 {
@@ -196,12 +197,16 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
         /// <summary>
         /// 获取所有在职的部门manager
         /// </summary>
+        /// <param name="dateFrom">开始日期</param>
+        /// <param name="dateTo">结束日期</param>
         /// <returns></returns>
-        public DataTable GetDepartmentManagerList()
+        public DataTable GetDepartmentManagerList(DateTime dateFrom,DateTime dateTo)
         {
             DataTable dt = new DataTable();
             EnsureConnectionOpen();
-            using (var command = CreateCommand("select * from HRActiveDeptManagerV a where a.FullDeptCode like '10000.11000%' and a.IsActiveDept = 'Y'", CommandType.Text))
+            using (var command = CreateCommand("Proc_GetDepartmentManagerList", CommandType.StoredProcedure
+                ,new SqlParameter("startDate", dateFrom)
+                , new SqlParameter("endDate", dateTo)))
             {
                 using (var da = new SqlDataAdapter(command))
                 {

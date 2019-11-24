@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace ZNV.Timesheet.Report
 {
@@ -36,9 +37,9 @@ namespace ZNV.Timesheet.Report
             return _reportRepository.GetNotSubmitTimesheetUserList(dateList);
         }
 
-        public DataTable GetDepartmentManagerList()
+        public DataTable GetDepartmentManagerList(DateTime dateFrom, DateTime dateTo)
         {
-            return _reportRepository.GetDepartmentManagerList();
+            return _reportRepository.GetDepartmentManagerList(dateFrom, dateTo);
         }
     }
 }

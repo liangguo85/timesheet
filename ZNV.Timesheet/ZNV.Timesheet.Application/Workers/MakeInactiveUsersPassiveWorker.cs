@@ -88,7 +88,7 @@ namespace ZNV.Timesheet.Workers
                     Email = userList.Rows[i]["Email"].ToString();
                     //因为邮件模板中可能会把用户的名称放到邮件内容里面，所以这里每个用户都单独发送
                     //如果说邮件的标题内容都和用户无关，那就可以改成统一发送
-                    EmailSender.SendEmail(emailTemplate.EmailTemplateName.Replace("[EmployeeCode]",EmployeeCode).Replace("[EmployeeName]",EmployeeName),
+                    EmailSender.SendEmail(emailTemplate.EmailTemplateName.Replace("[EmployeeCode]", EmployeeCode).Replace("[EmployeeName]", EmployeeName),
                         emailTemplate.EmailTemplateBody.Replace("[EmployeeCode]", EmployeeCode).Replace("[EmployeeName]", EmployeeName),
                         Email);
                 }
@@ -97,14 +97,13 @@ namespace ZNV.Timesheet.Workers
 
         private void AutoCreateManagerTimesheet(DateTime timeNow)
         {
-            //先拿到所有的部门manager
-            var userList = IocManager.Instance.Resolve<IReportAppService>().GetDepartmentManagerList();
-
             //每个部门的manager都自动创建本周的工时，项目对应名称是“部门管理”的项目，还需要结合节假日
             var project = IocManager.Instance.Resolve<IProjectAppService>().GetAllProjectList().Where(p => p.ProjectName == "部门管理").FirstOrDefault();
             if (project != null)
             {
                 List<DateTime> dateTimeList = Comm.GetWorkDateTimes(timeNow);
+                //拿到当前日期区间没填写工时的部门manager
+                var userList = IocManager.Instance.Resolve<IReportAppService>().GetDepartmentManagerList(dateTimeList.Min(), dateTimeList.Max());
                 var tsAppService = IocManager.Instance.Resolve<ITimesheetAppService>();
                 for (int k = 0; k < userList.Rows.Count; k++)
                 {

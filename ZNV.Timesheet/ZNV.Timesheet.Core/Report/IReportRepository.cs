@@ -11,6 +11,6 @@ namespace ZNV.Timesheet.Report
         DataTable GetProductionLineReport(ProductionLineReportSearch search);
         DataTable GetTimesheetReport(TimesheetReportSearch search, out int totalCount);
         DataTable GetNotSubmitTimesheetUserList(string dateList);
-        DataTable GetDepartmentManagerList();
+        DataTable GetDepartmentManagerList(DateTime dateFrom, DateTime dateTo);
     }
 }

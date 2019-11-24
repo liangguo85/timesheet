@@ -38,6 +38,7 @@ namespace ZNV.Timesheet.EntityFramework
 
         public virtual IDbSet<HREmployee> Employees { get; set; }
         public virtual IDbSet<HRDepartment> Departments { get; set; }
+        public virtual IDbSet<ConfigurationManagement.Configuration> Configurations { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using ZNV.Timesheet.ConfigurationManagement;
 using ZNV.Timesheet.Report;
 
 
@@ -13,14 +14,17 @@ namespace ZNV.Timesheet.Web.Controllers
     public class TimesheetReportController : Controller
     {
         private readonly IReportAppService _reportAppService;
+        private readonly IConfigurationAppService _configurationAppService;
 
-        public TimesheetReportController(IReportAppService reportAppService)
+        public TimesheetReportController(IReportAppService reportAppService, IConfigurationAppService configurationAppService)
         {
             _reportAppService = reportAppService;
+            _configurationAppService = configurationAppService;
         }
         // GET: TimesheetReport
         public ActionResult Index()
         {
+            ViewBag.ProductionLineAttributes = new SelectList(_configurationAppService.GetConfigurationByParentConfigValue("04"), "ConfigText", "ConfigText");
             return View();
         }
 

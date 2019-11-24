@@ -92,36 +92,7 @@
                 "dom": '<"top"l>rt<"bottom"ip><"clear">'
             });
 
-            $("#searchProject").select2({
-                placeholder: '输入项目编号或名称',
-                minimumInputLength: 0,
-                allowClear: true,
-                multiple: true,
-                ajax: {
-                    delay: 150,
-                    url: 'Timesheet/GetProjectList',
-                    dataType: 'json',
-                    async: true,
-                    data: function (params) {
-                        return {
-                            pageSize: 100,
-                            pageNum: params.page || 1,
-                            searchTerm: params.term,
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.Results, function (obj) {
-                                return { id: obj.ProjectCode, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
-                            }),
-                            pagination: {
-                                more: (params.page * 100) <= data.Total
-                            }
-                        };
-                    }
-                }
-            });
+            $("#searchProject").select2(select2.allProject);
 
             $("#btnSearch").click(function () {
                 if ($("#beginDate").val() == "") {
@@ -212,7 +183,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>项目产线</label>
-                            <select class="form-control select2" id="searchProductionLine">
+                            @*<select class="form-control select2" id="searchProductionLine">
                                 <option value="研发公共">研发公共</option>
                                 <option value="智慧城市">智慧城市</option>
                                 <option value="公共安全">公共安全</option>
@@ -220,7 +191,8 @@
                                 <option value="物联网">物联网</option>
                                 <option value="战略投入">战略投入</option>
                                 <option value="云运维">云运维</option>
-                            </select>
+                            </select>*@
+                             @Html.DropDownList("searchProductionLine", (IEnumerable<SelectListItem>)ViewBag.ProductionLineAttributes, new { id = "searchProductionLine", @class = "form-control select2" })
                         </div>
                     </div>
                     <div class="col-md-4">

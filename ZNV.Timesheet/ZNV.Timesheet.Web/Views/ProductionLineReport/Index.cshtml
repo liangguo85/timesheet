@@ -142,7 +142,7 @@
                     <div class="col-md-8">
                         <div class="form-group">
                             <label>项目产线</label>
-                            <select class="form-control select2" id="searchProductionLine">
+                            @*<select class="form-control select2" id="searchProductionLine">
                                 <option value="研发公共">研发公共</option>
                                 <option value="智慧城市">智慧城市</option>
                                 <option value="公共安全">公共安全</option>
@@ -150,7 +150,8 @@
                                 <option value="物联网">物联网</option>
                                 <option value="战略投入">战略投入</option>
                                 <option value="云运维">云运维</option>
-                            </select>
+                            </select>*@
+                            @Html.DropDownList("searchProductionLine", (IEnumerable<SelectListItem>)ViewBag.ProductionLineAttributes, new { id = "searchProductionLine", @class = "form-control select2" })
                         </div>
                     </div>
                 </div>

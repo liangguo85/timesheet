@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
+using AutoMapper;
 
 namespace ZNV.Timesheet.PermissionModule
 {
@@ -75,7 +76,9 @@ namespace ZNV.Timesheet.PermissionModule
             {
                 permissionModule.Level = GetPermissionModule(permissionModule.ParentModuleId.Value).Level + 1;
             }
-            return _permissionModuleRepository.Update(permissionModule);
+            var updatedItem = GetPermissionModule(permissionModule.Id);
+            Mapper.Map(permissionModule, updatedItem);
+            return _permissionModuleRepository.Update(updatedItem);
         }
         public void DeleteModule(int id) {
             _permissionModuleRepository.Delete(id);

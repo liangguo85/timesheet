@@ -8,7 +8,7 @@
             //How long the user has to pause their typing before sending the next request
             delay: 150,
             //The url of the json service
-            url: "/Team/GetDepartmentList",
+            url: "/Home/GetDepartmentList",
             dataType: 'json',
             async: true,
             //Our search term and what page we are on
@@ -41,7 +41,7 @@
             //How long the user has to pause their typing before sending the next request
             delay: 150,
             //The url of the json service
-            url: "/Team/GetEmployeeList",
+            url: "/Home/GetEmployeeList",
             dataType: 'json',
             async: true,
             //Our search term and what page we are on
@@ -74,7 +74,7 @@
             //How long the user has to pause their typing before sending the next request
             delay: 150,
             //The url of the json service
-            url: "/UserSetting/GetTeamList",
+            url: "/Home/GetTeamList",
             dataType: 'json',
             async: true,
             //Our search term and what page we are on
@@ -104,7 +104,36 @@
         allowClear: false,
         ajax: {
             delay: 150,
-            url: 'Timesheet/GetProjectList',
+            url: 'Home/GetProjectList',
+            dataType: 'json',
+            async: true,
+            data: function (params) {
+                return {
+                    pageSize: 100,
+                    pageNum: params.page || 1,
+                    searchTerm: params.term,
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.Results, function (obj) {
+                        return { id: obj.Id, text: obj.ProjectName + "(" + obj.ProjectCode + ")" };
+                    }),
+                    pagination: {
+                        more: (params.page * 100) <= data.Total
+                    }
+                };
+            }
+        }
+    },
+    allProject: {
+        placeholder: '输入项目编号或名称',
+        minimumInputLength: 0,
+        allowClear: false,
+        ajax: {
+            delay: 150,
+            url: 'Home/GetAllProjectList',
             dataType: 'json',
             async: true,
             data: function (params) {

@@ -28,24 +28,26 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProjectType, "项目类别", new { @class = "control-label" })
-            @Html.DropDownListFor(model=>model.ProjectType, new List<SelectListItem> {
+            @*@Html.DropDownListFor(model=>model.ProjectType, new List<SelectListItem> {
                 new SelectListItem { Value="", Text=""},
                 new SelectListItem { Value="平台", Text="平台"},
                 new SelectListItem { Value="产品", Text="产品"},
                 new SelectListItem { Value="预研", Text="预研"},
                 new SelectListItem { Value="合同", Text="合同"},
                 new SelectListItem { Value="技术", Text="技术"}
-            }, new { @class="form-control"})
+            }, new { @class="form-control"})*@
+            @Html.DropDownListFor(model => model.ProjectType, (IEnumerable<SelectListItem>)ViewBag.ProjectTypes, String.Empty, new { id = "ProjectType", @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ProjectType, "", new { @class = "text-danger" })
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProjectKind, "项目性质", new { @class = "control-label" })
-            @Html.DropDownListFor(model=>model.ProjectKind, new List<SelectListItem> {
+            @*@Html.DropDownListFor(model=>model.ProjectKind, new List<SelectListItem> {
                 new SelectListItem { Value="", Text=""},
                 new SelectListItem { Value="自研", Text="自研"},
                 new SelectListItem { Value="ODM", Text="ODM"},
                 new SelectListItem { Value="OEM", Text="OEM"}
-            }, new { @class="form-control"})
+            }, new { @class="form-control"})*@
+            @Html.DropDownListFor(model => model.ProjectKind, (IEnumerable<SelectListItem>)ViewBag.ProjectKinds, String.Empty, new { id = "ProjectKind", @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ProjectKind, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -57,19 +59,20 @@
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProjectLevel, "项目级别", new { @class = "control-label" })
-            @Html.DropDownListFor(model=>model.ProjectLevel, new List<SelectListItem> {
+            @*@Html.DropDownListFor(model=>model.ProjectLevel, new List<SelectListItem> {
                 new SelectListItem { Value="", Text=""},
                 new SelectListItem { Value="战略", Text="战略"},
                 new SelectListItem { Value="普通", Text="普通"},
                 new SelectListItem { Value="维护", Text="维护"}
-            }, new { @class="form-control"})
+            }, new { @class="form-control"})*@
+            @Html.DropDownListFor(model => model.ProjectLevel, (IEnumerable<SelectListItem>)ViewBag.ProjectLevels, String.Empty, new { id = "ProjectLevel", @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ProjectLevel, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProductionLineAttribute, "产线属性", new { @class = "control-label" })
-            @Html.DropDownListFor(model=>model.ProductionLineAttribute, new List<SelectListItem> {
+            @*@Html.DropDownListFor(model=>model.ProductionLineAttribute, new List<SelectListItem> {
                 new SelectListItem { Value="", Text=""},
                 new SelectListItem { Value="研发公共", Text="研发公共"},
                 new SelectListItem { Value="智慧城市", Text="智慧城市"},
@@ -78,12 +81,13 @@
                 new SelectListItem { Value="物联网", Text="物联网"},
                 new SelectListItem { Value="战略投入", Text="战略投入"},
                 new SelectListItem { Value="云运维", Text="云运维"}
-            }, new { @class="form-control"})
+            }, new { @class="form-control"})*@
+            @Html.DropDownListFor(model => model.ProductionLineAttribute, (IEnumerable<SelectListItem>)ViewBag.ProductionLineAttributes, String.Empty, new { id = "ProductionLineAttribute", @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ProductionLineAttribute, "", new { @class = "text-danger" })
         </div>
         <div class="form-group col-md-6">
             @Html.LabelFor(model => model.ProjectStatus, "项目状态", new { @class = "control-label" })
-            @Html.DropDownListFor(model=>model.ProjectStatus, new List<SelectListItem> {
+            @*@Html.DropDownListFor(model=>model.ProjectStatus, new List<SelectListItem> {
                 new SelectListItem { Value="", Text=""},
                 new SelectListItem { Value="规划中", Text="规划中"},
                 new SelectListItem { Value="立项/进行中", Text="立项/进行中"},
@@ -91,7 +95,8 @@
                 new SelectListItem { Value="退市", Text="退市"},
                 new SelectListItem { Value="已暂停", Text="已暂停"},
                 new SelectListItem { Value="已取消/异常关闭", Text="已取消/异常关闭"}
-            }, new { @class="form-control"})
+            }, new { @class="form-control"})*@
+            @Html.DropDownListFor(model => model.ProjectStatus, (IEnumerable<SelectListItem>)ViewBag.ProjectStatusList, String.Empty, new { id = "ProjectStatus", @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ProjectStatus, "", new { @class = "text-danger" })
         </div>
     </div>

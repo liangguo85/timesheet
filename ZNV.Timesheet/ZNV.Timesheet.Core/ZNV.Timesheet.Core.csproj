@@ -214,6 +214,8 @@
     <Compile Include="ApproveLog\ApproveLog.cs" />
     <Compile Include="AutoMappperExtension.cs" />
     <Compile Include="BaseEntity.cs" />
+    <Compile Include="ConfigurationManagement\Configuration.cs" />
+    <Compile Include="ConfigurationManagement\IConfigurationRepository.cs" />
     <Compile Include="EmailTemplate\EmailTemplate.cs" />
     <Compile Include="EmailTemplate\IEmailTemplateRepository.cs" />
     <Compile Include="Employee\HRDepartment.cs" />

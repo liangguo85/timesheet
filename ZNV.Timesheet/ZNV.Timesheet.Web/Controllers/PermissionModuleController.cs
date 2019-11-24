@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using ZNV.Timesheet.PermissionModule;
 using ZNV.Timesheet.Web.App_Start;
@@ -43,14 +44,18 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult AddOrEdit(PermissionModule.PermissionModule permissionModule)
         {
-            permissionModule.Creator = "0001";
             if (permissionModule.Id == 0)
             {
+                permissionModule.Creator = Common.CommonHelper.CurrentUser;
+                permissionModule.LastModifier = permissionModule.Creator;
+                permissionModule.LastModifyTime = DateTime.Now;
                 _permissionModuleAppService.AddPermissionModule(permissionModule);
                 return Json(new { success = true, message = "新增权限模块信息成功!" }, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                permissionModule.LastModifier = Common.CommonHelper.CurrentUser;
+                permissionModule.LastModifyTime = DateTime.Now;
                 _permissionModuleAppService.UpdatePermissionModule(permissionModule);
                 return Json(new { success = true, message = "更新权限模块信息成功!" }, JsonRequestBehavior.AllowGet);
             }

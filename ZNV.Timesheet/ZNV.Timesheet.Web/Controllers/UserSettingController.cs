@@ -92,21 +92,5 @@ namespace ZNV.Timesheet.Web.Controllers
             }
             return Json(new { success = true, message = "设置成功!" }, JsonRequestBehavior.AllowGet);
         }
-
-        [HttpGet]
-        public ActionResult GetTeamList(string searchTerm, int pageSize, int pageNum)
-        {
-            var itemList = _teamService.GetTeamList().Where(x => string.IsNullOrEmpty(searchTerm) || x.TeamName.Contains(searchTerm)).ToList();
-            var result = new
-            {
-                Total = itemList.Count(),
-                Results = itemList.Skip((pageNum - 1) * pageSize).Take(pageSize)
-            };
-            return new JsonResult
-            {
-                Data = result,
-                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-            };
-        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/11/16 17:54:41 ******/
+/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/11/24 12:07:12 ******/
 CREATE DATABASE [ZNVTimesheet] ON  PRIMARY 
 ( NAME = N'ZNVTimesheet', FILENAME = N'E:\database\ZNVTimesheet.mdf' , SIZE = 9216KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
  LOG ON 
@@ -71,7 +71,7 @@ EXEC sys.sp_db_vardecimal_storage_format N'ZNVTimesheet', N'ON'
 GO
 USE [ZNVTimesheet]
 GO
-/****** Object:  User [liangguo]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  User [liangguo]    Script Date: 2019/11/24 12:07:13 ******/
 CREATE USER [liangguo] FOR LOGIN [liangguo] WITH DEFAULT_SCHEMA=[dbo]
 GO
 ALTER ROLE [db_owner] ADD MEMBER [liangguo]
@@ -88,7 +88,7 @@ ALTER ROLE [db_datareader] ADD MEMBER [liangguo]
 GO
 ALTER ROLE [db_datawriter] ADD MEMBER [liangguo]
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -250,7 +250,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_GetNotSubmitTimesheetUserList]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_GetNotSubmitTimesheetUserList]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -298,7 +298,7 @@ BEGIN
 	drop table #tmpResult
 END
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_ProductionLineReport]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_ProductionLineReport]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -467,7 +467,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_ProjectManpowerReport]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_ProjectManpowerReport]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -636,7 +636,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_ProjectReport]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_ProjectReport]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -787,7 +787,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_TimesheetReport]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_TimesheetReport]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -923,7 +923,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  UserDefinedFunction [dbo].[SPLIT]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  UserDefinedFunction [dbo].[SPLIT]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -958,7 +958,7 @@ BEGIN
 END
 
 GO
-/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -980,7 +980,7 @@ CREATE TABLE [dbo].[__MigrationHistory](
 GO
 SET ANSI_PADDING OFF
 GO
-/****** Object:  Table [dbo].[ApproveLog]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[ApproveLog]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1005,7 +1005,30 @@ CREATE TABLE [dbo].[ApproveLog](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[EmailTemplate]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[Configuration]    Script Date: 2019/11/24 12:07:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Configuration](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ConfigValue] [nvarchar](50) NOT NULL,
+	[ConfigText] [nvarchar](50) NOT NULL,
+	[ParentId] [int] NULL,
+	[Level] [int] NOT NULL,
+	[Creator] [nvarchar](20) NOT NULL,
+	[CreationTime] [datetime] NOT NULL,
+	[LastModifier] [nvarchar](20) NULL,
+	[LastModifyTime] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL,
+ CONSTRAINT [PK_Configuration] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[EmailTemplate]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1027,7 +1050,7 @@ CREATE TABLE [dbo].[EmailTemplate](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1048,7 +1071,7 @@ CREATE TABLE [dbo].[Holiday](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[HRDeptManager]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[HRDeptManager]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1071,7 +1094,7 @@ CREATE TABLE [dbo].[HRDeptManager](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[HRDeptTree]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[HRDeptTree]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1104,7 +1127,7 @@ CREATE TABLE [dbo].[HRDeptTree](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[HREmployee]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[HREmployee]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1135,7 +1158,7 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[PermissionModule]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[PermissionModule]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1158,7 +1181,7 @@ CREATE TABLE [dbo].[PermissionModule](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[Project]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1191,7 +1214,7 @@ CREATE TABLE [dbo].[Project](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project_copy]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[Project_copy]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1223,7 +1246,7 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Role]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[Role]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1243,7 +1266,7 @@ CREATE TABLE [dbo].[Role](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[RoleDepartment]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[RoleDepartment]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1264,7 +1287,7 @@ CREATE TABLE [dbo].[RoleDepartment](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[RoleModule]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[RoleModule]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1285,7 +1308,7 @@ CREATE TABLE [dbo].[RoleModule](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Team]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[Team]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1307,7 +1330,7 @@ CREATE TABLE [dbo].[Team](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1337,7 +1360,7 @@ CREATE TABLE [dbo].[Timesheet](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserRole]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[UserRole]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1358,7 +1381,7 @@ CREATE TABLE [dbo].[UserRole](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserSetting]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Table [dbo].[UserSetting]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1379,7 +1402,7 @@ CREATE TABLE [dbo].[UserSetting](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  View [dbo].[HRActiveDeptManagerV]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  View [dbo].[HRActiveDeptManagerV]    Script Date: 2019/11/24 12:07:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1423,7 +1446,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_N3]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Index [HREmployee_N3]    Script Date: 2019/11/24 12:07:13 ******/
 CREATE NONCLUSTERED INDEX [HREmployee_N3] ON [dbo].[HREmployee]
 (
 	[EmployeeName] ASC
@@ -1432,7 +1455,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_N5]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Index [HREmployee_N5]    Script Date: 2019/11/24 12:07:13 ******/
 CREATE NONCLUSTERED INDEX [HREmployee_N5] ON [dbo].[HREmployee]
 (
 	[OrgCode] ASC
@@ -1441,7 +1464,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_N6]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Index [HREmployee_N6]    Script Date: 2019/11/24 12:07:13 ******/
 CREATE NONCLUSTERED INDEX [HREmployee_N6] ON [dbo].[HREmployee]
 (
 	[DeptCode] ASC
@@ -1450,7 +1473,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_U2]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Index [HREmployee_U2]    Script Date: 2019/11/24 12:07:13 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [HREmployee_U2] ON [dbo].[HREmployee]
 (
 	[EmployeeCode] ASC
@@ -1459,7 +1482,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_U4]    Script Date: 2019/11/16 17:54:42 ******/
+/****** Object:  Index [HREmployee_U4]    Script Date: 2019/11/24 12:07:13 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [HREmployee_U4] ON [dbo].[HREmployee]
 (
 	[Email] ASC

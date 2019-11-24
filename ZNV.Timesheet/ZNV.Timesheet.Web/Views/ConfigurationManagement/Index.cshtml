@@ -1,0 +1,127 @@
+﻿@using ZNV.Timesheet.ConfigurationManagement;
+@{
+    ViewBag.Title = "配置管理";
+}
+@section styles {
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-simple-tree-table.css" rel="stylesheet" />
+}
+@section scripts
+{
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/notify.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/jquery-simple-tree-table.js"></script>
+    <script>
+        var Popup, dataTable
+
+        $(document).ready(function () {
+
+            $('#basic').simpleTreeTable({
+                expander: $('#expander'),
+                collapser: $('#collapser')
+            });
+        })
+
+        function PopupForm(url) {
+            var formDiv = $('<div/>');
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        resizable: false,
+                        modal: true,
+                        title: "编辑配置信息",
+                        height: 400,
+                        width: 600,
+                        close: function () {
+                            Popup.dialog('destroy').remove();
+                        }
+                    });
+                });
+        }
+
+        function SubmitForm(form) {
+            $.validator.unobtrusive.parse(form);
+            if ($(form).valid()) {
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            Popup.dialog('close');
+                            location.reload();
+
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+                        }
+                    }
+                });
+            }
+            return false;
+        }
+
+        function Delete(id) {
+            if (confirm("确认删除吗?")) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Delete", "ConfigurationManagement")/' + id,
+                    success: function (data) {
+                        if (data.success) {
+                            location.reload();
+
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+                        }
+                    }
+                })
+            }
+        }
+
+    </script>
+}
+<div class="row">
+    <div class="col-xs-12">
+        <!-- /.box -->
+        <div class="box">
+            <div class="box box-header">
+                <div class="btn-group-toggle">
+                    <button type="button" class="btn btn-info" onclick="PopupForm('@Url.Action("AddOrEdit","ConfigurationManagement")')">新增 <i class="fa fa-plus"></i></button>
+                    <button type="button" id="expander" class="btn btn-danger">全部展开</button>
+                    <button type="button" id="collapser" class="btn btn-info">全部收缩</button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table id="basic" class="table table-bordered table-striped table-hover" style="width:100%">
+                    @foreach (var item in ViewBag.ConfigurationList)
+                    {
+                        <tr data-node-id="@item.Id" data-node-pid="@item.ParentId">
+                            <td>@item.ConfigValue-@item.ConfigText</td>
+                            <td>
+                                <a class='btn btn-info btn-sm' onclick='PopupForm("@Url.Action("AddOrEdit", "ConfigurationManagement" )/@item.Id")'><i class='fa fa-pencil'></i>编辑</a>
+                                <a class='btn btn-danger btn-sm' style='margin-left:5px' onclick='Delete(@item.Id)'><i class='fa fa-trash'></i>删除</a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+
+
+
+
+

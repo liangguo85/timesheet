@@ -66,6 +66,10 @@
                 {
                     <li><a href="/EmailTemplate"><i class="fa fa-circle-o"></i>邮件模板</a></li>
                 }
+                @if (Model.Any(item => item.ModuleCode.StartsWith("00010007")))
+                {
+                    <li><a href="/ConfigurationManagement"><i class="fa fa-circle-o"></i>配置管理</a></li>
+                }
             </ul>
         </li>
     }

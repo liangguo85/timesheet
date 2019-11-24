@@ -7776,6 +7776,7 @@
     <Compile Include="App_Start\TimesheetWebModule.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Common\CommonHelper.cs" />
+    <Compile Include="Controllers\ConfigurationManagementController.cs" />
     <Compile Include="Controllers\DepartmentReportController.cs" />
     <Compile Include="Controllers\EmailTemplateController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -7856,6 +7857,8 @@
     <Content Include="Views\ProjectManpowerReport\Index.cshtml" />
     <Content Include="Views\ProductionLineReport\Index.cshtml" />
     <Content Include="Views\TimesheetReport\Index.cshtml" />
+    <Content Include="Views\ConfigurationManagement\Index.cshtml" />
+    <Content Include="Views\ConfigurationManagement\AddOrEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

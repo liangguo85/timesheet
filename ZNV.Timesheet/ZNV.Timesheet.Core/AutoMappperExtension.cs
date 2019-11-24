@@ -53,6 +53,8 @@ namespace ZNV.Timesheet
                       .IgnoreNoMap();
                 config.CreateMap<UserSetting.UserSetting, UserSetting.UserSetting>()
                       .IgnoreNoMap();
+                config.CreateMap<ConfigurationManagement.Configuration, ConfigurationManagement.Configuration>()
+                     .IgnoreNoMap();
             });
         }
 

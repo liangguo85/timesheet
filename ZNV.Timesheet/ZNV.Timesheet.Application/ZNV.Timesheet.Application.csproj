@@ -213,6 +213,8 @@
   <ItemGroup>
     <Compile Include="ApproveLog\IApproveLogAppService.cs" />
     <Compile Include="ApproveLog\ApproveLogAppService.cs" />
+    <Compile Include="ConfigurationManagement\ConfigurationAppService.cs" />
+    <Compile Include="ConfigurationManagement\IConfigurationAppService.cs" />
     <Compile Include="EmailTemplate\EmailTemplateAppService.cs" />
     <Compile Include="EmailTemplate\IEmailTemplateAppService.cs" />
     <Compile Include="Employee\EmployeeAppService.cs" />

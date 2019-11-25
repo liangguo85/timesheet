@@ -32,8 +32,9 @@ namespace ZNV.Timesheet.ConfigurationManagement
                              config.Creator,
                              config.LastModifier,
                              config.LastModifyTime,
-                             config.IsDeleted
-                         }).OrderBy(item => item.ConfigValue).ToList();
+                             config.IsDeleted,
+                             OrderId = (parentItem.ConfigValue ?? string.Empty) + config.ConfigValue
+                         }).OrderBy(item => item.OrderId).ToList();
             var configList = new List<Configuration>();
             list.ForEach(module =>
             {

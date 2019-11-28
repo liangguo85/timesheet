@@ -31,6 +31,10 @@
             employeeConfig.multiple = true
             $('#searchUser').select2(employeeConfig);
 
+            var projectConfig = select2.allProject
+            projectConfig.multiple = true
+            $("#searchProject").select2(projectConfig);
+
             $("#searchProductionLine").select2({
                 placeholder: '输入项目产线属性',
                 minimumInputLength: 0,
@@ -92,8 +96,6 @@
                 "dom": '<"top"l>rt<"bottom"ip><"clear">'
             });
 
-            $("#searchProject").select2(select2.allProject);
-
             $("#btnSearch").click(function () {
                 if ($("#beginDate").val() == "") {
                     alert("请选择查询开始日期!")
@@ -134,7 +136,14 @@
                     return;
                 }
 
-                window.location.href = "@Url.RouteUrl(new { Controller = "TimesheetReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&departmentIds=" + $("#searchDepartment").val() + "&productionLineList=" + $("#searchProductionLine").val() + "&projectIds=" + $("#searchProject").val() + "&userIds=" + $("#searchUser").val()
+                var beginDate = $("#beginDate").val() == null ? "" : $("#beginDate").val()
+                var endDate = $("#endDate").val() == null ? "" : $("#endDate").val()
+                var searchDepartment = $("#searchDepartment").val() == null ? "" : $("#searchDepartment").val()
+                var searchProductionLine = $("#searchProductionLine").val() == null ? "" : $("#searchProductionLine").val()
+                var searchProject = $("#searchProject").val() == null ? "" : $("#searchProject").val()
+                var searchUser = $("#searchUser").val() == null ? "" : $("#searchUser").val()
+
+                window.location.href = "@Url.RouteUrl(new { Controller = "TimesheetReport", Action = "GetExcelForReport" })/?startDate=" + beginDate + "&endDate=" + endDate + "&departmentIds=" + searchDepartment + "&productionLineList=" + searchProductionLine + "&projectIds=" + searchProject + "&userIds=" + searchUser
             });
 
         })

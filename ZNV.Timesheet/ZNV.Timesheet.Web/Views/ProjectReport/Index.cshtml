@@ -18,7 +18,9 @@
     <script src="~/js/config.js"></script>
     <script>
         $(document).ready(function () {
-            $("#searchProject").select2(select2.allProject);
+            var config = select2.allProject
+            config.multiple = true
+            $("#searchProject").select2(config);
 
             $("#btnSearch").click(function () {
                 if ($("#beginDate").val() == "") {
@@ -41,9 +43,9 @@
                     url: '@Url.Action("GetProjectReport", "ProjectReport")',
                     type: 'POST',
                     data: {
-                        startDate: $("#beginDate").val(),
-                        endDate: $("#endDate").val(),
-                        projectIds: $("#searchProject").val()
+                        startDate: $("#beginDate").val() == null ? "" : $("#beginDate").val(),
+                        endDate: $("#endDate").val() == null ? "" : $("#endDate").val(),
+                        projectIds: $("#searchProject").val() == null ? "" : $("#searchProject").val()
                     },
                     success: function (data) {
                         var head = $("#head")
@@ -112,7 +114,11 @@
                     return;
                 }
 
-                window.location.href = "@Url.RouteUrl(new { Controller = "ProjectReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&projectIds=" + $("#searchProject").val()
+                var beginDate = $("#beginDate").val() == null ? "" : $("#beginDate").val()
+                var endDate = $("#endDate").val() == null ? "" : $("#endDate").val()
+                var searchProject = $("#searchProject").val() == null ? "" : $("#searchProject").val()
+
+                window.location.href = "@Url.RouteUrl(new { Controller = "ProjectReport", Action = "GetExcelForReport" })/?startDate=" + beginDate + "&endDate=" + endDate + "&projectIds=" + searchProject
             });
 
         })

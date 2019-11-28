@@ -47,9 +47,9 @@
                     url: '@Url.Action("GetReport", "ProductionLineReport")',
                     type: 'POST',
                     data: {
-                        startDate: $("#beginDate").val(),
-                        endDate: $("#endDate").val(),
-                        productionLineList: $("#searchProductionLine").val()
+                        startDate: $("#beginDate").val() == null ? "" : $("#beginDate").val(),
+                        endDate: $("#endDate").val() == null ? "" : $("#endDate").val(),
+                        productionLineList: $("#searchProductionLine").val() == null ? "" : $("#searchProductionLine").val()
                     },
                     success: function (data) {
                         var head = $("#head")
@@ -115,7 +115,11 @@
                     return;
                 }
 
-                window.location.href = "@Url.RouteUrl(new { Controller = "ProductionLineReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&productionLineList=" + $("#searchProductionLine").val()
+                var beginDate = $("#beginDate").val() == null ? "" : $("#beginDate").val()
+                var endDate = $("#endDate").val() == null ? "" : $("#endDate").val()
+                var searchProductionLine = $("#searchProductionLine").val() == null ? "" : $("#searchProductionLine").val()
+
+                window.location.href = "@Url.RouteUrl(new { Controller = "ProductionLineReport", Action = "GetExcelForReport" })/?startDate=" + beginDate + "&endDate=" + endDate + "&productionLineList=" + searchProductionLine
             });
 
         })

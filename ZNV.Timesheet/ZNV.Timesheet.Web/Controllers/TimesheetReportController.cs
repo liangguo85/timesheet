@@ -72,7 +72,7 @@ namespace ZNV.Timesheet.Web.Controllers
             search.isPage = false;
             DataTable dt = _reportAppService.GetTimesheetReport(search, out totalRow);
             string sheetName = "员工工时报表";
-            var book = Common.CommonHelper.CreateHSSFromDataTable(sheetName, dt, new List<int>() { 0 });
+            var book = Common.CommonHelper.CreateHSSFromDataTable(sheetName, dt, new List<int>() { });
             MemoryStream ms = new MemoryStream();
             book.Write(ms);
             ms.Seek(0, SeekOrigin.Begin);

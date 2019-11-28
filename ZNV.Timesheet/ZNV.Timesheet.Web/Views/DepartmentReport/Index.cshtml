@@ -43,9 +43,9 @@
                     url: '@Url.Action("GetDepartmentReport", "DepartmentReport")',
                     type: 'POST',
                     data: {
-                        startDate: $("#beginDate").val(),
-                        endDate: $("#endDate").val(),
-                        departmentIds: $("#searchDepartment").val()
+                        startDate: $("#beginDate").val() == null ? "" : $("#beginDate").val(),
+                        endDate: $("#endDate").val() == null ? "" : $("#endDate").val(),
+                        departmentIds: $("#searchDepartment").val() == null ? "" : $("#searchDepartment").val()
                     },
                     success: function (data) {
                         var head = $("#head")
@@ -114,7 +114,11 @@
                     return;
                 }
 
-                window.location.href = "@Url.RouteUrl(new { Controller = "DepartmentReport", Action = "GetExcelForReport" })/?startDate=" + $("#beginDate").val() + "&endDate=" + $("#endDate").val() + "&departmentIds=" + $("#searchDepartment").val()
+                var beginDate = $("#beginDate").val() == null ? "" : $("#beginDate").val()
+                var endDate = $("#endDate").val() == null ? "" : $("#endDate").val()
+                var searchDepartment = $("#searchDepartment").val() == null ? "" : $("#searchDepartment").val()
+
+                window.location.href = "@Url.RouteUrl(new { Controller = "DepartmentReport", Action = "GetExcelForReport" })/?startDate=" + beginDate + "&endDate=" + endDate + "&departmentIds=" + searchDepartment
             });
 
         })

@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
-using Newtonsoft.Json;
 using ZNV.Timesheet.ConfigurationManagement;
 using ZNV.Timesheet.Report;
 
@@ -57,6 +56,10 @@ namespace ZNV.Timesheet.Web.Controllers
             if (!string.IsNullOrEmpty(Request["columns[5][search][value]"]))
             {
                 search.userIds = Request["columns[5][search][value]"];
+            }
+            if (!string.IsNullOrEmpty(Request["columns[6][search][value]"]))
+            {
+                search.status = Request["columns[6][search][value]"];
             }
             search.currentUserID = Common.CommonHelper.CurrentUser;
 

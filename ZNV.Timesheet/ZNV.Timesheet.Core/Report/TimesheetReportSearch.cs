@@ -15,6 +15,7 @@ namespace ZNV.Timesheet.Report
         public string projectIds { get; set; }
         public string userIds { get; set; }
         public string currentUserID { get; set; }
+        public string status { get; set; }
         public bool isPage { get; set; }
         public int pageSize { get; set; }
         public int pageStart { get; set; }

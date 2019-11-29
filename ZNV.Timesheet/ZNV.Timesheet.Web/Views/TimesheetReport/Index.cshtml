@@ -43,6 +43,14 @@
             });
             $("#searchProductionLine").val('').trigger('change');
 
+            $("#searchStatus").select2({
+                placeholder: '输入状态',
+                minimumInputLength: 0,
+                allowClear: true,
+                multiple: false
+            });
+            $("#searchStatus").val('').trigger('change');
+
             var beginDate = new Date();
             beginDate.setDate(beginDate.getDate() - 7);
             $("#beginDate").val(beginDate.toISOString().slice(0, 10))
@@ -117,6 +125,7 @@
                 dataTable.columns(3).search($("#searchProductionLine").val() == null ? "" : $("#searchProductionLine").val());
                 dataTable.columns(4).search($("#searchProject").val() == null ? "" : $("#searchProject").val());
                 dataTable.columns(5).search($("#searchUser").val() == null ? "" : $("#searchUser").val());
+                dataTable.columns(6).search($("#searchStatus").val() == null ? "" : $("#searchStatus").val());
                 dataTable.draw();
             });
 
@@ -142,8 +151,9 @@
                 var searchProductionLine = $("#searchProductionLine").val() == null ? "" : $("#searchProductionLine").val()
                 var searchProject = $("#searchProject").val() == null ? "" : $("#searchProject").val()
                 var searchUser = $("#searchUser").val() == null ? "" : $("#searchUser").val()
+                var searchStatus = $("#searchStatus").val() == null ? "" : $("#searchStatus").val()
 
-                window.location.href = "@Url.RouteUrl(new { Controller = "TimesheetReport", Action = "GetExcelForReport" })/?startDate=" + beginDate + "&endDate=" + endDate + "&departmentIds=" + searchDepartment + "&productionLineList=" + searchProductionLine + "&projectIds=" + searchProject + "&userIds=" + searchUser
+                window.location.href = "@Url.RouteUrl(new { Controller = "TimesheetReport", Action = "GetExcelForReport" })/?startDate=" + beginDate + "&endDate=" + endDate + "&departmentIds=" + searchDepartment + "&productionLineList=" + searchProductionLine + "&projectIds=" + searchProject + "&userIds=" + searchUser + "&status=" + searchStatus
             });
 
         })
@@ -192,16 +202,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>项目产线</label>
-                            @*<select class="form-control select2" id="searchProductionLine">
-                                <option value="研发公共">研发公共</option>
-                                <option value="智慧城市">智慧城市</option>
-                                <option value="公共安全">公共安全</option>
-                                <option value="公共安全-心测及定位">公共安全-心测及定位</option>
-                                <option value="物联网">物联网</option>
-                                <option value="战略投入">战略投入</option>
-                                <option value="云运维">云运维</option>
-                            </select>*@
-                             @Html.DropDownList("searchProductionLine", (IEnumerable<SelectListItem>)ViewBag.ProductionLineAttributes, new { id = "searchProductionLine", @class = "form-control select2" })
+                            @Html.DropDownList("searchProductionLine", (IEnumerable<SelectListItem>)ViewBag.ProductionLineAttributes, new { id = "searchProductionLine", @class = "form-control select2" })
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -210,10 +211,21 @@
                             <select class="form-control select2" id="searchProject"></select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label>人员</label>
                             <select class="form-control select2" id="searchUser"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select class="form-control select2" id="searchStatus">
+                                <option value="0">草稿</option>
+                                <option value="1">审核中</option>
+                                <option value="2">审批通过</option>
+                                <option value="3">已拒绝</option>
+                            </select>
                         </div>
                     </div>
                 </div>

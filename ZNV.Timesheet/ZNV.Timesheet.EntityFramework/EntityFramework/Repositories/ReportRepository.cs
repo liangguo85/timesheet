@@ -134,7 +134,7 @@ namespace ZNV.Timesheet.EntityFramework.Repositories
             using (var command = CreateCommand("Proc_TimesheetReport", CommandType.StoredProcedure,
                 new SqlParameter("startDate", search.startDate), new SqlParameter("endDate", search.endDate),
                 new SqlParameter("departmentIDs", search.departmentIds ?? ""), new SqlParameter("productionLineList", search.productionLineList ?? ""),
-                new SqlParameter("projectIds", search.projectIds ?? ""), new SqlParameter("userIds", search.userIds ?? ""), new SqlParameter("currentUserID", search.currentUserID),
+                new SqlParameter("projectIds", search.projectIds ?? ""), new SqlParameter("userIds", search.userIds ?? ""), new SqlParameter("currentUserID", search.currentUserID), new SqlParameter("status", search.status ?? ""),
                 isPageSqlParameter, new SqlParameter("pageSize", search.pageSize), new SqlParameter("pageStart", search.pageStart), outputTotalSqlParameter
                 ))
             {

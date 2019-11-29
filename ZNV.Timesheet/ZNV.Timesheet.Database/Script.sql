@@ -1,10 +1,10 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/11/24 12:07:12 ******/
+/****** Object:  Database [ZNVTimesheet]    Script Date: 2019/11/29 8:50:39 ******/
 CREATE DATABASE [ZNVTimesheet] ON  PRIMARY 
 ( NAME = N'ZNVTimesheet', FILENAME = N'E:\database\ZNVTimesheet.mdf' , SIZE = 9216KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
  LOG ON 
-( NAME = N'ZNVTimesheet_log', FILENAME = N'E:\database\ZNVTimesheet_1.ldf' , SIZE = 10176KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+( NAME = N'ZNVTimesheet_log', FILENAME = N'E:\database\ZNVTimesheet_1.ldf' , SIZE = 11200KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
 GO
 ALTER DATABASE [ZNVTimesheet] SET COMPATIBILITY_LEVEL = 100
 GO
@@ -71,7 +71,7 @@ EXEC sys.sp_db_vardecimal_storage_format N'ZNVTimesheet', N'ON'
 GO
 USE [ZNVTimesheet]
 GO
-/****** Object:  User [liangguo]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  User [liangguo]    Script Date: 2019/11/29 8:50:40 ******/
 CREATE USER [liangguo] FOR LOGIN [liangguo] WITH DEFAULT_SCHEMA=[dbo]
 GO
 ALTER ROLE [db_owner] ADD MEMBER [liangguo]
@@ -88,7 +88,7 @@ ALTER ROLE [db_datareader] ADD MEMBER [liangguo]
 GO
 ALTER ROLE [db_datawriter] ADD MEMBER [liangguo]
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_DepartmentReport]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -159,7 +159,7 @@ begin
 		INNER JOIN [Project] B ON A.ProjectID = B.Id
 		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
 		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
-	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+	WHERE A.[Status] <> 0 and A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
 		AND (
 			-- 所有权限
 			@searchAllDepartment = 1
@@ -250,7 +250,26 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_GetNotSubmitTimesheetUserList]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_GetDepartmentManagerList]    Script Date: 2019/11/29 8:50:40 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+--获取所有在职的部门manager，只取工时表日期区间内没有记录的manager
+--EXEC [dbo].[Proc_GetDepartmentManagerList] '2019-12-04','2019-12-08'
+CREATE PROCEDURE [dbo].[Proc_GetDepartmentManagerList](
+  @dateFrom AS datetime,  --开始日期
+	@dateTo AS datetime		--结束日期
+)
+AS
+BEGIN
+	select DISTINCT a.UserNum from (select * from HRActiveDeptManagerV where FullDeptCode like '10000.11000%' and IsActiveDept = 'Y') a 
+	left join (select * from Timesheet where TimesheetDate BETWEEN @dateFrom and @dateTo) b on a.UserNum=b.TimesheetUser 
+	where b.TimesheetDate is NULL 
+END
+
+GO
+/****** Object:  StoredProcedure [dbo].[Proc_GetNotSubmitTimesheetUserList]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -298,7 +317,7 @@ BEGIN
 	drop table #tmpResult
 END
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_ProductionLineReport]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_ProductionLineReport]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -378,7 +397,7 @@ begin
 		INNER JOIN [Project] B ON A.ProjectID = B.Id
 		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
 		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
-	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+	WHERE A.[Status] <> 0 and A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
 		AND (
 			-- 所有权限
 			@searchAllDepartment = 1
@@ -467,7 +486,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_ProjectManpowerReport]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_ProjectManpowerReport]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -547,7 +566,7 @@ begin
 		INNER JOIN [Project] B ON A.ProjectID = B.Id
 		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
 		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
-	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+	WHERE A.[Status] <> 0 and A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
 		AND (
 			-- 所有权限
 			@searchAllDepartment = 1
@@ -636,7 +655,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_ProjectReport]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_ProjectReport]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -698,7 +717,7 @@ begin
 		INNER JOIN [Project] B ON A.ProjectID = B.Id
 		INNER JOIN [MAPSysDB].[dbo].[HREmployee] C ON C.EmployeeCode = A.TimesheetUser
 		INNER JOIN [MAPSysDB].[dbo].[HRDeptTree] D ON D.DeptCode1 = C.DeptCode
-	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+	WHERE A.[Status] <> 0 and A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
 		AND (
 			-- 所有权限
 			@searchAllDepartment = 1
@@ -787,7 +806,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  StoredProcedure [dbo].[Proc_TimesheetReport]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  StoredProcedure [dbo].[Proc_TimesheetReport]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -801,6 +820,7 @@ CREATE Proc [dbo].[Proc_TimesheetReport]
 	@projectIds nvarchar(max),
 	@userIds nvarchar(max),
 	@currentUserID nvarchar(50),
+	@status nvarchar(50),
 	@isPage bit,-- 是否分页【解决导出Excel全部导出问题】
 	@pageSize int, -- 每页记录数
 	@pageStart int,
@@ -877,6 +897,7 @@ begin
 		LEFT JOIN [MAPSysDB].[dbo].[HREmployee] E ON E.EmployeeCode = B.ProductManagerID
 		LEFT JOIN [MAPSysDB].[dbo].[HREmployee] F ON F.EmployeeCode = B.ProjectManagerID
 	WHERE A.TimesheetDate >= @startDate and A.TimesheetDate <= @endDate
+		AND A.[Status] = CASE WHEN @status = '' THEN A.[Status] ELSE CAST(@status as int) END
 		AND (
 			-- 所有权限
 			@searchAllDepartment = 1
@@ -923,7 +944,7 @@ begin
 	DROP TABLE #TempTimesheet
 end
 GO
-/****** Object:  UserDefinedFunction [dbo].[SPLIT]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  UserDefinedFunction [dbo].[SPLIT]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -958,7 +979,7 @@ BEGIN
 END
 
 GO
-/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[__MigrationHistory]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -980,7 +1001,7 @@ CREATE TABLE [dbo].[__MigrationHistory](
 GO
 SET ANSI_PADDING OFF
 GO
-/****** Object:  Table [dbo].[ApproveLog]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[ApproveLog]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1005,7 +1026,7 @@ CREATE TABLE [dbo].[ApproveLog](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Configuration]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[Configuration]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1028,7 +1049,7 @@ CREATE TABLE [dbo].[Configuration](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[EmailTemplate]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[EmailTemplate]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1050,7 +1071,7 @@ CREATE TABLE [dbo].[EmailTemplate](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[Holiday]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1071,7 +1092,7 @@ CREATE TABLE [dbo].[Holiday](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[HRDeptManager]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[HRDeptManager]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1094,7 +1115,7 @@ CREATE TABLE [dbo].[HRDeptManager](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[HRDeptTree]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[HRDeptTree]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1127,7 +1148,7 @@ CREATE TABLE [dbo].[HRDeptTree](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[HREmployee]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[HREmployee]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1158,7 +1179,7 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[PermissionModule]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[PermissionModule]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1181,7 +1202,7 @@ CREATE TABLE [dbo].[PermissionModule](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[Project]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1214,7 +1235,7 @@ CREATE TABLE [dbo].[Project](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Project_copy]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[Project_copy]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1246,7 +1267,7 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Role]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[Role]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1266,7 +1287,7 @@ CREATE TABLE [dbo].[Role](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[RoleDepartment]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[RoleDepartment]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1287,7 +1308,7 @@ CREATE TABLE [dbo].[RoleDepartment](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[RoleModule]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[RoleModule]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1308,7 +1329,7 @@ CREATE TABLE [dbo].[RoleModule](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Team]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[Team]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1330,7 +1351,7 @@ CREATE TABLE [dbo].[Team](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[Timesheet]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1360,7 +1381,7 @@ CREATE TABLE [dbo].[Timesheet](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserRole]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[UserRole]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1381,7 +1402,7 @@ CREATE TABLE [dbo].[UserRole](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserSetting]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Table [dbo].[UserSetting]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1402,7 +1423,7 @@ CREATE TABLE [dbo].[UserSetting](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  View [dbo].[HRActiveDeptManagerV]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  View [dbo].[HRActiveDeptManagerV]    Script Date: 2019/11/29 8:50:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1446,7 +1467,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_N3]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Index [HREmployee_N3]    Script Date: 2019/11/29 8:50:40 ******/
 CREATE NONCLUSTERED INDEX [HREmployee_N3] ON [dbo].[HREmployee]
 (
 	[EmployeeName] ASC
@@ -1455,7 +1476,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_N5]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Index [HREmployee_N5]    Script Date: 2019/11/29 8:50:40 ******/
 CREATE NONCLUSTERED INDEX [HREmployee_N5] ON [dbo].[HREmployee]
 (
 	[OrgCode] ASC
@@ -1464,7 +1485,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_N6]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Index [HREmployee_N6]    Script Date: 2019/11/29 8:50:40 ******/
 CREATE NONCLUSTERED INDEX [HREmployee_N6] ON [dbo].[HREmployee]
 (
 	[DeptCode] ASC
@@ -1473,7 +1494,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_U2]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Index [HREmployee_U2]    Script Date: 2019/11/29 8:50:40 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [HREmployee_U2] ON [dbo].[HREmployee]
 (
 	[EmployeeCode] ASC
@@ -1482,7 +1503,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [HREmployee_U4]    Script Date: 2019/11/24 12:07:13 ******/
+/****** Object:  Index [HREmployee_U4]    Script Date: 2019/11/29 8:50:40 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [HREmployee_U4] ON [dbo].[HREmployee]
 (
 	[Email] ASC
@@ -1492,16 +1513,3 @@ USE [master]
 GO
 ALTER DATABASE [ZNVTimesheet] SET  READ_WRITE 
 GO
-
---获取所有在职的部门manager，只取工时表日期区间内没有记录的manager
---EXEC [dbo].[Proc_GetDepartmentManagerList] '2019-12-04','2019-12-08'
-CREATE PROCEDURE [dbo].[Proc_GetDepartmentManagerList](
-  @dateFrom AS datetime,  --开始日期
-	@dateTo AS datetime		--结束日期
-)
-AS
-BEGIN
-	select DISTINCT a.UserNum from (select * from HRActiveDeptManagerV where FullDeptCode like '10000.11000%' and IsActiveDept = 'Y') a 
-	left join (select * from Timesheet where TimesheetDate BETWEEN @dateFrom and @dateTo) b on a.UserNum=b.TimesheetUser 
-	where b.TimesheetDate is NULL 
-END

@@ -57,10 +57,16 @@ namespace ZNV.Timesheet.Web.Controllers
             projectList = projectList.OrderBy(sortColumnName + " " + sortDirection).ToList();
             projectList = projectList.Skip(start).Take(length).ToList();
             projectList.ForEach(item => {
-                var projectManager = _employeeAppService.GetEmployeeByCode(item.ProjectManagerID);
-                var productManager = _employeeAppService.GetEmployeeByCode(item.ProductManagerID);
-                item.ProjectManagerName = projectManager.EmployeeName + "(" + projectManager.EmployeeCode + ")";
-                item.ProductManagerName = productManager.EmployeeName + "(" + productManager.EmployeeCode + ")";
+                if (!string.IsNullOrEmpty(item.ProjectManagerID))
+                {
+                    var projectManager = _employeeAppService.GetEmployeeByCode(item.ProjectManagerID);
+                    item.ProjectManagerName = projectManager.EmployeeName + "(" + projectManager.EmployeeCode + ")";
+                }
+                if (!string.IsNullOrEmpty(item.ProductManagerID))
+                {
+                    var productManager = _employeeAppService.GetEmployeeByCode(item.ProductManagerID);
+                    item.ProductManagerName = productManager.EmployeeName + "(" + productManager.EmployeeCode + ")";
+                }
             });
             return Json(new { data = projectList, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }

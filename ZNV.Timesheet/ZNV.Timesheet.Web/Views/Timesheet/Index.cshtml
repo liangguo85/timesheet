@@ -187,6 +187,24 @@
 
         function PopupFormForWeek(url, currentDate) {
             abp.ui.block();
+            var isSetTeam = true;
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetUserTeamId", "Timesheet")',
+                cache: false,
+                async: false,
+                success: function (data) {
+                    abp.ui.unblock();
+                    debugger;
+                    if (data == 0) {
+                        isSetTeam = false;
+                    }
+                }
+            });
+            if (!isSetTeam) {
+                alert('请先在个人设置中设置科室!');
+                return;
+            }
             var formDiv = $('<div/>');
             var weekDate = $("#selectWeek").val();
             if (currentDate != undefined && currentDate != "" && currentDate != null) {//如果这个参数有值，则需要更加该日期把对应的周一和周末找出来
@@ -241,9 +259,11 @@
         }
 
         function SubmitFormForWeek(form) {
+            abp.ui.block();
             //按周操作的是多个工时对象，需要把form表单进行转换
             var weekData = GetTimeSheetFromForm(form, ApproveStatus.Draft);
             if (weekData.TimesheetList.length == 0) {
+                abp.ui.unblock();
                 $.notify('需要提交周工时数据为空!', {
                     globalPosition: "top center",
                     className: "error"
@@ -253,6 +273,7 @@
             //各种检验，单天不能超过8，同一个日期的工时不能超过8
             var validCheck = CheckTimesheetValid(GetTimeSheetFromForm(form, ApproveStatus.Draft, true).TimesheetList);
             if (validCheck != "") {
+                abp.ui.unblock();
                 $.notify(validCheck, {
                     globalPosition: "top center",
                     className: "error"
@@ -290,8 +311,8 @@
                 });
                 return;
             }
-            //各种检验，单天不能超过8，同一个日期的工时不能超过8
-            var validCheck = CheckTimesheetValid(GetTimeSheetFromForm(form, ApproveStatus.Draft, true).TimesheetList);
+            //各种检验，单天不能超过8，同一个日期的工时不能超过8，应用户要求，保存草稿时去掉验证
+            var validCheck = "";//CheckTimesheetValid(GetTimeSheetFromForm(form, ApproveStatus.Draft, true).TimesheetList);
             if (validCheck != "") {
                 abp.ui.unblock();
                 $.notify(validCheck, {

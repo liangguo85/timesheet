@@ -56,10 +56,10 @@ namespace ZNV.Timesheet.Web.Controllers
             {
                 if (projectInfo.Category == "售前售后")
                 {//Category是售前售后则走科室审批（先找user对应的team，然后再找team的teamleader）
-                    var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
-                    if (us != null && us.TeamId != 0)
+                    var us = GetUserTeamId();
+                    if (us != -1)
                     {
-                        return _teamService.GetTeam(us.TeamId).TeamLeader;
+                        return _teamService.GetTeam(us).TeamLeader;
                     }
                 }
                 else
@@ -95,7 +95,8 @@ namespace ZNV.Timesheet.Web.Controllers
             List<Project.Project> projects = _projectService.GetAllProjectList();
             list.ForEach(item =>
             {
-                item.ProjectName = Common.CommonHelper.GetProjectNameByProjectID(projects, item.ProjectID.Value);
+                if (item.ProjectID != null)
+                    item.ProjectName = Common.CommonHelper.GetProjectNameByProjectID(projects, item.ProjectID.Value);
             });
             return Json(new { data = list, draw = Request["draw"], recordsTotal = totalRow, recordsFiltered = totalRow }, JsonRequestBehavior.AllowGet);
         }
@@ -190,7 +191,7 @@ namespace ZNV.Timesheet.Web.Controllers
             tfw.startDate = startDate.ToString("yyyy-MM-dd");
             tfw.endDate = endDate.ToString("yyyy-MM-dd");
             var tss = _appService.GetAllTimesheetsByUser(Common.CommonHelper.CurrentUser, startDate, endDate);
-            decimal allWorkload = Math.Round(tss.Sum(t => t.Workload).Value,0);
+            decimal allWorkload = Math.Round(tss.Sum(t => t.Workload).Value, 0);
             decimal allWorkloadByWorkday = 0;
             for (int i = 0; i < workDate.Count; i++)
             {
@@ -232,8 +233,8 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult SaveDraftForWeek(Timesheet.TimesheetForWeek tsfw)
         {
-            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
-            if (!(us != null && us.TeamId != 0))
+            var us = GetUserTeamId();
+            if (us == -1)
             {
                 return Json(new { success = false, message = "请先在个人设置中设置科室!" }, JsonRequestBehavior.AllowGet);
             }
@@ -260,8 +261,8 @@ namespace ZNV.Timesheet.Web.Controllers
         [HttpPost]
         public ActionResult SubmitFormForWeek(Timesheet.TimesheetForWeek tsfw, string comment)
         {
-            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
-            if (!(us != null && us.TeamId != 0))
+            var us = GetUserTeamId();
+            if (us == -1)
             {
                 return Json(new { success = false, message = "请先在个人设置中设置科室!" }, JsonRequestBehavior.AllowGet);
             }
@@ -347,5 +348,22 @@ namespace ZNV.Timesheet.Web.Controllers
                 return Json(new { success = false, message = "需要撤回周工时数据为空!" }, JsonRequestBehavior.AllowGet);
             }
         }
+
+
+        /// <summary>
+        /// 获取当前用户是否设置了科室
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public int GetUserTeamId()
+        {
+            var us = _usService.GetUserSettingList().Where(p => p.UserId == CommonHelper.CurrentUser).FirstOrDefault();
+            if (us != null && us.TeamId != 0)
+            {
+                return us.TeamId;
+            }
+            return -1;
+        }
+
     }
 }

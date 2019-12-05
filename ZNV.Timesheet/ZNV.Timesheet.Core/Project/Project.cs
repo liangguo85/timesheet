@@ -29,6 +29,7 @@ namespace ZNV.Timesheet.Project
         [NotMapped]
         public virtual string ProductManagerName { get; set; }
 
+        [RequiredIf("Category == '立项项目' || Category == '非立项项目'", ErrorMessage = "产品管理不能为空!")]
         public virtual string ProductLeaderID { get; set; }
 
         [NotMapped]

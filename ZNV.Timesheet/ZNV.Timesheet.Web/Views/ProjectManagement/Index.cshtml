@@ -113,6 +113,8 @@
 
             $('#searchProjectManager, #searchProductionManager, #searchProductionLeader').select2(select2.employee);
 
+            var allProjectConfig = select2.allProject;
+            allProjectConfig.allowClear = true;
             $("#searchProject").select2(select2.allProject);
 
             $("#btnSearch").click(function () {

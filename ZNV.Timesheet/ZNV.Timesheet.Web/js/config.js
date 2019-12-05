@@ -69,7 +69,7 @@
         placeholder: '输入科室Id或名称',
         //Does the user have to enter any data before sending the ajax request
         minimumInputLength: 0,
-        allowClear: false,
+        allowClear: true,
         ajax: {
             //How long the user has to pause their typing before sending the next request
             delay: 150,
@@ -101,7 +101,7 @@
     project: {
         placeholder: '输入项目编号或名称',
         minimumInputLength: 0,
-        allowClear: false,
+        allowClear: true,
         ajax: {
             delay: 150,
             url: 'Home/GetProjectList',
@@ -130,7 +130,7 @@
     allProject: {
         placeholder: '输入项目编号或名称',
         minimumInputLength: 0,
-        allowClear: false,
+        allowClear: true,
         ajax: {
             delay: 150,
             url: 'Home/GetAllProjectList',

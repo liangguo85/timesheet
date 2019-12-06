@@ -260,6 +260,24 @@
 
         function SubmitFormForWeek(form) {
             abp.ui.block();
+            var isSetTeam = true;
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetUserTeamId", "Timesheet")',
+                cache: false,
+                async: false,
+                success: function (data) {
+                    abp.ui.unblock();
+                    debugger;
+                    if (data == 0) {
+                        isSetTeam = false;
+                    }
+                }
+            });
+            if (!isSetTeam) {
+                alert('请先在个人设置中设置科室!');
+                return;
+            }
             //按周操作的是多个工时对象，需要把form表单进行转换
             var weekData = GetTimeSheetFromForm(form, ApproveStatus.Draft);
             if (weekData.TimesheetList.length == 0) {

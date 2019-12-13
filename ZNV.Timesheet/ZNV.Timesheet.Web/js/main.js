@@ -104,6 +104,10 @@ function ShowApproveComment(actionName, tsIdList) {
     var divComment = $('<div style="text-align: center;"/>');
     var textArea = $('<textarea id="txtareaComment" style="width:100%" rows="3"></textarea>');
     var btComment = $('<input id="submitcomment" disabled="disabled" type="button" class="btn btn-primary btn-lg" />');
+    if (actionName == "审批通过") {
+        textArea.text('通过');
+        btComment.removeAttr('disabled');
+    }
     textArea.change(function () {
         var comment = $(this).val();
         if (comment && comment.trim() != '') {

@@ -108,7 +108,8 @@ function ShowApproveComment(actionName, tsIdList) {
         textArea.text('通过');
         btComment.removeAttr('disabled');
     }
-    textArea.change(function () {
+    textArea.bind('input propertychange','textarea',function(){
+    //textArea.change(function () {
         var comment = $(this).val();
         if (comment && comment.trim() != '') {
             btComment.removeAttr('disabled');
